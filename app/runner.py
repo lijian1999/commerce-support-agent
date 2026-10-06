@@ -10,14 +10,18 @@ from app.rag.index import IndexStore
 from app.state import new_turn_input
 
 
-def make_context(customer_id: str | None, today: str | None = None, fault: str = "off", session_id: str = "") -> AppContext:
-    """请求开始时读一次索引指针，这次请求里所有的检索都用这一个版本。"""
-    pointer = IndexStore().read_pointer()
+def make_context(customer_id: str | None, today: str | None = None, fault: str = "off",
+                 session_id: str = "", index_version: str | None = None) -> AppContext:
+    """请求开始时读一次索引指针，这次请求里所有的检索都用这一个版本。
+    给了 index_version 就用它（可以是还没发布的版本），不再读指针。"""
+    if index_version is None:
+        pointer = IndexStore().read_pointer()
+        index_version = pointer["current"] if pointer else None
     return AppContext(
         customer_id=customer_id or None,
         today=today or config.DEFAULT_TODAY,
         fault=fault,
-        index_version=pointer["current"] if pointer else None,
+        index_version=index_version,
         session_id=session_id,
     )
 

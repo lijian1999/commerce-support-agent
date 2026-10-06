@@ -22,7 +22,7 @@ uv run streamlit run ui.py                          # 聊天界面
 uv run pytest -q                                    # 单元测试（test_ui.py 会调用真实模型）
 ```
 
-命令行参数：`--customer`（不给就是匿名）、`--fault off|primary_down|all_down`、`--yes` / `--no`（自动回答取消确认）、`--verbose`（打印每一步的完整输出）。
+命令行参数：`--customer`（不给就是匿名）、`--fault off|primary_down|all_down`、`--yes` / `--no`（自动回答取消确认）、`--index-version v2`（指定知识库版本，可以是未发布的）、`--verbose`（打印每一步的完整输出）。
 
 ## 演示
 

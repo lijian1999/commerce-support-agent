@@ -81,6 +81,7 @@ def step_title(step: dict) -> str:
     else:
         icon = "⚪"
     first = str(step["summary"]).split("\n")[0]
+    first = first.replace("`", "")      # 标题当 Markdown 渲染，反引号会变成代码样式
     if len(first) > 60:
         first = first[:60] + "…"
     return f"{icon} {step['name']} — {first}"

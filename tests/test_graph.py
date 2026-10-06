@@ -22,7 +22,7 @@ from app.db import connect
 from app.graph import build_graph
 from app.models import ModelResult, ModelUnavailable
 from app.router import RouteDecision
-from app.runner import run_turn
+from app.runner import make_context, run_turn
 from app.sql_agent.plan import QueryPlan
 from app.supervisor.plan import ExecutionPlan, PlanTask
 from cli import format_preview, format_step
@@ -486,7 +486,7 @@ def test_cli_interactive_rebuilds_context_each_turn(monkeypatch):
     fake.install(monkeypatch)
     calls = {"count": 0}
 
-    def fake_make_context(customer_id, today=None, fault="off", session_id=""):
+    def fake_make_context(customer_id, today=None, fault="off", session_id="", index_version=None):
         calls["count"] += 1
         return AppContext(customer_id="CUST-002", index_version="v1", session_id="s-graph")
 
@@ -495,3 +495,34 @@ def test_cli_interactive_rebuilds_context_each_turn(monkeypatch):
     monkeypatch.setattr(builtins, "input", lambda *args, **kwargs: next(inputs))
     assert cli.main([]) == 0
     assert calls["count"] == 3
+
+
+def test_make_context_uses_given_index_version(monkeypatch):
+    """给了 index_version 就不读指针，没给才读。"""
+    calls = {"count": 0}
+
+    class FakePointerStore:
+        def read_pointer(self):
+            calls["count"] += 1
+            return {"current": "v7", "previous": None}
+
+    monkeypatch.setattr("app.runner.IndexStore", FakePointerStore)
+    assert make_context("CUST-001").index_version == "v7"
+    assert calls["count"] == 1
+    assert make_context("CUST-001", index_version="v9").index_version == "v9"
+    assert calls["count"] == 1
+
+
+def test_cli_passes_index_version(monkeypatch):
+    """命令行的 --index-version 原样传到 make_context。"""
+    fake = FakeModels(router=[ROUTE_DIRECT], answer=["你好！"])
+    fake.install(monkeypatch)
+    seen: dict = {}
+
+    def fake_make_context(*args, **kwargs):
+        seen.update(kwargs)
+        return AppContext(customer_id="CUST-002", index_version="v9", session_id="s-graph")
+
+    monkeypatch.setattr(cli, "make_context", fake_make_context)
+    assert cli.main(["--index-version", "v9", "你好"]) == 0
+    assert seen["index_version"] == "v9"

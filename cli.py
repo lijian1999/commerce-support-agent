@@ -115,6 +115,8 @@ def main(argv: list[str] | None = None) -> int:
     group.add_argument("--yes", action="store_true", help="遇到取消订单的确认时自动回答「是」")
     group.add_argument("--no", action="store_true", help="遇到取消订单的确认时自动回答「否」")
     parser.add_argument("--verbose", action="store_true", help="每个步骤下面再打印 detail 的 JSON")
+    parser.add_argument("--index-version", default=None,
+                        help="指定知识库的版本，可以是还没发布的版本；不给就用线上版本")
     parser.add_argument("question", nargs="?", default=None, help="要问的问题；不给就进入交互模式")
     args = parser.parse_args(argv)
     VERBOSE = args.verbose
@@ -122,7 +124,8 @@ def main(argv: list[str] | None = None) -> int:
 
     graph = build_graph(checkpointer=InMemorySaver())
     thread_id = uuid.uuid4().hex[:8]
-    ctx = make_context(args.customer, args.today, args.fault, session_id=thread_id)
+    ctx = make_context(args.customer, args.today, args.fault, session_id=thread_id,
+                       index_version=args.index_version)
     print(f"会话 {thread_id}   客户: {ctx.customer_id or '未登录'}   今天: {ctx.today}   "
           f"索引版本: {ctx.index_version or '无'}   模拟故障: {ctx.fault}")
 
@@ -143,7 +146,8 @@ def main(argv: list[str] | None = None) -> int:
         if text in ("exit", "quit"):
             break
         # 每一轮重新读一次索引指针，线上版本换了这一轮就能跟上
-        ctx = make_context(args.customer, args.today, args.fault, session_id=thread_id)
+        ctx = make_context(args.customer, args.today, args.fault, session_id=thread_id,
+                           index_version=args.index_version)
         run_and_print(graph, ctx, thread_id, text, auto_confirm=auto_confirm)
     return 0
 

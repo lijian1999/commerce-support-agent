@@ -296,3 +296,43 @@ def test_removed_doc_gone_from_new_version(tmp_path: Path) -> None:
     assert manifest["doc_changes"]["removed"] == ["products/b.md"]
     hits = _chroma(store).get_collection("kb_v2").get(where={"doc": "products/b.md"})
     assert hits["ids"] == []
+
+
+# ---- 脚本里状态和清理的输出 ----
+
+import importlib.util
+
+
+def load_index_script():
+    path = Path(__file__).resolve().parent.parent / "scripts" / "index.py"
+    spec = importlib.util.spec_from_file_location("index_script", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_status_excludes_previous_version(tmp_path, capsys) -> None:
+    """回滚之后「上一个」发布过，不算进「已构建未发布」。"""
+    script = load_index_script()
+    store, docs, embed = _setup(tmp_path)
+    store.build(docs, _cfg(), embed)          # v1
+    store.build(docs, _cfg(), embed)          # v2
+    store.build(docs, _cfg(), embed)          # v3
+    store.publish("v1", _cfg())
+    store.publish("v3", _cfg())
+    assert store.rollback() == ("v3", "v1")   # 线上 v1，上一个 v3
+    script._status(store)
+    assert capsys.readouterr().out.strip() == "线上: v1    上一个: v3    已构建未发布: v2"
+
+
+def test_gc_command_prints_removed_and_kept(tmp_path, capsys) -> None:
+    """gc 命令把清掉的和留下的版本都打出来，重复调用没有可清理的版本。"""
+    script = load_index_script()
+    store, docs, embed = _setup(tmp_path)
+    for _ in range(5):
+        store.build(docs, _cfg(), embed)
+        store.publish(store.list_versions()[-1], _cfg())
+    assert script._gc(store, 2) == 0
+    assert capsys.readouterr().out.strip() == "已清理: v1，v2，v3   保留: v4，v5"
+    assert script._gc(store, 2) == 0
+    assert capsys.readouterr().out.strip() == "没有需要清理的版本   保留: v4，v5"
