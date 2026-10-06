@@ -74,9 +74,11 @@ def run_and_print(graph, ctx, thread_id: str, text: str | None = None, resume=No
     """跑一轮并把每一步打印出来，返回这一轮结束时的状态。遇到确认就中断问用户。"""
     values: dict = {}
     model_steps: list[str] = []
+    last_summary: str = ""          # 最后打印过的那一步的摘要
     for kind, payload in run_turn(graph, ctx, thread_id, text, resume):
         if kind == "step":
             print(format_step(payload, color=sys.stdout.isatty(), verbose=VERBOSE))
+            last_summary = str(payload["summary"])
             if payload["kind"] == "model":
                 model_steps.append(str(payload["name"]))
         elif kind == "interrupt":
@@ -89,6 +91,10 @@ def run_and_print(graph, ctx, thread_id: str, text: str | None = None, resume=No
             values = payload
 
     # 走到这里说明这一轮正常结束，没有停在确认上
+    # 回复文本和最后一步的摘要不是同一句时（转人工就是这种）单独再打一行
+    answer = values.get("answer")
+    if answer and answer != last_summary:
+        print(f"客服> {answer}")
     if model_steps:
         print(f"—— 有模型参与的步骤 {len(model_steps)} 个: {', '.join(model_steps)}")
     else:
@@ -136,6 +142,8 @@ def main(argv: list[str] | None = None) -> int:
             continue
         if text in ("exit", "quit"):
             break
+        # 每一轮重新读一次索引指针，线上版本换了这一轮就能跟上
+        ctx = make_context(args.customer, args.today, args.fault, session_id=thread_id)
         run_and_print(graph, ctx, thread_id, text, auto_confirm=auto_confirm)
     return 0
 

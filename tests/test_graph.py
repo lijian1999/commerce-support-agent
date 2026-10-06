@@ -1,6 +1,7 @@
 """主图与运行入口的测试：模型全部是假的，数据库是真的，检索是假的。"""
 from __future__ import annotations
 
+import builtins
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +15,7 @@ import app.rag.retrieval as retrieval_module
 import app.router as router_module
 import app.sql_agent.graph as sql_graph_module
 import app.supervisor.nodes as supervisor_module
+import cli
 from app.answer import LOGIN_REPLY
 from app.context import AppContext
 from app.db import connect
@@ -455,3 +457,41 @@ def test_format_preview():
         "明细: Dell XPS 15 × 1   $1399.00",
         "合计: $1399.00   执行后: 订单状态将变为已取消；此操作不可撤销",
     ]
+
+
+# ---------------------------------------------------------------- 命令行的打印行为
+
+def test_cli_prints_reply_for_handoff(monkeypatch, capsys):
+    fake = FakeModels(router=[ROUTE_HANDOFF], answer=["用户要求人工。"])
+    fake.install(monkeypatch)
+    cli.run_and_print(new_graph(), context_of(), "t-cli-handoff", "帮我转人工")
+    lines = capsys.readouterr().out.splitlines()
+    reply = [i for i, line in enumerate(lines) if line.startswith("客服> 已为您转接人工客服，工单号 TKT-")]
+    stats = [i for i, line in enumerate(lines) if line.startswith("—— 有模型参与的步骤")]
+    assert len(reply) == 1, lines
+    assert stats and reply[0] < stats[0], lines
+
+
+def test_cli_does_not_repeat_answer(monkeypatch, capsys):
+    fake = FakeModels(router=[ROUTE_DIRECT], answer=["您好！"])
+    fake.install(monkeypatch)
+    cli.run_and_print(new_graph(), context_of(), "t-cli-direct", "你好")
+    out = capsys.readouterr().out
+    assert "客服>" not in out
+    assert "[answer]".ljust(18) + "您好！" in out
+
+
+def test_cli_interactive_rebuilds_context_each_turn(monkeypatch):
+    fake = FakeModels(router=[ROUTE_DIRECT, ROUTE_DIRECT], answer=["你好！", "不客气。"])
+    fake.install(monkeypatch)
+    calls = {"count": 0}
+
+    def fake_make_context(customer_id, today=None, fault="off", session_id=""):
+        calls["count"] += 1
+        return AppContext(customer_id="CUST-002", index_version="v1", session_id="s-graph")
+
+    inputs = iter(["你好", "", "谢谢", "exit"])
+    monkeypatch.setattr(cli, "make_context", fake_make_context)
+    monkeypatch.setattr(builtins, "input", lambda *args, **kwargs: next(inputs))
+    assert cli.main([]) == 0
+    assert calls["count"] == 3
