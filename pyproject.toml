@@ -1,0 +1,21 @@
+[project]
+name = "commerce-support-agent"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "chromadb>=1.5.9",
+    "cryptography>=50.0.2",
+    "langchain>=1.4.3",
+    "langchain-openai>=1.6.7",
+    "langgraph>=1.2.13",
+    "langsmith>=0.14.4",
+    "pydantic>=2.13.5",
+    "pymysql>=1.2.3",
+    "python-dotenv>=1.2.4",
+    "streamlit>=1.65.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
