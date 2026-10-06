@@ -114,7 +114,7 @@ print(len(r.notes), r.notes[0], '|', r.notes[-2], '|', r.notes[-1])"
 
 ```
 str []
-5 主模型第 1 次调用失败（APIConnectionError），0.5 秒后重试 | 切换到备用模型 | 备用模型调用成功
+5 主模型第 1 次调用失败（OpenAIConnectionError），0.5 秒后重试 | 切换到备用模型 | 备用模型调用成功
 ```
 
 ## 第四步：`tests/test_models.py`
