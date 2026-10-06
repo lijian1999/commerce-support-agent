@@ -114,4 +114,4 @@ r = out['task_results']['t1']
 print(r['status'], len(r['data']['chunks']), r['data']['chunks'][0]['doc'])"
 ```
 
-通过的标准：这条命令输出 `ok 4 policies/return_policy.md`；`uv run pytest tests/test_retrieval.py -q` 输出 `11 passed`。全部通过后最后一行输出 `DONE`。
+通过的标准：这条命令输出 `ok 6 policies/return_policy.md`；`uv run pytest tests/test_retrieval.py -q` 输出 `11 passed`。全部通过后最后一行输出 `DONE`。

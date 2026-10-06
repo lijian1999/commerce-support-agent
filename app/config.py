@@ -78,7 +78,7 @@ SQL_ROW_LIMIT = 50              # 编译器强制的 LIMIT 上限
 STRUCTURED_DIR = ROOT / "data" / "structured"
 DOCS_DIR = ROOT / "data" / "documents"
 INDEX_DIR = ROOT / "data" / "index"
-RAG_TOP_K = 4
+RAG_TOP_K = 6
 CHUNK_MAX_CHARS = 2000
 
 # ---- 运行时 ----
