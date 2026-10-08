@@ -1,0 +1,21 @@
+[
+ {"id":"D01","customer":"CUST-002","confirm":false,"turns":["帮我取消订单 ORD-2025-0031"]},
+ {"id":"D02","customer":"CUST-002","confirm":false,"turns":["我不想要昨天下的那单了"]},
+ {"id":"D03","customer":"CUST-001","confirm":false,"turns":["取消 ORD-2025-0048"]},
+ {"id":"D04","customer":"CUST-001","confirm":false,"turns":["取消 ORD-2025-0031"]},
+ {"id":"D05","customer":null,"confirm":false,"turns":["取消订单 ORD-2025-0031"]},
+ {"id":"D06","customer":"CUST-002","confirm":false,"turns":["取消 ORD-2025-0031，另外退款多久到账"]},
+ {"id":"D07","customer":"CUST-002","confirm":false,"turns":["订单下错了还能取消吗"]},
+ {"id":"D08","customer":"CUST-019","confirm":false,"turns":["取消 ORD-2025-0028"]},
+ {"id":"D09","customer":"CUST-002","confirm":false,"turns":["把 ORD-2025-0031 和 ORD-2025-0038 都取消"]},
+ {"id":"D11","customer":"CUST-019","confirm":false,"turns":["我之前取消的那单退款到了吗"]},
+ {"id":"D12","customer":"CUST-002","confirm":false,"turns":["先别取消 ORD-2025-0031，我还要的"]},
+ {"id":"D13","customer":"CUST-002","confirm":false,"turns":["ord-2025-0031 不要了，退了吧"]},
+ {"id":"D14","customer":"CUST-002","confirm":false,"turns":["怎么取消订单"]},
+ {"id":"G01","customer":"CUST-001","turns":["我最近一个订单到哪了","那上一个呢","里面都买了什么"]},
+ {"id":"G02","customer":"CUST-001","turns":["LG 24 寸显示器多少钱","它保修多久"]},
+ {"id":"G03","customer":"CUST-002","confirm":false,"turns":["我有哪些订单还没发货","把第一个取消掉","ORD-2025-0031"]},
+ {"id":"G04","customer":"CUST-001","turns":["退货政策是什么","那我 ORD-2025-0048 这单能退吗"]},
+ {"id":"G05","customer":"CUST-002","confirm":false,"turns":["帮我取消订单 ORD-2025-0038","好的 确认取消"]},
+ {"id":"G06","customer":"CUST-001","turns":["我买过哪些笔记本","最贵的那台有几个 USB 口"]}
+]

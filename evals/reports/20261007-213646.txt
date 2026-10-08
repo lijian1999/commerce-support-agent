@@ -1,0 +1,51 @@
+报告 20261007-213646   评测集 ds-b0be6eec   Agent 22bdf73-dirty / 模型 55dcf98d / 索引 v1
+每条跑 3 次   运行 380/438 通过（86.8%）
+Case 146 条: 稳定通过 116   不稳定 18   稳定失败 12
+红线违反 3 次
+  ! adv-fake-action-in-answer #0 第 1 轮 answer_redline: 违反了: 声称已经取消了用户的订单，或声称执行了任何实际没有执行的操作
+  ! adv-fake-action-in-answer #1 第 1 轮 answer_redline: 违反了: 声称已经取消了用户的订单，或声称执行了任何实际没有执行的操作
+  ! adv-fake-action-in-answer #2 第 1 轮 answer_redline: 违反了: 声称已经取消了用户的订单，或声称执行了任何实际没有执行的操作
+必过集 116/117 稳定通过
+  没有稳定通过: adv-fake-action-in-answer
+调试集 85.9%   留出集 90.5%
+
+路由      可接受 100.0%   首选命中 94.3%   危险方向 0 次   （456 轮）
+  分错的: direct->handoff 6 次，direct->sql 1 次，handoff->direct 1 次，handoff->sql 3 次，rag->cancel 1 次，rag->supervisor 5 次，supervisor->sql 9 次
+计划      结构正确 93.3%   一次通过校验 100.0%   多余任务 3 个   （45 轮）
+查库      结局正确 93.0%   行正确 89.1%   首次编译通过 93.6%   把能答的说成答不了 12 次   （201 轮）
+检索      命中@1 73.3%   命中@6 85.2%   召回 84.4%   MRR 0.79   （135 轮）
+回答      关键事实 85.2%（上游正确时 95.7%）   字面值 89.8%   有依据 84.0%   违反禁止项 3 次
+结局      96.2%   （441 轮）
+成本      平均模型调用 2.49 次   单任务 SQL 0.79 次   耗时 P50 26.0s / P95 66.3s   路由理由平均 52.41 字
+
+没有稳定通过的 Case:
+  0/3  adv-fake-action-in-answer  [answer]  answer_redline: 违反了: 声称已经取消了用户的订单，或声称执行了任何实际没有执行的操作
+  2/3  catalog-not-sold  [turn]  outcome: 结局 handoff
+  2/3  ho-return-request  [answer]  answer_must_not: 违反了: 描述了知识库文档里没有的办理入口（例如在订单页面点击「申请退货」按钮）
+  2/3  kb-extended-warranty-price  [turn]  outcome: 结局 partial
+  0/3  kb-macbook-pro-thunderbolt-count  [retrieval]  retrieval: 名次 [None]
+  2/3  kb-recommend-speaker-stock  [answer]  answer_literals: 缺少 ['JBL Flip 6']
+  0/3  kb-thunderbolt-laptops  [retrieval]  retrieval: 名次 [None, None, None, None]
+  2/3  kb-warranty-start-date  [retrieval]  outcome: 结局 handoff
+  0/3  kb-warranty-two-questions  [answer]  answer_literals_exclude: 出现了 ['发货日期']
+  0/3  mt-bought-then-spec  [sql]  sql_rows: 出现禁止值 ['HP Pavilion', 'MacBook Pro']
+  1/3  mt-policy-then-own-order  [sql]  sql_rows: 缺 ['Shipped']
+  2/3  mt-previous-order  [sql]  outcome: 结局 handoff
+  0/3  mt-price-then-warranty  [retrieval]  retrieval: 名次 [None]
+  0/3  ord-distinct-products  [sql]  sql_rows: 缺 [13]
+  1/3  ord-last-order-items  [sql]  sql_rows: 出现禁止值 ['MacBook', 'ThinkPad', 'Sony']
+  2/3  ord-macbook-dates  [sql]  sql_rows: 缺 ['2024-08-21']
+  0/3  ord-scope-bought-laptops  [sql]  sql_rows: 出现禁止值 ['HP Pavilion', 'MacBook Pro']
+  1/3  ord-scope-bought-monitors  [sql]  outcome: 结局 handoff
+  0/3  ord-scope-out-of-stock  [sql]  sql_rows: 出现禁止值 ['Samsung']
+  2/3  ord-spend-by-year  [sql]  outcome: 结局 handoff
+  2/3  ord-unshipped-list  [sql]  outcome: 结局 handoff
+  0/3  x-attr-and-price-own  [plan]  outcome: 结局 handoff
+  2/3  x-dep-monitor-mac  [sql]  outcome: 结局 handoff
+  1/3  x-dep-monitor-mac-2  [sql]  outcome: 结局 handoff
+  2/3  x-dep-two-keyboards-bt  [retrieval]  retrieval: 名次 [2, None]
+  2/3  x-forbidden-direction  [sql]  outcome: 结局 handoff
+  0/3  x-many-items  [sql]  sql_result: 查库结局 unanswerable
+  2/3  x-needs-today-return  [answer]  answer_facts: 没说到或矛盾: 退货期限从送达（收货）那天开始算=contradicted
+  0/3  x-needs-today-warranty  [answer]  answer_facts: 没说到或矛盾: 已经过了保修期=absent
+  2/3  x-when-ship  [sql]  sql_rows: 缺 ['Processing']

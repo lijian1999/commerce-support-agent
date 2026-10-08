@@ -1,0 +1,530 @@
+[
+ {
+  "id": "D10",
+  "customer": "CUST-002",
+  "turns": [
+   {
+    "question": "帮我取消订单 ORD-2025-0031",
+    "seconds": 1.2,
+    "error": null,
+    "route": "cancel",
+    "answer": "订单 ORD-2025-0031 已取消。",
+    "sources": [],
+    "plan": null,
+    "task_results": {},
+    "handoff": null,
+    "cancel": {
+     "order_id": "ORD-2025-0031",
+     "preview": {
+      "action": "cancel_order",
+      "action_label": "取消订单",
+      "order_id": "ORD-2025-0031",
+      "order_date": "2025-10-17",
+      "status": "Processing",
+      "items": [
+       {
+        "name": "Dell XPS 13 (Intel i7, 512GB)",
+        "quantity": 1,
+        "price_per_unit": 1399.0
+       }
+      ],
+      "total_amount": 1399.0,
+      "effect": "订单状态将变为已取消；此操作不可撤销"
+     },
+     "decision": {
+      "confirm": true,
+      "order_id": "ORD-2025-0031"
+     },
+     "outcome": "cancelled",
+     "message": "订单 ORD-2025-0031 已取消。"
+    },
+    "interrupts": [
+     {
+      "action": "cancel_order",
+      "action_label": "取消订单",
+      "order_id": "ORD-2025-0031",
+      "order_date": "2025-10-17",
+      "status": "Processing",
+      "items": [
+       {
+        "name": "Dell XPS 13 (Intel i7, 512GB)",
+        "quantity": 1,
+        "price_per_unit": 1399.0
+       }
+      ],
+      "total_amount": 1399.0,
+      "effect": "订单状态将变为已取消；此操作不可撤销"
+     }
+    ],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=cancel   理由: 用户明确要求取消订单，根据规则只要包含取消订单的要求就选 cancel。",
+      "detail": {
+       "route": "cancel",
+       "reason": "用户明确要求取消订单，根据规则只要包含取消订单的要求就选 cancel。"
+      },
+      "notes": []
+     },
+     {
+      "name": "cancel/extract",
+      "kind": "code",
+      "summary": "订单号 ORD-2025-0031（正则提取）",
+      "detail": {
+       "order_id": "ORD-2025-0031"
+      },
+      "notes": []
+     },
+     {
+      "name": "cancel/check",
+      "kind": "code",
+      "summary": "属于当前客户 ✓   状态 Processing ✓   可以取消",
+      "detail": {
+       "order_id": "ORD-2025-0031",
+       "status": "Processing",
+       "preview": {
+        "action": "cancel_order",
+        "action_label": "取消订单",
+        "order_id": "ORD-2025-0031",
+        "order_date": "2025-10-17",
+        "status": "Processing",
+        "items": [
+         {
+          "name": "Dell XPS 13 (Intel i7, 512GB)",
+          "quantity": 1,
+          "price_per_unit": 1399.0
+         }
+        ],
+        "total_amount": 1399.0,
+        "effect": "订单状态将变为已取消；此操作不可撤销"
+       }
+      },
+      "notes": []
+     },
+     {
+      "name": "cancel/confirm",
+      "kind": "code",
+      "summary": "用户: 确认",
+      "detail": {
+       "decision": {
+        "confirm": true,
+        "order_id": "ORD-2025-0031"
+       },
+       "preview": {
+        "action": "cancel_order",
+        "action_label": "取消订单",
+        "order_id": "ORD-2025-0031",
+        "order_date": "2025-10-17",
+        "status": "Processing",
+        "items": [
+         {
+          "name": "Dell XPS 13 (Intel i7, 512GB)",
+          "quantity": 1,
+          "price_per_unit": 1399.0
+         }
+        ],
+        "total_amount": 1399.0,
+        "effect": "订单状态将变为已取消；此操作不可撤销"
+       }
+      },
+      "notes": []
+     },
+     {
+      "name": "cancel/execute",
+      "kind": "code",
+      "summary": "影响 1 行，已写入取消记录，事务提交",
+      "detail": {
+       "sql": "UPDATE orders SET status = 'Cancelled', cancelled_at = %s WHERE order_id = %s AND customer_id = %s AND status = 'Processing'",
+       "params": [
+        "2025-10-20 20:10:50",
+        "ORD-2025-0031",
+        "CUST-002"
+       ],
+       "affected_rows": 1,
+       "outcome": "cancelled"
+      },
+      "notes": []
+     },
+     {
+      "name": "cancel/reply",
+      "kind": "code",
+      "summary": "订单 ORD-2025-0031 已取消。",
+      "detail": {
+       "outcome": "cancelled"
+      },
+      "notes": []
+     }
+    ]
+   },
+   {
+    "question": "ORD-2025-0031 现在什么状态",
+    "seconds": 5.7,
+    "error": null,
+    "route": "sql",
+    "answer": "订单 ORD-2025-0031 当前的状态是 **Cancelled**（已取消）。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "ORD-2025-0031 现在什么状态",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "orders.status"
+       ],
+       "rows": [
+        {
+         "orders.status": "Cancelled"
+        }
+       ],
+       "row_count": 1
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问特定订单的状态，这属于查询当前客户自己的订单数据，只需查数据库即可回答。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问特定订单的状态，这属于查询当前客户自己的订单数据，只需查数据库即可回答。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"select\": [\"orders.status\"], \"filters\": [{\"column\": \"orders.order_id\", \"op\": \"eq\", \"values\": [\"ORD-2025-0031\"]}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户询问特定订单 ORD-2025-0031 的当前状态。这是一个简单的查询，需要从 orders 表中获取该订单的 status 字段。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "orders.status"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "orders.order_id",
+         "op": "eq",
+         "values": [
+          "ORD-2025-0031"
+         ]
+        }
+       ],
+       "order_by": [],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT o.status AS `orders.status`\nFROM orders o\nWHERE o.customer_id = %s AND o.order_id = %s\nLIMIT 1\nparams = ['CUST-002', 'ORD-2025-0031']",
+      "detail": {
+       "sql": "SELECT o.status AS `orders.status`\nFROM orders o\nWHERE o.customer_id = %s AND o.order_id = %s\nLIMIT 1",
+       "params": [
+        "CUST-002",
+        "ORD-2025-0031"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "1 行",
+      "detail": {
+       "columns": [
+        "orders.status"
+       ],
+       "rows": [
+        {
+         "orders.status": "Cancelled"
+        }
+       ],
+       "row_count": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "订单 ORD-2025-0031 当前的状态是 **Cancelled**（已取消）。",
+      "detail": {
+       "answer": "订单 ORD-2025-0031 当前的状态是 **Cancelled**（已取消）。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   },
+   {
+    "question": "再取消一次 ORD-2025-0031",
+    "seconds": 1.2,
+    "error": null,
+    "route": "cancel",
+    "answer": "订单 ORD-2025-0031 之前已经取消过了。",
+    "sources": [],
+    "plan": null,
+    "task_results": {},
+    "handoff": null,
+    "cancel": {
+     "order_id": "ORD-2025-0031",
+     "outcome": "already_cancelled",
+     "message": "订单 ORD-2025-0031 之前已经取消过了。"
+    },
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=cancel   理由: 用户明确要求再次取消订单，根据规则只要包含取消订单的要求就归类为 cancel。",
+      "detail": {
+       "route": "cancel",
+       "reason": "用户明确要求再次取消订单，根据规则只要包含取消订单的要求就归类为 cancel。"
+      },
+      "notes": []
+     },
+     {
+      "name": "cancel/extract",
+      "kind": "code",
+      "summary": "订单号 ORD-2025-0031（正则提取）",
+      "detail": {
+       "order_id": "ORD-2025-0031"
+      },
+      "notes": []
+     },
+     {
+      "name": "cancel/check",
+      "kind": "code",
+      "summary": "状态 Cancelled，已经取消过",
+      "detail": {
+       "order_id": "ORD-2025-0031",
+       "status": "Cancelled",
+       "preview": null
+      },
+      "notes": []
+     },
+     {
+      "name": "cancel/reply",
+      "kind": "code",
+      "summary": "订单 ORD-2025-0031 之前已经取消过了。",
+      "detail": {
+       "outcome": "already_cancelled"
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "H01",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "我一共下过几单",
+    "seconds": 10.8,
+    "error": null,
+    "route": "sql",
+    "answer": "您一共下过 8 单。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我一共下过几单",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "total_orders"
+       ],
+       "rows": [
+        {
+         "total_orders": 8
+        }
+       ],
+       "row_count": 1
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己历史订单的总数，这属于查询当前客户自己的订单数据，只需查数据库即可回答。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己历史订单的总数，这属于查询当前客户自己的订单数据，只需查数据库即可回答。"
+      },
+      "notes": [
+       "主模型第 1 次调用失败（OpenAIConnectionError），0.5 秒后重试",
+       "主模型第 2 次调用失败（OpenAIConnectionError），1.0 秒后重试",
+       "主模型第 3 次调用失败（OpenAIConnectionError），重试 2 次后放弃",
+       "切换到备用模型",
+       "备用模型调用成功"
+      ]
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"metrics\": [{\"func\": \"count\", \"column\": \"orders.order_id\", \"alias\": \"total_orders\"}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户询问自己一共下过几单，这是一个统计问题。需要统计 orders 表中的订单数量。由于客户私有表会自动限定为当前登录客户，直接对 orders.order_id 进行计数即可。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [],
+       "metrics": [
+        {
+         "func": "count",
+         "column": "orders.order_id",
+         "alias": "total_orders"
+        }
+       ],
+       "group_by": [],
+       "filters": [],
+       "order_by": [],
+       "limit": 1
+      },
+      "notes": [
+       "主模型第 1 次调用失败（OpenAIConnectionError），0.5 秒后重试",
+       "主模型第 2 次调用失败（OpenAIConnectionError），1.0 秒后重试",
+       "主模型第 3 次调用失败（OpenAIConnectionError），重试 2 次后放弃",
+       "切换到备用模型",
+       "备用模型调用成功"
+      ]
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT COUNT(o.order_id) AS `total_orders`\nFROM orders o\nWHERE o.customer_id = %s\nLIMIT 1\nparams = ['CUST-001']",
+      "detail": {
+       "sql": "SELECT COUNT(o.order_id) AS `total_orders`\nFROM orders o\nWHERE o.customer_id = %s\nLIMIT 1",
+       "params": [
+        "CUST-001"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "1 行",
+      "detail": {
+       "columns": [
+        "total_orders"
+       ],
+       "rows": [
+        {
+         "total_orders": 8
+        }
+       ],
+       "row_count": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "您一共下过 8 单。",
+      "detail": {
+       "answer": "您一共下过 8 单。",
+       "sources": []
+      },
+      "notes": [
+       "主模型第 1 次调用失败（OpenAIConnectionError），0.5 秒后重试",
+       "主模型第 2 次调用失败（OpenAIConnectionError），1.0 秒后重试",
+       "主模型第 3 次调用失败（OpenAIConnectionError），重试 2 次后放弃",
+       "切换到备用模型",
+       "备用模型调用成功"
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "H02",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "我一共下过几单",
+    "seconds": 3.1,
+    "error": null,
+    "route": "handoff",
+    "answer": "已为您转接人工客服，工单号 TKT-20251020-97E9D4。人工客服会根据已有的记录继续处理，您不需要重复说明。",
+    "sources": [],
+    "plan": null,
+    "task_results": {},
+    "handoff": {
+     "ticket_id": "TKT-20251020-97E9D4",
+     "customer_id": "CUST-001",
+     "reason": "system_failure",
+     "reason_label": "系统处理失败",
+     "detail": "路由模型不可用",
+     "summary": "用户: 我一共下过几单",
+     "order_ids": [],
+     "session_id": "probe-H02",
+     "trace_id": "",
+     "created_at": "2025-10-20T20:10:52"
+    },
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "模型调用失败，转人工",
+      "detail": null,
+      "notes": [
+       "主模型第 1 次调用失败（OpenAIConnectionError），0.5 秒后重试",
+       "主模型第 2 次调用失败（OpenAIConnectionError），1.0 秒后重试",
+       "主模型第 3 次调用失败（OpenAIConnectionError），重试 2 次后放弃",
+       "切换到备用模型",
+       "备用模型第 1 次调用失败（OpenAIConnectionError），0.5 秒后重试",
+       "备用模型第 2 次调用失败（OpenAIConnectionError），1.0 秒后重试",
+       "备用模型第 3 次调用失败（OpenAIConnectionError），重试 2 次后放弃"
+      ]
+     },
+     {
+      "name": "handoff",
+      "kind": "code",
+      "summary": "工单 TKT-20251020-97E9D4   原因: 系统处理失败   摘要来源: 原始对话",
+      "detail": {
+       "ticket_id": "TKT-20251020-97E9D4",
+       "customer_id": "CUST-001",
+       "reason": "system_failure",
+       "reason_label": "系统处理失败",
+       "detail": "路由模型不可用",
+       "summary": "用户: 我一共下过几单",
+       "order_ids": [],
+       "session_id": "probe-H02",
+       "trace_id": "",
+       "created_at": "2025-10-20T20:10:52"
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ }
+]

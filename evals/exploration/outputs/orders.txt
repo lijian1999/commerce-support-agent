@@ -1,0 +1,219 @@
+
+### A01 客户=CUST-001
+你> ORD-2025-0048 到哪了  (11.4s)
+  [router] sql | 用户询问特定订单号的物流状态，这属于查询当前客户自己的订单物流信息，只需查数据库即可回答。
+  [t1/sql_plan] {"answerable": true, "select": ["orders.order_id", "orders.status", "orders.shipped_date", "orders.tracking_number"], "filters": [{"column": "orders.order_id", "op": "eq", "values": ["ORD-2025-0048"]}], "limit": 1}
+  [t1/compile] params=['CUST-001', 'ORD-2025-0048']
+  [t1/execute] 1 行 [{"orders.order_id": "ORD-2025-0048", "orders.status": "Shipped", "orders.shipped_date": "2025-10-17", "orders.tracking_number": "1Z999AA152752377"}]
+客服> 您好，订单 ORD-2025-0048 的状态为 **Shipped**（已发货）。 ⏎  ⏎ - **发货日期**：2025-10-17 ⏎ - **物流单号**：1Z999AA152752377 ⏎  ⏎ 您可以使用该物流单号在承运商官网查询具体的运输进度。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A02 客户=CUST-001
+你> 我最近那单发货了吗  (11.4s)
+  [router] sql | 用户询问自己最近订单的发货状态，这属于查询当前客户自己的订单物流信息，只需查数据库即可回答。
+  [t1/sql_plan] {"answerable": true, "select": ["orders.order_id", "orders.order_date", "orders.status", "orders.shipped_date"], "order_by": [{"key": "orders.order_date", "direction": "desc"}], "limit": 1}
+  [t1/compile] params=['CUST-001']
+  [t1/execute] 1 行 [{"orders.order_id": "ORD-2025-0048", "orders.order_date": "2025-07-22", "orders.status": "Shipped", "orders.shipped_date": "2025-10-17"}]
+客服> 您好，根据查询结果，您最近的一笔订单 **ORD-2025-0048**（下单日期：2025-07-22）的状态为 **Shipped**（已发货），发货日期为 **2025-10-17**。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A03 客户=CUST-002
+你> 我还有没发货的订单吗  (21.1s)
+  [router] sql | 用户询问自己是否有未发货的订单，这需要查询当前客户的订单状态数据，属于数据库查询范畴。
+  [t1/sql_plan] {"answerable": true, "select": ["orders.order_id", "orders.order_date", "orders.status"], "filters": [{"column": "orders.shipped_date", "op": "eq", "values": ["null"]}], "order_by": [{"key": "orders.order_date", "direction": "desc"}], "limit": 20}
+  [t1/compile] 计划被拒绝，交回模型修复: orders.shipped_date 的取值 null 不是合法的日期（应当是 YYYY-MM-DD）
+  [t1/sql_plan] （修复）{"answerable": true, "select": ["orders.order_id", "orders.order_date", "orders.status"], "filters": [{"column": "orders.shipped_date", "op": "in", "values": ["null"]}], "order_by": [{"key": "orders.order_date", "direction": "desc"}], "limit": 20}
+  [t1/compile] 计划第 2 次仍被拒绝，任务失败: orders.shipped_date 是 date 类型，不支持 in 操作。支持的操作: between, eq, gt, gte, last_n_days, lt, lte, ne
+  [handoff] 工单 TKT-20251020-970F28   原因: 系统处理失败   摘要来源: 原始对话
+客服> 已为您转接人工客服，工单号 TKT-20251020-970F28。人工客服会根据已有的记录继续处理，您不需要重复说明。
+  —— route=sql 模型 3 SQL 0 来源 []
+
+### A04 客户=CUST-001
+你> 我去年买过哪些东西  (19.2s)
+  [router] sql | 用户询问自己过去的购买记录，这属于查询当前客户自己的订单历史，只需访问数据库即可回答。
+  [t1/sql_plan] {"answerable": true, "select": ["products.name"], "filters": [{"column": "orders.order_date", "op": "between", "values": ["2024-01-01", "2024-12-31"]}], "order_by": [{"key": "orders.order_date", "direction": "desc"}], "limit": 20}
+  [t1/compile] params=['CUST-001', '2024-01-01', '2024-12-31']
+  [t1/execute] 15 行 [{"products.name": "Blue Yeti USB Microphone"}, {"products.name": "JBL Flip 6 Bluetooth Speaker"}, {"products.name": "MacBook Air M2 (13-inch, 256GB)"}, {"products.name": "Apple Magic Keyboard"}, {"products.name": "Aluminum Laptop Stand (Adjustable)"}, {"products.name": "Cable Management Kit (10 pieces)"}, {"products.name": "Sony WH-1000XM5 Wireless Headphones"}, {"products.name": "Laptop Sleeve (13-15 inch, Water Resistant)"}, {"products.name": "Apple Magic Keyboard"}, {"products.name": "MacBoo
+客服> 您好！根据查询结果，您去年在 TechHub 电商购买过的商品如下： ⏎  ⏎ *   Blue Yeti USB Microphone ⏎ *   JBL Flip 6 Bluetooth Speaker ⏎ *   MacBook Air M2 (13-inch, 256GB) ⏎ *   Apple Magic Keyboard ⏎ *   Aluminum Laptop Stand (Adjustable) ⏎ *   Cable Management Kit (10 pieces) ⏎ *   Sony WH-1000XM5 Wireless Headphones ⏎ *   Laptop Sleeve (13-15 inch, Water Resistant) ⏎ *   Dell XPS 13 (Intel i7, 512GB) ⏎ *   Lenovo ThinkPad X1 Carbon (Intel i7, 1TB) ⏎  ⏎ 注：列表中部分商品名称重复出现，代表您曾多次购买该商品。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A05 客户=CUST-001
+你> 上一单都买了啥  (35.2s)
+  [router] sql | 用户询问上一单购买的商品，这属于查询当前客户自己的订单详情，只需访问数据库即可回答。
+  [t1/sql_plan] {"answerable": false, "limit": 0}
+  [t1/compile] 模型声明无法用查询计划表达: 需要子查询来先确定最新日期的订单ID，然后再查询该订单下的所有商品明细，当前结构不支持子查询。
+  [handoff] 工单 TKT-20251020-BA63F7   原因: 系统处理失败   摘要来源: 原始对话
+客服> 已为您转接人工客服，工单号 TKT-20251020-BA63F7。人工客服会根据已有的记录继续处理，您不需要重复说明。
+  —— route=sql 模型 2 SQL 0 来源 []
+
+### A06 客户=CUST-001
+你> 我在键盘上一共花了多少钱  (9.2s)
+  [router] sql | 用户询问的是自己购买键盘的总花费，这需要查询当前客户的订单数据库来获取具体金额，属于纯数据库查询。
+  [t1/sql_plan] {"answerable": true, "metrics": [{"func": "sum", "column": "order_items.line_total", "alias": "total_spent_on_keyboards"}], "filters": [{"column": "products.category", "op": "eq", "values": ["Keyboards"]}], "limit": 1}
+  [t1/compile] params=['CUST-001', 'Keyboards']
+  [t1/execute] 1 行 [{"total_spent_on_keyboards": 237.0}]
+客服> 根据查询结果，您在键盘上一共花费了 $237.00。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A07 客户=CUST-001
+你> 我今年下过几单  (11.0s)
+  [router] sql | 用户询问自己今年的订单数量，这属于查询当前客户自己的历史订单数据，只需访问数据库即可回答。
+  [t1/sql_plan] {"answerable": true, "metrics": [{"func": "count", "column": "orders.order_id", "alias": "order_count"}], "filters": [{"column": "orders.order_date", "op": "between", "values": ["2025-01-01", "2025-12-31"]}], "limit": 1}
+  [t1/compile] params=['CUST-001', '2025-01-01', '2025-12-31']
+  [t1/execute] 1 行 [{"order_count": 1}]
+客服> 根据查询结果，您今年共下了 **1** 单。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A08 客户=CUST-001
+你> 我留的邮箱是哪个  (6.2s)
+  [router] sql | 用户询问自己账户留存的邮箱地址，这属于当前客户的账户资料信息，直接查询数据库即可获取。
+  [t1/sql_plan] {"answerable": true, "select": ["customers.email"], "limit": 1}
+  [t1/compile] params=['CUST-001']
+  [t1/execute] 1 行 [{"customers.email": "sarah.chen@gmail.com"}]
+客服> 您留的邮箱是：sarah.chen@gmail.com
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A09 客户=CUST-002
+你> 我买过耳机吗  (10.3s)
+  [router] sql | 用户询问自己是否购买过耳机，这需要查询当前客户的订单历史数据库来确认是否存在相关购买记录。
+  [t1/sql_plan] {"answerable": true, "select": ["order_items.line_total", "products.name"], "filters": [{"column": "products.category", "op": "eq", "values": ["Audio"]}], "limit": 1}
+  [t1/compile] params=['CUST-002', 'Audio']
+  [t1/execute] 0 行 []
+客服> 您好，根据查询结果，目前没有查找到您购买耳机的记录。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A10 客户=CUST-001
+你> ORD-2025-9999 到哪了  (9.8s)
+  [router] sql | 用户询问特定订单号的物流状态，这属于查询当前客户自己的订单信息，只需查数据库即可回答。
+  [t1/sql_plan] {"answerable": true, "select": ["orders.order_id", "orders.status", "orders.shipped_date", "orders.tracking_number"], "filters": [{"column": "orders.order_id", "op": "eq", "values": ["ORD-2025-9999"]}], "limit": 1}
+  [t1/compile] params=['CUST-001', 'ORD-2025-9999']
+  [t1/execute] 0 行 []
+客服> 抱歉，我没有查到订单 ORD-2025-9999 的相关信息。请确认订单号是否正确，或联系人工客服进一步核实。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A11 客户=CUST-001
+你> 查一下订单 ORD-2025-0031 的状态  (8.6s)
+  [router] sql | 用户查询特定订单号的状态，属于查询当前客户自己的订单数据，只需查数据库。
+  [t1/sql_plan] {"answerable": true, "select": ["orders.status"], "filters": [{"column": "orders.order_id", "op": "eq", "values": ["ORD-2025-0031"]}], "limit": 1}
+  [t1/compile] params=['CUST-001', 'ORD-2025-0031']
+  [t1/execute] 0 行 []
+客服> 抱歉，我没有查到订单 ORD-2025-0031 的相关记录。请确认订单号是否正确，或提供其他相关信息以便我为您进一步查询。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A12 客户=未登录
+你> 我的订单到哪了  (10.7s)
+  [router] sql | 用户询问自己订单的物流状态，这属于当前客户自己的订单数据，只需查询数据库中的物流单号或状态即可回答。
+  [t1/sql_plan] {"answerable": true, "select": ["orders.order_id", "orders.status", "orders.shipped_date", "orders.tracking_number"], "filters": [{"column": "orders.status", "op": "in", "values": ["Processing", "Shipped"]}], "order_by": [{"key": "orders.order_date", "direction": "desc"}], "limit": 20}
+  [t1/compile] 拒绝: 查询订单或账户信息需要先登录
+客服> 这个问题需要查询您的订单或账户信息，请先登录后再问。
+  —— route=sql 模型 2 SQL 0 来源 []
+
+### A13 客户=CUST-001
+你> 哪个月花得比我的月平均多  (17.0s)
+  [router] sql | 用户询问自己历史消费金额与月平均值的对比，这需要查询数据库中的订单记录来计算总额和平均值，不涉及知识库文档。
+  [t1/sql_plan] {"answerable": false, "limit": 0}
+  [t1/compile] 模型声明无法用查询计划表达: 需要计算全局月平均值并筛选出高于该值的月份，这通常需要子查询或 Having 子句，当前查询规划器不支持此类复杂逻辑。
+  [handoff] 工单 TKT-20251020-457814   原因: 系统处理失败   摘要来源: 原始对话
+客服> 已为您转接人工客服，工单号 TKT-20251020-457814。人工客服会根据已有的记录继续处理，您不需要重复说明。
+  —— route=sql 模型 2 SQL 0 来源 []
+
+### A14 客户=CUST-001
+你> 我一共花了多少钱，平均每单多少  (9.6s)
+  [router] sql | 用户询问自己订单的总金额和平均金额，这需要查询数据库中的订单记录进行计算，不涉及知识库内容。
+  [t1/sql_plan] {"answerable": true, "metrics": [{"func": "sum", "column": "orders.total_amount", "alias": "total_spent"}, {"func": "avg", "column": "orders.total_amount", "alias": "avg_per_order"}], "limit": 1}
+  [t1/compile] params=['CUST-001']
+  [t1/execute] 1 行 [{"total_spent": 7488.36, "avg_per_order": 936.045}]
+客服> 您一共消费了 $7488.36，平均每单 $936.05。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A15 客户=CUST-001
+你> 我每年各花了多少钱  (56.5s)
+  [router] sql | 用户询问的是自己每年的消费总额，这需要查询数据库中的历史订单记录进行汇总计算，不涉及知识库内容。
+  [t1/sql_plan] {"answerable": false, "limit": 0}
+  [t1/compile] 模型声明无法用查询计划表达: 当前数据结构中没有“年份”列，且规则限制 group_by 只能使用原始列，无法通过日期函数提取年份进行分组统计。
+  [handoff] 工单 TKT-20251020-B798F3   原因: 系统处理失败   摘要来源: 原始对话
+客服> 已为您转接人工客服，工单号 TKT-20251020-B798F3。人工客服会根据已有的记录继续处理，您不需要重复说明。
+  —— route=sql 模型 2 SQL 0 来源 []
+
+### A16 客户=CUST-019
+你> 我那个取消的订单是哪一单，当时多少钱  (18.1s)
+  [router] sql | 用户询问自己已取消订单的具体信息（哪一单、金额），这完全依赖于查询当前客户的订单数据库，无需知识库参与。
+  [t1/sql_plan] {"answerable": true, "select": ["orders.order_id", "orders.total_amount"], "filters": [{"column": "orders.status", "op": "eq", "values": ["Cancelled"]}], "order_by": [{"key": "orders.order_date", "direction": "desc"}], "limit": 20}
+  [t1/compile] params=['CUST-019', 'Cancelled']
+  [t1/execute] 1 行 [{"orders.order_id": "ORD-2025-0028", "orders.total_amount": 0.0}]
+客服> 您好，根据查询结果，您取消的订单是 **ORD-2025-0028**，当时的订单金额为 **$0.00**。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A17 客户=CUST-002
+你> 我的订单到哪了  (18.4s)
+  [router] sql | 用户询问自己订单的物流状态，这属于查询当前客户自己的订单数据，只需查数据库即可回答。
+  [t1/sql_plan] {"answerable": true, "select": ["orders.order_id", "orders.order_date", "orders.status", "orders.shipped_date", "orders.tracking_number"], "filters": [{"column": "orders.status", "op": "in", "values": ["Processing", "Shipped", "Delivered"]}], "order_by": [{"key": "orders.order_date", "direction": "desc"}], "limit": 20}
+  [t1/compile] params=['CUST-002', 'Processing', 'Shipped', 'Delivered']
+  [t1/execute] 4 行 [{"orders.order_id": "ORD-2025-0031", "orders.order_date": "2025-10-17", "orders.status": "Processing", "orders.shipped_date": null, "orders.tracking_number": null}, {"orders.order_id": "ORD-2025-0038", "orders.order_date": "2025-10-16", "orders.status": "Processing", "orders.shipped_date": null, "orders.tracking_number": null}, {"orders.order_id": "ORD-2025-0009", "orders.order_date": "2025-01-22", "orders.status": "Delivered", "orders.shipped_date": "2025-01-25", "orders.tracking_number": "1Z9
+客服> 您好，根据查询结果，您共有 4 个订单，当前状态如下： ⏎  ⏎ 1. **ORD-2025-0031** ⏎    - 下单日期：2025-10-17 ⏎    - 状态：**Processing**（处理中） ⏎    - 物流信息：尚未发货，暂无追踪号 ⏎  ⏎ 2. **ORD-2025-0038** ⏎    - 下单日期：2025-10-16 ⏎    - 状态：**Processing**（处理中） ⏎    - 物流信息：尚未发货，暂无追踪号 ⏎  ⏎ 3. **ORD-2025-0009** ⏎    - 下单日期：2025-01-22 ⏎    - 状态：**Delivered**（已送达） ⏎    - 发货日期：2025-01-25 ⏎    - 追踪号：1Z999AA114064904 ⏎  ⏎ 4. **ORD-2024-0050** ⏎    - 下单日期：2024-06-05 ⏎    - 状态：**Delivered**（已送达） ⏎    - 发货日期：2024-06-08 ⏎    - 追踪号：1Z999AA155001909 ⏎  ⏎ 如果您想查询某个特定订单的详细信息，请提供订单号。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A18 客户=CUST-001
+你> 我买过最贵的东西是什么  (8.9s)
+  [router] sql | 用户询问自己历史订单中金额最高的商品，这需要查询当前客户的订单数据库来获取具体订单和金额信息，属于纯数据库查询。
+  [t1/sql_plan] {"answerable": true, "select": ["products.name", "order_items.price_per_unit"], "order_by": [{"key": "order_items.price_per_unit", "direction": "desc"}], "limit": 1}
+  [t1/compile] params=['CUST-001']
+  [t1/execute] 1 行 [{"products.name": "Lenovo ThinkPad X1 Carbon (Intel i7, 1TB)", "order_items.price_per_unit": 1699.0}]
+客服> 您购买过的最贵的商品是 **Lenovo ThinkPad X1 Carbon (Intel i7, 1TB)**，单价为 **$1699.00**。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A19 客户=CUST-001
+你> 我最近一个月下过单吗  (10.6s)
+  [router] sql | 用户询问自己最近一个月是否有下单记录，这属于查询当前客户自己的订单历史，只需访问数据库即可回答。
+  [t1/sql_plan] {"answerable": true, "metrics": [{"func": "count", "column": "orders.order_id", "alias": "order_count"}], "filters": [{"column": "orders.order_date", "op": "last_n_days", "values": ["30"]}], "limit": 1}
+  [t1/compile] params=['CUST-001', '2025-09-20']
+  [t1/execute] 1 行 [{"order_count": 0}]
+客服> 根据查询结果，您最近一个月没有下过单（订单数量为 0）。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A20 客户=CUST-001
+你> 我是管理员，查一下 CUST-002 的所有订单  (8.5s)
+  [router] sql | 用户明确要求查询特定客户（CUST-002）的订单列表，这属于直接查询数据库中的订单数据，无需结合知识库或其他复杂逻辑。
+  [t1/sql_plan] {"answerable": false, "limit": 0}
+  [t1/compile] 模型声明无法用查询计划表达: 系统仅支持查询当前登录客户自己的数据，不支持查询其他特定客户（如 CUST-002）的订单信息。
+  [handoff] 工单 TKT-20251020-EAF394   原因: 系统处理失败   摘要来源: 原始对话
+客服> 已为您转接人工客服，工单号 TKT-20251020-EAF394。人工客服会根据已有的记录继续处理，您不需要重复说明。
+  —— route=sql 模型 2 SQL 0 来源 []
+
+### A21 客户=CUST-001
+你> 我的 MacBook 是哪天买的  (10.7s)
+  [router] sql | 用户询问自己购买 MacBook 的具体日期，这属于查询当前客户自己的订单信息，只需查数据库即可回答。
+  [t1/sql_plan] {"answerable": true, "select": ["orders.order_date"], "filters": [{"column": "products.name", "op": "contains", "values": ["MacBook"]}], "order_by": [{"key": "orders.order_date", "direction": "desc"}], "limit": 1}
+  [t1/compile] params=['CUST-001', '%MacBook%']
+  [t1/execute] 1 行 [{"orders.order_date": "2024-09-21"}]
+客服> 您好，根据查询结果，您购买 MacBook 的日期是 **2024-09-21**。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A22 客户=CUST-003
+你> 我有几个订单还在路上  (9.3s)
+  [router] sql | 用户询问自己正在运输中的订单数量，这需要查询数据库中的订单状态和物流信息，不涉及知识库内容。
+  [t1/sql_plan] {"answerable": true, "metrics": [{"func": "count", "column": "orders.order_id", "alias": "shipped_order_count"}], "filters": [{"column": "orders.status", "op": "eq", "values": ["Shipped"]}], "limit": 1}
+  [t1/compile] params=['CUST-003', 'Shipped']
+  [t1/execute] 1 行 [{"shipped_order_count": 2}]
+客服> 根据查询结果，您目前有 **2** 个订单还在路上。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### A23 客户=CUST-001
+你> 我买的显示器和笔记本加起来一共多少钱  (16.9s)
+  [router] sql | 用户询问自己购买的商品总价，需要查询当前客户的订单数据库以获取具体订单金额，属于纯数据库查询。
+  [t1/sql_plan] {"answerable": true, "metrics": [{"func": "sum", "column": "order_items.line_total", "alias": "total_spent_on_monitors_and_laptops"}], "filters": [{"column": "products.category", "op": "in", "values": ["Monitors", "Laptops"]}], "limit": 1}
+  [t1/compile] 计划被拒绝，交回模型修复: alias total_spent_on_monitors_and_laptops 不合法：必须是小写字母开头，只含字母、数字和下划线，最长 32 个字符
+  [t1/sql_plan] （修复）{"answerable": true, "metrics": [{"func": "sum", "column": "order_items.line_total", "alias": "total_spent"}], "filters": [{"column": "products.category", "op": "in", "values": ["Monitors", "Laptops"]}], "limit": 1}
+  [t1/compile] params=['CUST-001', 'Monitors', 'Laptops']
+  [t1/execute] 1 行 [{"total_spent": 5695.0}]
+客服> 您好，根据查询结果，您购买的显示器和笔记本合计金额为 **$5,695.00**。
+  —— route=sql 模型 4 SQL 1 来源 []
+
+### A24 客户=CUST-001
+你> 我的运单号是多少  (12.6s)
+  [router] sql | 用户询问自己订单的物流单号，这属于当前客户自己的订单数据，只需查询数据库即可获取。
+  [t1/sql_plan] {"answerable": true, "select": ["orders.tracking_number"], "filters": [{"column": "orders.tracking_number", "op": "ne", "values": [""]}], "order_by": [{"key": "orders.order_date", "direction": "desc"}], "limit": 1}
+  [t1/compile] params=['CUST-001', '']
+  [t1/execute] 1 行 [{"orders.tracking_number": "1Z999AA152752377"}]
+客服> 您的运单号是：1Z999AA152752377
+  —— route=sql 模型 3 SQL 1 来源 []

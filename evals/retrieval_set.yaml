@@ -1,0 +1,195 @@
+- query: 拆封了的电子产品几天内能退
+  mode: any
+  relevant:
+  - doc: policies/return_policy.md
+    section: Return Windows
+- query: 退货要收手续费吗
+  mode: any
+  relevant:
+  - doc: policies/return_policy.md
+    section: Restocking Fees
+- query: 哪些东西不能退
+  mode: any
+  relevant:
+  - doc: policies/return_policy.md
+    section: Non-Returnable Items
+- query: 退款多久到账
+  mode: any
+  relevant:
+  - doc: policies/return_policy.md
+    section: Refund Method
+- query: 退货流程怎么走
+  mode: any
+  relevant:
+  - doc: policies/return_policy.md
+    section: Return Process
+- query: 收到的东西是坏的怎么办
+  mode: any
+  relevant:
+  - doc: policies/return_policy.md
+    section: Damaged or Defective Items
+- query: 退货政策是什么
+  mode: any
+  relevant:
+  - doc: policies/return_policy.md
+    section: Return Windows
+- query: 保修期多长
+  mode: any
+  relevant:
+  - doc: policies/warranty_guide.md
+    section: Standard Warranty Coverage
+- query: 摔坏了保修吗
+  mode: any
+  relevant:
+  - doc: policies/warranty_guide.md
+    section: What's NOT Covered
+- query: 怎么申请保修
+  mode: any
+  relevant:
+  - doc: policies/warranty_guide.md
+    section: Filing a Warranty Claim
+- query: 延保有哪些选择
+  mode: any
+  relevant:
+  - doc: policies/warranty_guide.md
+    section: Extended Warranty Options
+- query: 标准配送要几天
+  mode: any
+  relevant:
+  - doc: policies/shipping_guide.md
+    section: Shipping Options
+- query: 下单后多久发货
+  mode: any
+  relevant:
+  - doc: policies/shipping_guide.md
+    section: Order Processing Time
+- query: 能寄到国外吗
+  mode: any
+  relevant:
+  - doc: policies/shipping_guide.md
+    section: Shipping Restrictions
+- query: 包裹显示签收了但我没收到
+  mode: any
+  relevant:
+  - doc: policies/shipping_guide.md
+    section: Delivery Issues
+- query: 下单后怎么改收货地址
+  mode: any
+  relevant:
+  - doc: policies/support_faq.md
+    section: Modifying or Canceling Orders
+  - doc: policies/shipping_guide.md
+    section: Delivery Issues
+- query: 支持哪些付款方式
+  mode: any
+  relevant:
+  - doc: policies/support_faq.md
+    section: Payment & Pricing
+- query: 忘记密码怎么办
+  mode: any
+  relevant:
+  - doc: policies/support_faq.md
+    section: Account Management
+- query: 客服电话是多少
+  mode: any
+  relevant:
+  - doc: policies/support_faq.md
+    section: Contact Methods
+- query: LG 24 寸显示器能接 MacBook 吗
+  mode: any
+  relevant:
+  - doc: products/TECH-MON-007.md
+    section: Compatibility
+  - doc: products/TECH-MON-007.md
+    section: Common Questions
+- query: Dell 4K 显示器的刷新率是多少
+  mode: any
+  relevant:
+  - doc: products/TECH-MON-006.md
+    section: Key Specifications
+- query: Sony 那款降噪耳机续航多久
+  mode: any
+  relevant:
+  - doc: products/TECH-AUD-016.md
+    section: Key Specifications
+  - doc: products/TECH-AUD-016.md
+    section: Common Questions
+- query: 机械键盘是什么轴的
+  mode: any
+  relevant:
+  - doc: products/TECH-KEY-012.md
+    section: Key Specifications
+  - doc: products/TECH-KEY-012.md
+    section: Product Overview
+- query: MacBook Pro 有几个雷电口
+  mode: any
+  relevant:
+  - doc: products/TECH-LAP-002.md
+    section: Key Specifications
+- query: AirPods Pro 防水吗
+  mode: any
+  relevant:
+  - doc: products/TECH-AUD-017.md
+    section: Key Specifications
+  - doc: products/TECH-AUD-017.md
+    section: Common Questions
+  - doc: products/TECH-AUD-017.md
+    section: Product Overview
+- query: Blue Yeti 麦克风没声音怎么办
+  mode: any
+  relevant:
+  - doc: products/TECH-AUD-018.md
+    section: Troubleshooting
+- query: 无线键鼠套装的包装里有什么
+  mode: any
+  relevant:
+  - doc: products/TECH-KEY-015.md
+    section: What's Included
+- query: ThinkPad 能外接几台显示器
+  mode: any
+  relevant:
+  - doc: products/TECH-LAP-004.md
+    section: Compatibility
+  - doc: products/TECH-LAP-004.md
+    section: Key Specifications
+- query: Mac 接显示器需要什么转接头
+  mode: any
+  relevant:
+  - doc: policies/compatibility_guide.md
+    section: Monitor Connection Guide
+  - doc: policies/compatibility_guide.md
+    section: Adapter Requirements Summary
+- query: 雷电和 USB-C 有什么区别
+  mode: any
+  relevant:
+  - doc: policies/compatibility_guide.md
+    section: USB-C and Thunderbolt Explained
+- query: 哪些笔记本有雷电接口
+  mode: all
+  relevant:
+  - doc: products/TECH-LAP-001.md
+    section: Key Specifications
+  - doc: products/TECH-LAP-002.md
+    section: Key Specifications
+  - doc: products/TECH-LAP-003.md
+    section: Key Specifications
+  - doc: products/TECH-LAP-004.md
+    section: Key Specifications
+- query: Apple Magic Keyboard 和无线键鼠套装支持蓝牙吗
+  mode: all
+  relevant:
+  - doc: products/TECH-KEY-010.md
+  - doc: products/TECH-KEY-015.md
+- query: 它保修多久
+  mode: any
+  relevant:
+  - doc: products/TECH-MON-007.md
+- query: TechHub 的 CEO 是谁
+  mode: none
+  relevant: []
+- query: 你们卖手机吗
+  mode: none
+  relevant: []
+- query: 今天天气怎么样
+  mode: none
+  relevant: []

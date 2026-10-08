@@ -1,0 +1,299 @@
+
+### B01 客户=未登录
+你> 退货政策是什么  (18.2s)
+  [router] rag | 用户询问的是退货政策，这属于通用的业务规则，知识库中包含退货、保修等政策文档，无需查询客户个人数据。
+  [t1/retrieve] 检索词: 退货政策是什么
+       0.618 policies/warranty_guide.md § Warranty vs. Return Policy
+       0.617 policies/return_policy.md § Non-Returnable Items
+       0.584 policies/return_policy.md § Restocking Fees
+       0.584 policies/return_policy.md § Refund Method
+       0.581 policies/support_faq.md § Returns & Refunds
+       0.575 policies/return_policy.md § Return Windows
+客服> TechHub 的退货政策主要包含以下内容： ⏎  ⏎ **1. 退货期限** ⏎ *   **未拆封电子产品**：收货后 **30 天** 内可退货，需保留完整原包装和封条。 ⏎ *   **已拆封电子产品**：收货后 **14 天** 内可退货，产品需处于良好工作状态，并包含所有配件、线缆和文档。 ⏎ *   **其他所有商品**：收货后 **30 天** 内可退货，需保持原始状态。 ⏎  ⏎ **2. 退款方式与时间** ⏎ *   退款将退回至**原支付方式**。 ⏎ *   **信用卡/借记卡**：5-7 个工作日到账。 ⏎ *   **PayPal**：3-5 个工作日到账。 ⏎ *   注意：银行处理可能需要额外 3-7 个工作日。 ⏎ *   仅当商品存在缺陷时，原运费才会被退还。 ⏎  ⏎ **3. 补货费 (Restocking Fees)** ⏎ *   **免收补货费的情况**： ⏎     *   有缺陷的商品（制造缺陷或运输损坏）。 ⏎     *   未拆封且保留原包装的商品。 ⏎     *   价格低于 $500 的商品。 ⏎ *   **收取 15% 补货费的情况**： ⏎     *   因“买家后悔”（非质量问题）而退货的、价格超过 $500 的已拆封电子产品。 ⏎     *   费用将从退款金额中扣除。 ⏎  ⏎ **4. 不可退货商品** ⏎ *   清仓或最终销售商品（结账时已标记）。 ⏎ *   数字礼品卡。 ⏎ *   可下载软件或数字产品。 ⏎ *   商品页面标记为“不可退货”的商品。 ⏎  ⏎ **温馨提示**：如果在收货后 14 天内遇到问题且考虑退货，退货流程通常比等待保修服务更快。保修服务通常由制造商处理，耗时 1-3 周，仅针对硬件故障或缺陷。
+  —— route=rag 模型 2 SQL 0 来源 ['policies/warranty_guide.md', 'policies/return_policy.md', 'policies/support_faq.md']
+
+### B02 客户=未登录
+你> 拆封了的耳机还能退吗，几天内  (8.9s)
+  [router] rag | 用户询问的是退货政策（拆封后是否可退、时限），这属于知识库中的政策类问题，不涉及具体订单查询。
+  [t1/retrieve] 检索词: 拆封了的耳机还能退吗，几天内
+       0.636 policies/return_policy.md § Return Windows
+       0.629 policies/support_faq.md § Returns & Refunds
+       0.623 products/TECH-AUD-017.md § Common Questions
+       0.606 products/TECH-AUD-018.md § Common Questions
+       0.604 products/TECH-AUD-016.md § Common Questions
+       0.587 policies/return_policy.md § Return Process
+客服> 您好！根据 TechHub 的退货政策，拆封了的耳机**可以退货**，退货期限为**收货后 14 天内**。 ⏎  ⏎ 具体条件如下： ⏎ 1. **时间要求**：必须在收货后 14 天内发起退货申请。 ⏎ 2. **商品状态**：耳机需处于良好工作状态，且必须包含所有配件、线缆及相关文档。 ⏎ 3. **包装要求**：原包装建议保留，但并非强制要求。 ⏎ 4. **退款时效**：退货商品被接收并检查后，退款将在 5-7 个工作日内退回至原支付方式。 ⏎  ⏎ 如果您需要办理退货，请联系客服获取 RMA（退货授权）号码。
+  —— route=rag 模型 2 SQL 0 来源 ['policies/return_policy.md', 'policies/support_faq.md', 'products/TECH-AUD-017.md', 'products/TECH-AUD-018.md', 'products/TECH-AUD-016.md']
+
+### B03 客户=未登录
+你> 保修多久，摔坏了保吗  (15.1s)
+  [router] rag | 用户询问保修期限和意外损坏是否保修，这属于保修政策范畴，知识库中包含此类政策信息，无需查询订单数据。
+  [t1/retrieve] 检索词: 保修多久，摔坏了保吗
+       0.694 policies/warranty_guide.md § Standard Warranty Coverage
+       0.671 policies/warranty_guide.md § Extended Warranty Options
+       0.635 policies/warranty_guide.md § What's NOT Covered
+       0.627 policies/warranty_guide.md § What's Covered
+       0.622 products/TECH-ACC-022.md § Common Questions
+       0.610 policies/warranty_guide.md § Warranty vs. Return Policy
+客服> 根据 TechHub 的保修政策，回答如下： ⏎  ⏎ **1. 保修期多久？** ⏎ 所有产品均包含 **1 年** 的有限制造商保修，保修期从**发货日期**开始计算。 ⏎ *   部分品牌（如 Apple、Dell、HP 等）或第三方保护计划可提供 **2-4 年** 的延长保修，具体取决于您购买时选择的方案。 ⏎  ⏎ **2. 摔坏了保吗？** ⏎ **标准保修不覆盖** 因跌落、撞击等造成的意外损坏。 ⏎ *   **如果您购买了含意外损坏保护的延长保修**（例如 AppleCare+ 或某些第三方保护计划），则**可以**享受维修或更换服务，但通常需要支付一定的**服务费**。 ⏎ *   如果您仅拥有标准 1 年保修，摔坏属于“意外损坏”，不在保修范围内，需自费维修。 ⏎  ⏎ **建议：** ⏎ *   如果产品刚收到不久（14-30 天内），且您希望快速解决，可以考虑走**退货**流程（退货政策允许因任何原因退货，包括意外损坏，但需符合退货条件）。 ⏎ *   如果已超过退货期，请查看您的订单是否包含“意外损坏保护”或“延长保修”。如果没有，摔坏将无法免费维修。
+  —— route=rag 模型 2 SQL 0 来源 ['policies/warranty_guide.md', 'products/TECH-ACC-022.md']
+
+### B04 客户=未登录
+你> 标准配送要几天，满多少免运费  (6.7s)
+  [router] rag | 用户询问配送时效和免运费政策，这些属于通用的业务规则和政策信息，存储在知识库中，不涉及具体订单数据。
+  [t1/retrieve] 检索词: 标准配送要几天，满多少免运费
+       0.746 policies/shipping_guide.md § Shipping Options
+       0.606 policies/shipping_guide.md § Order Processing Time
+       0.579 policies/return_policy.md § Damaged or Defective Items
+       0.578 policies/support_faq.md § Returns & Refunds
+       0.571 policies/return_policy.md § Refund Method
+       0.568 policies/shipping_guide.md § Delivery
+客服> 根据 TechHub 的配送政策： ⏎  ⏎ *   **标准配送时间**：5-7 个工作日。 ⏎ *   **免运费门槛**：订单满 **$50.00** 及以上免运费。 ⏎     *   若订单金额低于 $50.00，标准配送费用为 **$7.99**。 ⏎  ⏎ *注：工作日指周一至周五，不包含联邦假日。*
+  —— route=rag 模型 2 SQL 0 来源 ['policies/shipping_guide.md', 'policies/return_policy.md', 'policies/support_faq.md']
+
+### B05 客户=未登录
+你> LG 24 寸显示器能接 MacBook 吗  (8.0s)
+  [router] rag | 用户询问的是特定商品（LG 24 寸显示器）与另一设备（MacBook）的兼容性，这属于商品的功能和兼容性信息，知识库中有此类文档，无需查询数据库。
+  [t1/retrieve] 检索词: LG 24 寸显示器能接 MacBook 吗
+       0.720 products/TECH-MON-007.md § Compatibility
+       0.707 products/TECH-MON-007.md § Common Questions
+       0.657 policies/compatibility_guide.md § Mac to PC Product Compatibility
+       0.641 policies/compatibility_guide.md § Monitor Connection Guide
+       0.601 products/TECH-MON-007.md § What's Included
+       0.601 products/TECH-LAP-002.md § Compatibility
+客服> 可以接，但需要额外购买一个 **USB-C 转 HDMI 适配器**。 ⏎  ⏎ 具体说明如下： ⏎ 1. **连接方式**：LG 24 寸显示器只有 HDMI 接口，没有 USB-C 接口。MacBook 没有 HDMI 接口，因此必须通过 USB-C 转 HDMI 适配器进行连接。 ⏎ 2. **配件情况**：显示器包装内包含 HDMI 线，但**不包含** USB-C 转 HDMI 适配器，需单独购买。 ⏎ 3. **购买建议**：TechHub 有售该适配器，价格约为 **$15.00 - $25.00**。 ⏎ 4. **兼容性**：连接后即插即用，无需安装驱动，支持 macOS 系统。
+  —— route=rag 模型 2 SQL 0 来源 ['products/TECH-MON-007.md', 'policies/compatibility_guide.md', 'products/TECH-LAP-002.md']
+
+### B06 客户=未登录
+你> MacBook Air M2 多少钱  (9.9s)
+  [router] sql | 用户询问特定商品的价格，根据规则商品价格存储在数据库中，因此只需查询数据库即可回答。
+  [t1/sql_plan] {"answerable": true, "select": ["products.name", "products.price"], "filters": [{"column": "products.name", "op": "contains", "values": ["MacBook Air M2"]}], "limit": 20}
+  [t1/compile] params=['%MacBook Air M2%']
+  [t1/execute] 1 行 [{"products.name": "MacBook Air M2 (13-inch, 256GB)", "products.price": 1199.0}]
+客服> MacBook Air M2 (13-inch, 256GB) 的价格是 $1199.00。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### B07 客户=未登录
+你> Blue Yeti 麦克风有货吗  (10.5s)
+  [router] sql | 用户询问特定商品是否有货，库存信息存储在数据库中，只需查询数据库即可回答。
+  [t1/sql_plan] {"answerable": true, "select": ["products.name", "products.in_stock"], "filters": [{"column": "products.name", "op": "contains", "values": ["Blue Yeti"]}], "limit": 1}
+  [t1/compile] params=['%Blue Yeti%']
+  [t1/execute] 1 行 [{"products.name": "Blue Yeti USB Microphone", "products.in_stock": 0}]
+客服> 根据查询结果，Blue Yeti USB Microphone 目前库存数量为 0，因此暂时**没有货**。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### B08 客户=未登录
+你> Dell 4K 显示器的刷新率是多少，现在卖多少钱  (19.1s)
+  [router] supervisor | 用户询问特定商品的刷新率（属于商品规格/功能，在知识库）和当前售价（属于价格，在数据库），需要同时查询两个数据源。
+  [planner] 执行计划（第 1 次生成，1 次模型调用）
+       t1  rag  查询 Dell 4K 显示器的刷新率规格参数   依赖: 无
+       t2  sql  查询 Dell 4K 显示器的当前售价   依赖: 无
+  [validate] 计划通过校验，批次: [['t1', 't2']]
+  [scheduler] 第 1 批并行: t1, t2
+  [t1/retrieve] 检索词: 查询 Dell 4K 显示器的刷新率规格参数
+       0.670 products/TECH-MON-006.md § Key Specifications
+       0.606 products/TECH-MON-006.md § Product Overview
+       0.599 products/TECH-MON-006.md § Compatibility
+       0.599 products/TECH-MON-009.md § Key Specifications
+       0.592 products/TECH-MON-006.md § What's Included
+       0.589 products/TECH-MON-006.md § Common Questions
+  [t2/sql_plan] {"answerable": true, "select": ["products.name", "products.price"], "filters": [{"column": "products.name", "op": "contains", "values": ["Dell"]}, {"column": "products.name", "op": "contains", "values": ["4K"]}], "limit": 20}
+  [t2/compile] params=['%Dell%', '%4K%']
+  [t2/execute] 1 行 [{"products.name": "Dell UltraSharp 27\" 4K Monitor", "products.price": 549.0}]
+  [scheduler] 全部任务已结束
+客服> 根据查询结果，Dell UltraSharp 27" 4K Monitor 的相关信息如下： ⏎  ⏎ *   **刷新率**：60Hz ⏎ *   **当前售价**：$549.00
+  —— route=supervisor 模型 4 SQL 1 来源 ['products/TECH-MON-006.md', 'products/TECH-MON-009.md']
+
+### B09 客户=未登录
+你> 你们卖 iPhone 吗  (31.5s)
+  [router] sql | 用户询问店铺是否销售某类商品，这属于商品库存/目录查询，数据库中有商品是否有货的信息。
+  [t1/sql_plan] {"answerable": true, "select": ["products.name", "products.category"], "filters": [{"column": "products.name", "op": "contains", "values": ["iPhone"]}], "limit": 20}
+  [t1/compile] params=['%iPhone%']
+  [t1/execute] 0 行 []
+客服> 抱歉，我没有查到 TechHub 电商销售 iPhone 的相关记录。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### B10 客户=未登录
+你> 支持货到付款吗  (4.3s)
+  [router] rag | 货到付款属于支付/配送政策，知识库中包含配送政策，无需查询数据库。
+  [t1/retrieve] 检索词: 支持货到付款吗
+       0.676 policies/support_faq.md § Payment & Pricing
+       0.603 policies/shipping_guide.md § Delivery
+       0.602 policies/support_faq.md § Common Issues
+       0.586 policies/support_faq.md § Modifying or Canceling Orders
+       0.579 policies/shipping_guide.md § Shipping Options
+       0.575 policies/shipping_guide.md § Tips for Smooth Delivery
+客服> 根据提供的参考资料，TechHub 电商目前**不支持**货到付款。 ⏎  ⏎ 我们接受的支付方式包括：Visa、Mastercard、American Express、Discover、PayPal 和 Apple Pay。每笔订单仅支持使用一种支付方式，且无法拆分支付。
+  —— route=rag 模型 2 SQL 0 来源 ['policies/support_faq.md', 'policies/shipping_guide.md']
+
+### B11 客户=未登录
+你> 保修期内屏幕坏了怎么申请保修  (18.2s)
+  [router] rag | 用户询问的是通用的保修申请流程和政策，这属于知识库中的售后政策文档，不涉及具体订单查询。
+  [t1/retrieve] 检索词: 保修期内屏幕坏了怎么申请保修
+       0.622 policies/warranty_guide.md § Filing a Warranty Claim
+       0.603 policies/warranty_guide.md § What's Covered
+       0.601 policies/warranty_guide.md § Standard Warranty Coverage
+       0.593 policies/warranty_guide.md § Contact Information
+       0.583 policies/warranty_guide.md § Extended Warranty Options
+       0.583 policies/warranty_guide.md § What's NOT Covered
+客服> 您好！根据 TechHub 的保修政策，屏幕故障通常属于**硬件故障**，如果在保修期内且非人为损坏，是可以申请保修的。以下是申请步骤： ⏎  ⏎ **第一步：联系产品制造商** ⏎ 保修服务由产品制造商直接处理。请准备好您的**购买凭证**（TechHub 可提供此证明）。 ⏎ *   **常见品牌联系方式：** ⏎     *   Apple: 1-800-MY-APPLE 或 support.apple.com ⏎     *   Dell: 1-800-624-9896 或 dell.com/support ⏎     *   HP: 1-800-474-6836 或 hp.com/support ⏎     *   Lenovo: 1-855-253-6686 或 support.lenovo.com ⏎     *   其他品牌请查看产品包装内的联系信息或制造商官网。 ⏎  ⏎ **第二步：制造商评估** ⏎ 制造商会与您进行故障排查，可能会要求您提供照片或诊断信息。如果批准保修服务，他们会提供一个**退货授权码 (RMA)**。 ⏎  ⏎ **第三步：寄送产品** ⏎ 按照制造商的指示寄送产品。通常制造商会提供**预付运费标签**，请确保将产品包装牢固。 ⏎  ⏎ **第四步：维修或更换** ⏎ 制造商会进行维修或更换，通常耗时 **1-3 周**。产品寄回时，您会收到物流追踪信息。 ⏎  ⏎ **重要提示：** ⏎ *   **保修范围：** 标准保修期为**1年**（从收货日期算起），涵盖正常使用的硬件故障（如屏幕缺陷）。 ⏎ *   **不覆盖情况：** 如果是**意外损坏**（如跌落、撞击、液体进入）或**未经授权的维修**导致的损坏，则不在保修范围内。 ⏎ *   **TechHub 协助：** 如果您需要购买凭证或流程指导，可联系 TechHub 客服： ⏎     *   电话：1-800-555-TECH ⏎     *   邮箱：support@techhub.com ⏎  ⏎ 建议您先确认屏幕故障是否由意外损坏引起，然后直接联系制造商开始流程。
+  —— route=rag 模型 2 SQL 0 来源 ['policies/warranty_guide.md']
+
+### B12 客户=未登录
+你> 一千多的笔记本拆开用了几天想退，要收手续费吗  (10.5s)
+  [router] rag | 用户询问退货政策（手续费），这属于知识库中的退货政策范畴，不需要查询特定订单数据。
+  [t1/retrieve] 检索词: 一千多的笔记本拆开用了几天想退，要收手续费吗
+       0.650 policies/return_policy.md § Restocking Fees
+       0.633 products/TECH-ACC-022.md § Common Questions
+       0.632 products/TECH-ACC-024.md § Common Questions
+       0.598 products/TECH-KEY-012.md § Common Questions
+       0.595 products/TECH-ACC-025.md § Common Questions
+       0.580 policies/warranty_guide.md § Warranty vs. Return Policy
+客服> 根据我们的退货政策，针对您提到的“一千多”（即价格超过 $500）且“拆开用了几天”的笔记本电脑，情况如下： ⏎  ⏎ **是的，需要收取手续费。** ⏎  ⏎ 具体规定如下： ⏎ *   **适用条件**：价格超过 $500 的电子产品，因买家个人原因（非质量问题）退货，且包装已拆封。 ⏎ *   **手续费比例**：**15%** 的退货手续费。 ⏎ *   **计算方式**：手续费将从您的退款金额中直接扣除。 ⏎  ⏎ **例外情况**： ⏎ 如果该笔记本存在**制造缺陷**或**运输损坏**，则**不需要**支付任何手续费，全额退款。 ⏎  ⏎ **其他注意事项**： ⏎ *   退货需在收货后 **14 天内** 提出。 ⏎ *   商品需保持良好状态。 ⏎ *   退款通常在 5-7 个工作日内到账。 ⏎  ⏎ 如果您认为电脑存在质量问题，请提供相关故障描述或照片，我们可以协助您判断是否适用免手续费的退货政策。
+  —— route=rag 模型 2 SQL 0 来源 ['policies/return_policy.md', 'products/TECH-ACC-022.md', 'products/TECH-ACC-024.md', 'products/TECH-KEY-012.md', 'products/TECH-ACC-025.md', 'policies/warranty_guide.md']
+
+### B13 客户=未登录
+你> 有哪些显示器在卖，哪个最便宜  (31.2s)
+  [router] sql | 用户询问在售显示器列表及价格，价格和库存信息均在数据库中，无需知识库或订单数据。
+  [t1/sql_plan] {"answerable": true, "select": ["products.product_id", "products.name", "products.price"], "filters": [{"column": "products.category", "op": "eq", "values": ["Monitors"]}, {"column": "products.in_stock", "op": "eq", "values": ["true"]}], "order_by": [{"key": "products.price", "direction": "asc"}], "limit": 20}
+  [t1/compile] params=['Monitors', 1]
+  [t1/execute] 3 行 [{"products.product_id": "TECH-MON-007", "products.name": "LG 24\" 1080p Monitor", "products.price": 199.0}, {"products.product_id": "TECH-MON-006", "products.name": "Dell UltraSharp 27\" 4K Monitor", "products.price": 549.0}, {"products.product_id": "TECH-MON-009", "products.name": "BenQ 27\" Designer Monitor (Color Accurate)", "products.price": 599.0}]
+客服> 目前在售的显示器共有 3 款，具体如下： ⏎  ⏎ 1. **LG 24" 1080p Monitor**：$199.00 ⏎ 2. **Dell UltraSharp 27" 4K Monitor**：$549.00 ⏎ 3. **BenQ 27" Designer Monitor (Color Accurate)**：$599.00 ⏎  ⏎ 其中，**LG 24" 1080p Monitor** 是最便宜的，价格为 $199.00。
+  —— route=sql 模型 3 SQL 1 来源 []
+
+### B14 客户=未登录
+你> Sony 那款降噪耳机续航多久  (6.7s)
+  [router] rag | 用户询问的是特定商品（Sony降噪耳机）的规格参数（续航时间），这属于产品功能信息，存储在知识库中，不涉及用户个人订单数据。
+  [t1/retrieve] 检索词: Sony 那款降噪耳机续航多久
+       0.618 products/TECH-AUD-016.md § Common Questions
+       0.574 products/TECH-AUD-016.md § Product Overview
+       0.561 products/TECH-AUD-016.md § Key Specifications
+       0.534 products/TECH-AUD-016.md § Troubleshooting
+       0.528 products/TECH-AUD-016.md § What's Included
+       0.526 products/TECH-AUD-016.md § Common Questions
+客服> Sony WH-1000XM5 降噪耳机的续航时间如下： ⏎  ⏎ *   **开启降噪 (ANC)：** 官方标称最长 **30 小时**（在中等音量下）。如果在最大音量下使用，实际续航约为 **20-25 小时**。 ⏎ *   **关闭降噪 (ANC)：** 最长可达 **40 小时**。 ⏎ *   **快速充电：** 充电 **3 分钟** 即可播放 **3 小时**。 ⏎ *   **完全充电：** 使用 USB-C 接口，约需 **3.5 小时** 充满。
+  —— route=rag 模型 2 SQL 0 来源 ['products/TECH-AUD-016.md']
+
+### B15 客户=未登录
+你> 机械键盘是什么轴的  (9.8s)
+  [router] rag | 用户询问机械键盘的轴体类型，这属于商品规格和功能信息，知识库中有相关文档，无需查询数据库。
+  [t1/retrieve] 检索词: 机械键盘是什么轴的
+       0.599 products/TECH-KEY-012.md § Product Overview
+       0.572 products/TECH-KEY-012.md § Key Specifications
+       0.543 products/TECH-KEY-015.md § Key Specifications
+       0.539 products/TECH-KEY-012.md § Common Questions
+       0.536 products/TECH-KEY-012.md § What's Included
+       0.535 products/TECH-KEY-010.md § Product Overview
+客服> 根据提供的资料，TechHub 电商目前在售的机械键盘（产品编号 TECH-KEY-012）使用的是 **Cherry MX Red** 轴体。 ⏎  ⏎ 该轴体的特点如下： ⏎ *   **类型**：线性轴（Linear），无段落感，无清脆的“咔哒”声。 ⏎ *   **触发力度**：45g ⏎ *   **触发行程**：2mm ⏎ *   **寿命**：每键 5000 万次敲击 ⏎ *   **噪音**：相比 Cherry MX Blue 等段落轴更安静，但仍比薄膜键盘声音大。 ⏎  ⏎ *注：资料中还提到另一款键盘 TECH-KEY-015 使用的是薄膜按键（Membrane keys），并非机械轴；Apple Magic Keyboard 使用的是剪刀脚结构（Scissor-switch），也不属于传统机械轴。*
+  —— route=rag 模型 2 SQL 0 来源 ['products/TECH-KEY-012.md', 'products/TECH-KEY-015.md', 'products/TECH-KEY-010.md']
+
+### B16 客户=未登录
+你> 哪些笔记本有雷电接口  (16.7s)
+  [router] rag | 用户询问哪些笔记本有雷电接口，这属于商品规格和功能信息，知识库中包含此类信息，无需查询数据库。
+  [t1/retrieve] 检索词: 哪些笔记本有雷电接口
+       0.528 policies/compatibility_guide.md § Common Product Combinations
+       0.517 policies/compatibility_guide.md § Common Product Combinations
+       0.516 products/TECH-KEY-012.md § Common Questions
+       0.514 products/TECH-ACC-024.md § Compatibility
+       0.509 policies/compatibility_guide.md § Mac to PC Product Compatibility
+       0.498 products/TECH-LAP-004.md § Compatibility
+客服> 根据提供的参考资料，以下笔记本明确支持或提及了雷电接口（Thunderbolt）： ⏎  ⏎ *   **Lenovo ThinkPad X1 Carbon (TECH-LAP-004)** ⏎     *   资料明确指出该机型支持 **Thunderbolt 4** 扩展坞连接，并支持通过 Thunderbolt 4 接口连接 USB-C 显示器。 ⏎  ⏎ *   **MacBook Pro M3 (TECH-LAP-002)** ⏎     *   虽然资料未直接列出接口规格，但在“Mac to PC Product Compatibility”部分提到 MacBook 系列通常需要通过 USB-C 转 HDMI 适配器连接部分显示器，且推荐搭配 USB-C Hub 使用，这通常暗示其具备 Thunderbolt/USB-C 高速接口特性（注：资料主要强调其 USB-C 兼容性，未明确写出“Thunderbolt”字样，但 ThinkPad 是资料中唯一明确标注 Thunderbolt 4 的笔记本）。 ⏎  ⏎ *   **MacBook Air M2 (TECH-LAP-001)** ⏎     *   资料提到其通过 USB-C Hub 连接显示器，同样未明确标注“Thunderbolt”字样，但属于 USB-C 接口设备。 ⏎  ⏎ **注意：** ⏎ *   **Dell XPS 13 (TECH-LAP-003)**、**HP Pavilion 15 (TECH-LAP-005)** 等其他提到的笔记本，在提供的资料中**没有明确说明**是否配备雷电接口。 ⏎ *   资料中仅对 **Lenovo ThinkPad X1 Carbon** 明确标注了 **Thunderbolt 4** 支持。 ⏎  ⏎ 如果您需要确认其他具体型号是否配备雷电接口，建议查看该产品的详细规格表，因为当前提供的兼容性指南主要侧重于外设连接方式，而非所有笔记本的完整接口列表。
+  —— route=rag 模型 2 SQL 0 来源 ['policies/compatibility_guide.md', 'products/TECH-KEY-012.md', 'products/TECH-ACC-024.md', 'products/TECH-LAP-004.md']
+
+### B17 客户=未登录
+你> TechHub 的 CEO 是谁  (4.2s)
+  [router] direct | 询问公司CEO属于外部公开信息，与本店业务（订单、商品、政策）无关。
+客服> 您好！我是 TechHub 电商的客服助手。我主要可以帮您查询订单、解答商品及售后政策问题，或协助取消订单，关于公司 CEO 的信息建议您查阅 TechHub 官方网站获取。
+  —— route=direct 模型 2 SQL 0 来源 []
+
+### B18 客户=未登录
+你> 订单取消有什么规定  (5.3s)
+  [router] rag | 用户询问的是关于订单取消的政策规定，这属于知识库中的退货/取消政策范畴，不涉及具体订单数据查询。
+  [t1/retrieve] 检索词: 订单取消有什么规定
+       0.663 policies/support_faq.md § Modifying or Canceling Orders
+       0.573 policies/support_faq.md § Common Issues
+       0.573 policies/return_policy.md § Refund Method
+       0.572 policies/return_policy.md § Damaged or Defective Items
+       0.563 policies/support_faq.md § Payment & Pricing
+       0.560 policies/return_policy.md § Restocking Fees
+客服> 根据 TechHub 电商的政策，订单取消的规定如下： ⏎  ⏎ *   **未发货订单**：如果您的订单尚未发货，请立即联系客服，我们可以为您取消订单并办理**全额退款**。 ⏎ *   **已发货订单**：一旦订单发出，您将无法直接取消，需要收到商品后按照**退货流程**进行处理。 ⏎  ⏎ 您可以登录账户查看订单状态，或联系客服确认订单是否已发货。
+  —— route=rag 模型 2 SQL 0 来源 ['policies/support_faq.md', 'policies/return_policy.md']
+
+### B19 客户=未登录
+你> 下单后怎么改收货地址  (11.4s)
+  [router] supervisor | 修改收货地址涉及订单状态判断（是否已发货/能否修改）以及平台关于地址修改的政策规则，需要同时查询数据库中的订单状态和知识库中的政策文档。
+  [planner] 执行计划（第 1 次生成，1 次模型调用）
+       t1  rag  查找关于下单后如何修改收货地址的操作流程、限制条件及注意事项   依赖: 无
+  [validate] 计划通过校验，批次: [['t1']]
+  [scheduler] 第 1 批并行: t1
+  [t1/retrieve] 检索词: 查找关于下单后如何修改收货地址的操作流程、限制条件及注意事项
+       0.678 policies/support_faq.md § Modifying or Canceling Orders
+       0.627 policies/shipping_guide.md § Tips for Smooth Delivery
+       0.625 policies/shipping_guide.md § Delivery Issues
+       0.622 policies/shipping_guide.md § Shipping Restrictions
+       0.603 policies/support_faq.md § Common Issues
+       0.592 policies/shipping_guide.md § Delivery
+  [scheduler] 全部任务已结束
+客服> 根据 TechHub 的政策，下单后修改收货地址的方法取决于订单是否已发货： ⏎  ⏎ 1. **如果订单尚未发货**： ⏎    请立即联系客服，我们可以为您更新收货地址。 ⏎  ⏎ 2. **如果订单已发货**： ⏎    地址修改必须通过承运商（快递公司）进行，这可能会产生额外费用。 ⏎  ⏎ **建议**： ⏎ 为了避免此类问题，请在结账时仔细核对收货地址（包括公寓/单元号）。 ⏎  ⏎ *注：我无法直接为您执行修改地址的操作，请您尽快联系我们的客服团队处理。*
+  —— route=supervisor 模型 3 SQL 0 来源 ['policies/support_faq.md', 'policies/shipping_guide.md']
+
+### B20 客户=未登录
+你> AirPods Pro 防水吗  (7.5s)
+  [router] rag | 询问商品功能/规格（防水性），属于知识库范畴，不涉及订单或价格库存
+  [t1/retrieve] 检索词: AirPods Pro 防水吗
+       0.681 products/TECH-AUD-017.md § Product Overview
+       0.655 products/TECH-AUD-017.md § Common Questions
+       0.639 products/TECH-AUD-017.md § Key Specifications
+       0.614 products/TECH-AUD-017.md § Compatibility
+       0.595 products/TECH-AUD-017.md § What's Included
+       0.590 products/TECH-AUD-017.md § Common Questions
+客服> AirPods Pro (2nd Generation) 具有 **IPX4** 防水等级。 ⏎  ⏎ 这意味着它们可以防汗水和轻微的水花飞溅（例如运动时的汗水或小雨），但**不防水**，不能浸水或在水下使用。 ⏎  ⏎ 请注意： ⏎ *   **耳塞和充电盒**均具备 IPX4 防水能力。 ⏎ *   超出 IPX4 等级限制的水损（如掉入水中）不在标准保修范围内。
+  —— route=rag 模型 2 SQL 0 来源 ['products/TECH-AUD-017.md']
+
+### B21 客户=未登录
+你> What is the return window for opened electronics?  (7.5s)
+  [router] rag | 用户询问的是关于已拆封电子产品的退货政策，这属于知识库中的退货政策文档，不涉及具体订单数据。
+  [t1/retrieve] 检索词: What is the return window for opened electronics?
+       0.696 policies/return_policy.md § Return Windows
+       0.631 policies/support_faq.md § Returns & Refunds
+       0.552 products/TECH-AUD-018.md § Common Questions
+       0.551 policies/return_policy.md § Condition Requirements
+       0.548 policies/return_policy.md § Non-Returnable Items
+       0.543 products/TECH-ACC-023.md § Common Questions
+客服> 根据 TechHub 的退货政策，已拆封电子产品的退货窗口为 **自收货之日起 14 天**。 ⏎  ⏎ 退货时需满足以下条件： ⏎ *   产品必须处于良好的工作状态。 ⏎ *   必须包含所有配件、线缆和文档。 ⏎ *   原包装建议保留，但非强制要求。 ⏎  ⏎ 此外，对于价格低于 $500 的商品（如 Blue Yeti 麦克风或 Logitech C920 摄像头），退货通常不收取补货费。
+  —— route=rag 模型 2 SQL 0 来源 ['policies/return_policy.md', 'policies/support_faq.md', 'products/TECH-AUD-018.md', 'products/TECH-ACC-023.md']
+
+### B22 客户=未登录
+你> 你们发国际件吗，能寄到加拿大吗  (4.8s)
+  [router] rag | 用户询问的是国际配送政策，这属于知识库中的配送政策范畴，不涉及具体订单数据。
+  [t1/retrieve] 检索词: 你们发国际件吗，能寄到加拿大吗
+       0.589 policies/shipping_guide.md § Shipping Restrictions
+       0.524 policies/shipping_guide.md § Shipping Carriers
+       0.515 policies/support_faq.md § Modifying or Canceling Orders
+       0.511 policies/shipping_guide.md § Introduction
+       0.507 policies/shipping_guide.md § Shipping Options
+       0.499 policies/shipping_guide.md § Order Processing Time
+客服> TechHub 目前**不提供**国际配送服务，因此**无法**寄送到加拿大。 ⏎  ⏎ 根据我们的配送政策，目前仅支持配送至： ⏎ *   美国 50 个州（包括阿拉斯加和夏威夷） ⏎ *   APO/FPO 地址（通过 USPS） ⏎  ⏎ 我们正在努力扩展配送范围，建议您关注后续更新。
+  —— route=rag 模型 2 SQL 0 来源 ['policies/shipping_guide.md', 'policies/support_faq.md']
+
+### B23 客户=未登录
+你> 延保怎么买，多少钱  (11.3s)
+  [router] rag | 用户询问延保服务的购买方式和价格，属于服务政策/产品信息，需查知识库；价格虽在数据库，但延保作为附加服务通常以政策文档形式存在于知识库，且未涉及具体订单查询，优先归为rag。
+  [t1/retrieve] 检索词: 延保怎么买，多少钱
+       0.591 policies/warranty_guide.md § Extended Warranty Options
+       0.493 policies/warranty_guide.md § Warranty vs. Return Policy
+       0.487 policies/support_faq.md § Payment & Pricing
+       0.484 policies/shipping_guide.md § Shipping Options
+       0.476 products/TECH-ACC-022.md § Common Questions
+       0.473 policies/warranty_guide.md § Standard Warranty Coverage
+客服> 您好！关于延保（Extended Warranty）的购买方式和价格，根据我们的政策文档，信息如下： ⏎  ⏎ **如何购买：** ⏎ 1. **结账时购买**：大多数产品可以在结账页面直接选择延保服务。 ⏎ 2. **购买后补购**： ⏎    - **Apple 产品**：可在购买后 **60 天内** 购买 AppleCare+。 ⏎    - **其他品牌**（如 Dell, HP, Lenovo, Logitech 等）：通常可在购买后 **30-90 天内** 购买制造商延保，具体时限因品牌而异。 ⏎    - **第三方保护计划**：通常仅在结账时提供。 ⏎  ⏎ **价格是多少：** ⏎ 提供的参考资料中**没有包含具体的延保价格**。价格通常取决于您购买的具体产品型号、品牌以及选择的延保计划类型（如是否包含意外损坏保护等）。 ⏎  ⏎ **建议：** ⏎ - 请在结账页面查看可选的延保选项及对应价格。 ⏎ - 对于特定品牌产品，请查看该产品的商品详情页，那里通常会列出可用的延保计划及其费用。 ⏎ - 如果您已经收到商品想补购延保，请联系对应品牌的官方客服或查看其官网。 ⏎  ⏎ **注意：** ⏎ - 所有产品默认包含 **1 年** 制造商有限保修（从收货日期算起），覆盖材料和工艺缺陷。 ⏎ - 延保是在此基础上的额外覆盖，通常延长至 2-4 年，部分计划包含意外损坏保护（可能需支付服务费）。
+  —— route=rag 模型 2 SQL 0 来源 ['policies/warranty_guide.md', 'policies/support_faq.md', 'policies/shipping_guide.md', 'products/TECH-ACC-022.md']
+
+### B24 客户=未登录
+你> 便宜点的蓝牙音箱有什么推荐，有货吗  (8.5s)
+  [router] sql | 用户询问商品推荐（涉及价格/库存）以及是否有货，这些信息均存储在数据库中，无需查询知识库文档。
+  [t1/sql_plan] {"answerable": false, "limit": 0}
+  [t1/compile] 模型声明无法用查询计划表达: 表结构中没有“蓝牙”属性，且 category 枚举值中无“蓝牙音箱”这一细分项，无法精确筛选出蓝牙音箱商品。
+  [handoff] 工单 TKT-20251020-EE6DFA   原因: 系统处理失败   摘要来源: 原始对话
+客服> 已为您转接人工客服，工单号 TKT-20251020-EE6DFA。人工客服会根据已有的记录继续处理，您不需要重复说明。
+  —— route=sql 模型 2 SQL 0 来源 []

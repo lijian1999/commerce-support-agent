@@ -10,4 +10,5 @@ class AppContext:
     today: str = DEFAULT_TODAY       # 今天的日期，ISO 格式
     fault: str = "off"               # 模拟故障：off / primary_down / all_down
     index_version: str | None = None # 请求开始时读到的知识库线上版本，本次请求的所有检索都用它
+    index_dir: str | None = None     # 知识库索引所在的目录；None 表示用 config.INDEX_DIR（评测用带诱导文档的索引时才指定）
     session_id: str = ""             # 会话编号

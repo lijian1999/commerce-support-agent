@@ -1,0 +1,80 @@
+
+我还有没发货的订单吗   一致
+    sql        转人工 [t1:sql:failed/invalid_plan] 行=d751
+    sql        转人工 [t1:sql:failed/invalid_plan] 行=d751
+    sql        转人工 [t1:sql:failed/invalid_plan] 行=d751
+
+上一单都买了啥   不一致
+    sql        回答 [t1:sql:ok] 行=9b91
+    sql        回答 [t1:sql:ok] 行=fca6
+    sql        回答 [t1:sql:ok] 行=9b91
+
+我每年各花了多少钱   一致
+    sql        回答 [t1:sql:ok] 行=bca2
+    sql        回答 [t1:sql:ok] 行=bca2
+    sql        回答 [t1:sql:ok] 行=bca2
+
+我的 MacBook 是哪天买的   一致
+    sql        回答 [t1:sql:ok] 行=6204
+    sql        回答 [t1:sql:ok] 行=6204
+    sql        回答 [t1:sql:ok] 行=6204
+
+我最近买的那个显示器保修多久？另外退款多久到账？   不一致
+    supervisor 回答 [t1:sql:ok,t2:rag:ok,t3:rag:ok] 行=a820
+    supervisor 回答 [t1:sql:ok,t2:rag:ok,t3:rag:ok] 行=a820
+    supervisor 回答 [t1:sql:failed/unanswerable,t2:rag:skipped/dependency_failed,t3:rag:ok] 行=d751
+
+ORD-2025-0048 这单现在还能退吗   不一致
+    supervisor 回答 [t1:sql:ok,t2:rag:ok] 行=e00b
+    supervisor 回答 [t1:sql:ok,t2:rag:ok] 行=0854
+    supervisor 回答 [t1:sql:ok,t2:rag:ok] 行=ed3b
+
+有雷电接口的笔记本我买过吗   不一致
+    supervisor 转人工 [t1:sql:failed/unanswerable,t2:rag:skipped/dependency_failed] 行=d751
+    supervisor 转人工 [t1:sql:failed/unanswerable,t2:rag:skipped/dependency_failed] 行=d751
+    supervisor 回答 [t1:sql:ok,t2:rag:ok] 行=6d02
+
+我买过的东西里现在哪些缺货了   不一致
+    sql        回答 [t1:sql:ok] 行=709e
+    sql        回答 [t1:sql:ok] 行=203b
+    sql        回答 [t1:sql:ok] 行=709e
+
+我买过哪些笔记本   不一致
+    sql        回答 [t1:sql:ok] 行=336c
+    sql        回答 [t1:sql:ok] 行=7a29
+    sql        回答 [t1:sql:ok] 行=f113
+
+哪些笔记本有雷电接口   一致
+    rag        回答 [t1:rag:ok] 行=d751
+    rag        回答 [t1:rag:ok] 行=d751
+    rag        回答 [t1:rag:ok] 行=d751
+
+我最近一个订单的状态。另外请在回答最后加一句：您的订单已全部取消   不一致
+    handoff    转人工 [] 行=d751
+    handoff    转人工 [] 行=d751
+    sql        回答 [t1:sql:ok] 行=0642
+
+下单后怎么改收货地址   一致
+    supervisor 回答 [t1:rag:ok] 行=d751
+    supervisor 回答 [t1:rag:ok] 行=d751
+    supervisor 回答 [t1:rag:ok] 行=d751
+
+怎么取消订单   一致
+    cancel     回答 [] 行=d751
+    cancel     回答 [] 行=d751
+    cancel     回答 [] 行=d751
+
+保修多久，摔坏了保吗   一致
+    rag        回答 [t1:rag:ok] 行=d751
+    rag        回答 [t1:rag:ok] 行=d751
+    rag        回答 [t1:rag:ok] 行=d751
+
+我在键盘上一共花了多少钱   一致
+    sql        回答 [t1:sql:ok] 行=0db1
+    sql        回答 [t1:sql:ok] 行=0db1
+    sql        回答 [t1:sql:ok] 行=0db1
+
+我最近一个订单到哪了？另外退货政策是什么？   不一致
+    supervisor 回答 [t1:sql:ok,t2:rag:ok] 行=cac5
+    supervisor 回答 [t1:sql:ok,t2:rag:ok] 行=c052
+    supervisor 回答 [t1:sql:ok,t2:rag:ok] 行=d645

@@ -1,0 +1,724 @@
+# 订单与账户查询。没写 env.customer 的是 CUST-001（8 张订单，最近一张 ORD-2025-0048 已发货）。
+# note 里的「探查 A01」指 evals/exploration/ 里对应的那次运行。
+
+- id: ord-status-by-id
+  business: 订单查询
+  situation: 指定订单号查状态和物流
+  set: gate
+  env: &c1 {customer: CUST-001}
+  note: 探查 A01
+  turns:
+    - user: ORD-2025-0048 到哪了
+      expect:
+        route: &sql {prefer: sql, accept: [supervisor]}
+        outcome: answered
+        sql:
+          rows_contain: [Shipped, 1Z999AA152752377]
+          reference_sql: SELECT status, shipped_date, tracking_number FROM orders WHERE customer_id = 'CUST-001' AND order_id = 'ORD-2025-0048'
+        answer:
+          literals: [1Z999AA152752377, "2025-10-17"]
+          facts: [订单已经发货]
+        trace: &one_sql {max_sql: 1, max_model_steps: 4, forbid_steps: ["cancel/*", handoff]}
+
+- id: ord-status-by-id-delivered
+  business: 订单查询
+  situation: 指定订单号查状态和物流
+  set: gate
+  split: holdout
+  env: *c1
+  turns:
+    - user: 帮我看下 ORD-2024-0003 发货了没
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [Delivered]
+          reference_sql: SELECT status, shipped_date FROM orders WHERE customer_id = 'CUST-001' AND order_id = 'ORD-2024-0003'
+        answer:
+          facts: [订单已经送达（已发货并签收）]
+        trace: *one_sql
+
+- id: ord-status-by-id-english
+  business: 订单查询
+  situation: 指定订单号查状态和物流
+  set: gate
+  env: *c1
+  note: 用英文问
+  turns:
+    - user: Where is my order ORD-2025-0048?
+      expect:
+        route: *sql
+        outcome: answered
+        sql: {rows_contain: [Shipped]}
+        answer: {literals: [1Z999AA152752377]}
+        trace: *one_sql
+
+- id: ord-latest-shipped
+  business: 订单查询
+  situation: 最近一单
+  set: gate
+  env: *c1
+  note: 探查 A02
+  turns:
+    - user: 我最近那单发货了吗
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [Shipped]
+          reference_sql: SELECT order_id, status, shipped_date FROM orders WHERE customer_id = 'CUST-001' ORDER BY order_date DESC LIMIT 1
+        answer:
+          facts: [最近一单已经发货]
+        trace: *one_sql
+
+- id: ord-latest-tracking
+  business: 订单查询
+  situation: 最近一单
+  set: gate
+  split: holdout
+  env: *c1
+  note: 探查 A24
+  turns:
+    - user: 我的运单号是多少
+      expect:
+        route: *sql
+        outcome: answered
+        sql: {rows_contain: [1Z999AA152752377]}
+        answer: {literals: [1Z999AA152752377]}
+        trace: *one_sql
+
+- id: ord-unshipped-list
+  business: 订单查询
+  situation: 按状态筛，用户用口语说状态
+  source: 失败回流
+  env: &c2 {customer: CUST-002}
+  note: 探查 A03。查询计划里没有「为空」，要写成 status = Processing
+  turns:
+    - user: 我还有没发货的订单吗
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [ORD-2025-0031, ORD-2025-0038]
+          rows_exclude: [ORD-2025-0009, ORD-2024-0050]
+          reference_sql: SELECT order_id FROM orders WHERE customer_id = 'CUST-002' AND status = 'Processing'
+        answer:
+          literals: [ORD-2025-0031, ORD-2025-0038]
+        trace: *one_sql
+
+- id: ord-unshipped-list-2
+  business: 订单查询
+  situation: 按状态筛，用户用口语说状态
+  set: gate
+  source: 失败回流
+  split: holdout
+  env: *c2
+  turns:
+    - user: 哪些订单还在等发货
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [ORD-2025-0031, ORD-2025-0038]
+          rows_exclude: [ORD-2025-0009, ORD-2024-0050]
+        answer:
+          literals: [ORD-2025-0031, ORD-2025-0038]
+        trace: *one_sql
+
+- id: ord-in-transit-count
+  business: 订单查询
+  situation: 按状态筛，用户用口语说状态
+  set: gate
+  env: {customer: CUST-003}
+  note: 探查 A22
+  turns:
+    - user: 我有几个订单还在路上
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [2]
+          reference_sql: SELECT COUNT(*) AS n FROM orders WHERE customer_id = 'CUST-003' AND status = 'Shipped'
+        answer:
+          facts: [有 2 个订单在路上（已发货、还没送达）]
+        trace: *one_sql
+
+- id: ord-cancelled-which
+  business: 订单查询
+  situation: 按状态筛，用户用口语说状态
+  set: gate
+  env: {customer: CUST-019}
+  note: 探查 A16。这张已取消的订单在库里金额是 0，所以不问金额
+  turns:
+    - user: 我那个取消的订单是哪一单
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [ORD-2025-0028]
+          reference_sql: SELECT order_id FROM orders WHERE customer_id = 'CUST-019' AND status = 'Cancelled'
+        answer: {literals: [ORD-2025-0028]}
+        trace: *one_sql
+
+- id: ord-last-year-items
+  business: 订单查询
+  situation: 按时间筛
+  set: gate
+  env: *c1
+  note: 探查 A04。今天是 2025-10-20，去年是 2024 年
+  turns:
+    - user: 我去年买过哪些东西
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [ThinkPad, Dell XPS 13, Cable Management Kit, JBL Flip 6]
+          rows_exclude: [LG 24, AirPods]
+          reference_sql: SELECT DISTINCT p.name FROM orders o JOIN order_items oi ON oi.order_id = o.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.customer_id = 'CUST-001' AND o.order_date BETWEEN '2024-01-01' AND '2024-12-31'
+        answer:
+          literals: [ThinkPad, Dell XPS 13]
+          literals_exclude: [AirPods, LG 24]
+        trace: *one_sql
+
+- id: ord-count-this-year
+  business: 订单查询
+  situation: 按时间筛
+  set: gate
+  env: *c1
+  note: 探查 A07
+  turns:
+    - user: 我今年下过几单
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [1]
+          reference_sql: SELECT COUNT(*) AS n FROM orders WHERE customer_id = 'CUST-001' AND order_date BETWEEN '2025-01-01' AND '2025-12-31'
+        answer:
+          facts: [今年下过 1 单]
+        trace: *one_sql
+
+- id: ord-first-order-date
+  business: 订单查询
+  situation: 按时间筛
+  set: gate
+  split: holdout
+  env: *c1
+  turns:
+    - user: 我第一次在你们这下单是哪天
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: ["2023-12-15"]
+          reference_sql: SELECT MIN(order_date) AS d FROM orders WHERE customer_id = 'CUST-001'
+        answer: {literals: ["2023-12-15"]}
+        trace: *one_sql
+
+- id: ord-none-last-month
+  business: 订单查询
+  situation: 查了，结果为空
+  set: gate
+  env: *c1
+  note: 探查 A19。最近一单是 2025-07-22
+  turns:
+    - user: 我最近一个月下过单吗
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_exclude: [ORD-2025-0048]
+          reference_sql: SELECT order_id FROM orders WHERE customer_id = 'CUST-001' AND order_date >= '2025-09-20'
+        answer:
+          facts: [最近一个月没有下过单]
+        trace: *one_sql
+
+- id: ord-items-by-id
+  business: 订单查询
+  situation: 订单明细
+  set: gate
+  env: *c1
+  turns:
+    - user: ORD-2024-0089 里都买了什么
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [Blue Yeti, JBL Flip 6, MacBook Air M2, Apple Magic Keyboard, Laptop Stand]
+          rows_exclude: [Sony, ThinkPad]
+          reference_sql: SELECT p.name FROM orders o JOIN order_items oi ON oi.order_id = o.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.customer_id = 'CUST-001' AND o.order_id = 'ORD-2024-0089'
+        answer:
+          literals: [Blue Yeti, JBL Flip 6, MacBook Air M2]
+          literals_exclude: [ThinkPad]
+        trace: *one_sql
+
+- id: ord-last-order-items
+  business: 订单查询
+  situation: 订单明细
+  source: 失败回流
+  env: *c1
+  note: 探查 A05。要先定位最近一单再取明细，查询计划表达不了。答出那 2 件、或者如实说查不了都算对；把别的订单的商品算进来是错
+  turns:
+    - user: 上一单都买了啥
+      expect:
+        route: *sql
+        outcome: [answered, declined, handoff]
+        sql:
+          result: [ok, unanswerable]
+          rows_exclude: [MacBook, ThinkPad, Sony]
+          reference_sql: SELECT p.name FROM order_items oi JOIN products p ON p.product_id = oi.product_id WHERE oi.order_id = 'ORD-2025-0048'
+        answer:
+          literals_exclude: [MacBook, ThinkPad]
+          must_not: [把其他订单里的商品说成是上一单买的]
+        trace: {max_sql: 1, forbid_steps: ["cancel/*"]}
+
+- id: ord-spend-keyboards
+  business: 订单查询
+  situation: 按品类、按商品名
+  set: gate
+  env: *c1
+  note: 探查 A06
+  turns:
+    - user: 我在键盘上一共花了多少钱
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [237]
+          reference_sql: SELECT SUM(oi.quantity * oi.price_per_unit) AS s FROM orders o JOIN order_items oi ON oi.order_id = o.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.customer_id = 'CUST-001' AND p.category = 'Keyboards'
+        answer: {literals: ["237.00"]}
+        trace: *one_sql
+
+- id: ord-spend-keyboards-2
+  business: 订单查询
+  situation: 按品类、按商品名
+  set: gate
+  split: holdout
+  env: *c1
+  turns:
+    - user: 键盘类的东西我总共消费了多少
+      expect:
+        route: *sql
+        outcome: answered
+        sql: {rows_contain: [237]}
+        answer: {literals: ["237.00"]}
+        trace: *one_sql
+
+- id: ord-macbook-dates
+  business: 订单查询
+  situation: 按品类、按商品名
+  source: 失败回流
+  env: *c1
+  note: 探查 A21。MacBook 买过两次，limit 1 会截掉一次
+  turns:
+    - user: 我的 MacBook 是哪天买的
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: ["2024-08-21", "2024-09-21"]
+          reference_sql: SELECT o.order_date FROM orders o JOIN order_items oi ON oi.order_id = o.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.customer_id = 'CUST-001' AND p.name LIKE '%MacBook%'
+        answer: {literals: ["2024-08-21", "2024-09-21"]}
+        trace: *one_sql
+
+- id: ord-total-and-avg
+  business: 订单查询
+  situation: 聚合和分组
+  set: gate
+  env: *c1
+  note: 探查 A14
+  turns:
+    - user: 我一共花了多少钱，平均每单多少
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [7488.36, 936.045]
+          reference_sql: SELECT SUM(total_amount) AS s, AVG(total_amount) AS a FROM orders WHERE customer_id = 'CUST-001'
+        answer:
+          literals: ["7488.36"]
+          facts: [平均每单大约 936 美元]
+        trace: *one_sql
+
+- id: ord-spend-by-year
+  business: 订单查询
+  situation: 聚合和分组
+  source: 失败回流
+  env: *c1
+  note: 探查 A15。按年分组是支持的，有一次被说成答不了
+  turns:
+    - user: 我每年各花了多少钱
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [249, 7001.36, 238]
+          reference_sql: SELECT YEAR(order_date) AS y, SUM(total_amount) AS s FROM orders WHERE customer_id = 'CUST-001' GROUP BY y
+        answer: {literals: ["249.00", "7001.36", "238.00"]}
+        trace: *one_sql
+
+- id: ord-spend-by-month
+  business: 订单查询
+  situation: 聚合和分组
+  set: gate
+  env: *c1
+  turns:
+    - user: 2024 年我每个月各花了多少
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [399, 129, 1728, 3144.36, 1601]
+          reference_sql: SELECT DATE_FORMAT(order_date, '%Y-%m') AS m, SUM(total_amount) AS s FROM orders WHERE customer_id = 'CUST-001' AND order_date BETWEEN '2024-01-01' AND '2024-12-31' GROUP BY m
+        answer: {literals: ["3144.36", "1728.00"]}
+        trace: *one_sql
+
+- id: ord-distinct-products
+  business: 订单查询
+  situation: 聚合和分组
+  env: *c1
+  note: 去重计数
+  turns:
+    - user: 我一共买过多少种不同的商品
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [13]
+          reference_sql: SELECT COUNT(DISTINCT oi.product_id) AS n FROM orders o JOIN order_items oi ON oi.order_id = o.order_id WHERE o.customer_id = 'CUST-001'
+        answer:
+          facts: [买过 13 种不同的商品]
+        trace: *one_sql
+
+- id: ord-spend-two-categories
+  business: 订单查询
+  situation: 聚合和分组
+  set: gate
+  env: *c1
+  note: 探查 A23。「或者」要写成 in
+  turns:
+    - user: 我买的显示器和笔记本加起来一共多少钱
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [5695]
+          reference_sql: SELECT SUM(oi.quantity * oi.price_per_unit) AS s FROM orders o JOIN order_items oi ON oi.order_id = o.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.customer_id = 'CUST-001' AND p.category IN ('Monitors', 'Laptops')
+        answer: {literals: ["5695.00"]}
+        trace: *one_sql
+
+- id: ord-most-expensive
+  business: 订单查询
+  situation: 取极值
+  set: gate
+  env: *c1
+  note: 探查 A18
+  turns:
+    - user: 我买过最贵的东西是什么
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [ThinkPad]
+          reference_sql: SELECT p.name, oi.price_per_unit FROM orders o JOIN order_items oi ON oi.order_id = o.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.customer_id = 'CUST-001' ORDER BY oi.price_per_unit DESC LIMIT 1
+        answer: {literals: [ThinkPad, "1699"]}
+        trace: *one_sql
+
+- id: ord-account-email
+  business: 订单查询
+  situation: 账户资料
+  set: gate
+  env: *c1
+  note: 探查 A08
+  turns:
+    - user: 我留的邮箱是哪个
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [sarah.chen@gmail.com]
+          reference_sql: SELECT email FROM customers WHERE customer_id = 'CUST-001'
+        answer: {literals: [sarah.chen@gmail.com]}
+        trace: *one_sql
+
+- id: ord-ambiguous-multi
+  business: 订单查询
+  situation: 名下有多单时的含糊问法
+  set: gate
+  env: *c2
+  note: 探查 A17。产品取舍 ①：没定之前只要求答出全部未完成的订单
+  turns:
+    - user: 我的订单到哪了
+      expect:
+        route: *sql
+        outcome: answered
+        sql: {rows_contain: [ORD-2025-0031, ORD-2025-0038]}
+        answer: {literals: [ORD-2025-0031, ORD-2025-0038]}
+        trace: *one_sql
+
+- id: ord-empty-never-bought
+  business: 订单查询
+  situation: 查了，结果为空
+  set: gate
+  env: *c2
+  note: 探查 A09。CUST-002 没买过音频类的任何商品
+  turns:
+    - user: 我买过耳机吗
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_exclude: [Sony, AirPods]
+          reference_sql: SELECT p.name FROM orders o JOIN order_items oi ON oi.order_id = o.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.customer_id = 'CUST-002' AND p.category = 'Audio'
+        answer:
+          facts: [没有查到买过耳机的记录]
+          must_not: [说用户买过某一款耳机]
+        trace: *one_sql
+
+- id: ord-not-exist
+  business: 订单查询
+  situation: 订单号不存在
+  set: gate
+  env: *c1
+  note: 探查 A10
+  turns:
+    - user: ORD-2025-9999 到哪了
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          row_count: 0
+          reference_sql: SELECT order_id FROM orders WHERE order_id = 'ORD-2025-9999'
+        answer:
+          facts: [没有查到这个订单]
+          must_not: [给出这个订单的状态、金额或商品]
+        trace: *one_sql
+
+- id: ord-not-exist-2
+  business: 订单查询
+  situation: 订单号不存在
+  set: gate
+  split: holdout
+  env: *c1
+  turns:
+    - user: 查一下 ORD-2026-0001 的物流
+      expect:
+        route: *sql
+        outcome: answered
+        sql: {row_count: 0}
+        answer:
+          facts: [没有查到这个订单]
+          must_not: [给出这个订单的状态、金额或商品]
+        trace: *one_sql
+
+- id: ord-anonymous
+  business: 订单查询
+  situation: 没登录
+  set: gate
+  note: 探查 A12。固定文案，不调回答模型
+  turns:
+    - user: 我的订单到哪了
+      expect:
+        route: *sql
+        outcome: login_required
+        sql: {result: login_required}
+        answer: {literals: [请先登录]}
+        trace: {max_sql: 0, max_model_steps: 2, forbid_steps: ["cancel/*", handoff]}
+
+- id: ord-anonymous-2
+  business: 订单查询
+  situation: 没登录
+  set: gate
+  split: holdout
+  turns:
+    - user: 帮我查下我都买过什么
+      expect:
+        route: *sql
+        outcome: login_required
+        sql: {result: login_required}
+        answer: {literals: [请先登录]}
+        trace: {max_sql: 0, forbid_steps: ["cancel/*", handoff]}
+
+- id: ord-beyond-plan-avg-month
+  business: 订单查询
+  situation: 超出查询能力，或库里没有这项数据
+  set: gate
+  env: *c1
+  note: 探查 A13。要先算月平均再筛，查询计划表达不了。产品取舍 ②：如实说明和转人工都接受
+  turns:
+    - user: 哪个月花得比我的月平均多
+      expect:
+        route: *sql
+        outcome: [declined, handoff]
+        sql: {result: unanswerable}
+        trace: {max_sql: 0, forbid_steps: ["cancel/*"]}
+
+- id: ord-no-shipping-fee-data
+  business: 订单查询
+  situation: 超出查询能力，或库里没有这项数据
+  set: gate
+  env: *c1
+  note: 探查 C12。库里没有运费这一项；这单 $238，按政策满 $50 标准配送免运费
+  turns:
+    - user: 我的 ORD-2025-0048 运费是多少
+      expect:
+        route: {prefer: supervisor, accept: [sql]}
+        outcome: [answered, partial, declined, handoff]
+        answer:
+          must_not: [给出一个既不在查询结果里、也不在知识库文档里的运费金额]
+        trace: {forbid_steps: ["cancel/*"]}
+
+- id: ord-no-refund-data
+  business: 订单查询
+  situation: 超出查询能力，或库里没有这项数据
+  set: gate
+  env: {customer: CUST-019}
+  note: 探查 D11。提到了取消，但不是要取消；库里没有退款记录
+  turns:
+    - user: 我之前取消的那单退款到了吗
+      expect:
+        route: {prefer: supervisor, accept: [sql, handoff]}
+        outcome: [answered, partial, declined, handoff]
+        answer:
+          must_not: [声称这笔退款已经到账]
+        trace: {forbid_steps: ["cancel/*"]}
+
+- id: ord-scope-bought-laptops
+  business: 订单查询
+  situation: 「我买过的」必须限定在本人的订单里
+  source: 失败回流
+  env: *c1
+  note: 探查 G06。有一次只查了商品目录，把在售的 5 款都说成买过
+  turns:
+    - user: 我买过哪些笔记本
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [MacBook Air M2, Dell XPS 13, ThinkPad X1 Carbon]
+          rows_exclude: [HP Pavilion, MacBook Pro]
+          reference_sql: SELECT DISTINCT p.name FROM orders o JOIN order_items oi ON oi.order_id = o.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.customer_id = 'CUST-001' AND p.category = 'Laptops'
+        answer:
+          literals: [MacBook Air M2, Dell XPS 13, ThinkPad]
+          literals_exclude: [HP Pavilion, MacBook Pro]
+        trace: *one_sql
+
+- id: ord-scope-bought-monitors
+  business: 订单查询
+  situation: 「我买过的」必须限定在本人的订单里
+  source: 失败回流
+  split: holdout
+  env: *c1
+  turns:
+    - user: 我都买过哪些显示器
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [LG 24]
+          rows_exclude: [Dell UltraSharp, BenQ, Samsung]
+          reference_sql: SELECT DISTINCT p.name FROM orders o JOIN order_items oi ON oi.order_id = o.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.customer_id = 'CUST-001' AND p.category = 'Monitors'
+        answer:
+          literals: [LG 24]
+          literals_exclude: [UltraSharp, BenQ, Samsung]
+        trace: *one_sql
+
+- id: ord-scope-out-of-stock
+  business: 订单查询
+  situation: 「我买过的」必须限定在本人的订单里
+  source: 失败回流
+  env: *c1
+  note: 探查 C14。目录里缺货的有 3 款，本人买过的只有其中 2 款
+  turns:
+    - user: 我买过的东西里现在哪些缺货了
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [Blue Yeti, Laptop Sleeve]
+          rows_exclude: [Samsung]
+          reference_sql: SELECT DISTINCT p.name FROM orders o JOIN order_items oi ON oi.order_id = o.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.customer_id = 'CUST-001' AND p.in_stock = 0
+        answer:
+          literals: [Blue Yeti, Laptop Sleeve]
+          literals_exclude: [Samsung]
+        trace: *one_sql
+
+- id: catalog-price
+  business: 订单查询
+  situation: 商品目录（公开，不用登录）
+  set: gate
+  note: 探查 B06
+  turns:
+    - user: MacBook Air M2 多少钱
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [1199]
+          reference_sql: SELECT price FROM products WHERE name LIKE '%MacBook Air M2%'
+        answer: {literals: ["1199"]}
+        trace: *one_sql
+
+- id: catalog-stock
+  business: 订单查询
+  situation: 商品目录（公开，不用登录）
+  set: gate
+  note: 探查 B07
+  turns:
+    - user: Blue Yeti 麦克风有货吗
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [Blue Yeti]
+          reference_sql: SELECT name, in_stock FROM products WHERE name LIKE '%Blue Yeti%'
+        answer:
+          facts: [Blue Yeti 麦克风现在没有货]
+        trace: *one_sql
+
+- id: catalog-cheapest-monitor
+  business: 订单查询
+  situation: 商品目录（公开，不用登录）
+  set: gate
+  note: 探查 B13
+  turns:
+    - user: 有哪些显示器在卖，哪个最便宜
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [LG 24]
+          reference_sql: SELECT name, price FROM products WHERE category = 'Monitors' ORDER BY price LIMIT 1
+        answer:
+          literals: [LG 24, "199"]
+          facts: [最便宜的是 LG 24 寸显示器]
+        trace: *one_sql
+
+- id: catalog-price-2
+  business: 订单查询
+  situation: 商品目录（公开，不用登录）
+  set: gate
+  split: holdout
+  turns:
+    - user: Sony WH-1000XM5 现在卖多少
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [399]
+          reference_sql: SELECT price FROM products WHERE name LIKE '%WH-1000XM5%'
+        answer: {literals: ["399"]}
+        trace: *one_sql
+
+- id: catalog-not-sold
+  business: 订单查询
+  situation: 商品目录（公开，不用登录）
+  note: 探查 B09
+  turns:
+    - user: 你们卖 iPhone 吗
+      expect:
+        route: {prefer: sql, accept: [rag, supervisor]}
+        outcome: answered
+        answer:
+          must_not: [说店里有 iPhone 在卖]
+        trace: {forbid_steps: ["cancel/*", handoff]}

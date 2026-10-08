@@ -1,4 +1,5 @@
 """统一的运行入口：拼 Runtime Context、带上元数据跑一轮，把事件逐个交出去。"""
+from pathlib import Path
 import subprocess
 from typing import Any, Iterator
 
@@ -11,17 +12,21 @@ from app.state import new_turn_input
 
 
 def make_context(customer_id: str | None, today: str | None = None, fault: str = "off",
-                 session_id: str = "", index_version: str | None = None) -> AppContext:
+                 session_id: str = "", index_version: str | None = None,
+                 index_dir: str | None = None) -> AppContext:
     """请求开始时读一次索引指针，这次请求里所有的检索都用这一个版本。
-    给了 index_version 就用它（可以是还没发布的版本），不再读指针。"""
+    给了 index_version 就用它（可以是还没发布的版本），不再读指针。
+    index_dir 非空时指针从那个目录里读，None 表示默认目录。"""
     if index_version is None:
-        pointer = IndexStore().read_pointer()
+        store = IndexStore(Path(index_dir)) if index_dir else IndexStore()
+        pointer = store.read_pointer()
         index_version = pointer["current"] if pointer else None
     return AppContext(
         customer_id=customer_id or None,
         today=today or config.DEFAULT_TODAY,
         fault=fault,
         index_version=index_version,
+        index_dir=index_dir,
         session_id=session_id,
     )
 

@@ -1,0 +1,3044 @@
+[
+ {
+  "id": "A01",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "ORD-2025-0048 到哪了",
+    "seconds": 11.4,
+    "error": null,
+    "route": "sql",
+    "answer": "您好，订单 ORD-2025-0048 的状态为 **Shipped**（已发货）。\n\n- **发货日期**：2025-10-17\n- **物流单号**：1Z999AA152752377\n\n您可以使用该物流单号在承运商官网查询具体的运输进度。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "ORD-2025-0048 到哪了",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "orders.order_id",
+        "orders.status",
+        "orders.shipped_date",
+        "orders.tracking_number"
+       ],
+       "rows": [
+        {
+         "orders.order_id": "ORD-2025-0048",
+         "orders.status": "Shipped",
+         "orders.shipped_date": "2025-10-17",
+         "orders.tracking_number": "1Z999AA152752377"
+        }
+       ],
+       "row_count": 1
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问特定订单号的物流状态，这属于查询当前客户自己的订单物流信息，只需查数据库即可回答。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问特定订单号的物流状态，这属于查询当前客户自己的订单物流信息，只需查数据库即可回答。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"select\": [\"orders.order_id\", \"orders.status\", \"orders.shipped_date\", \"orders.tracking_number\"], \"filters\": [{\"column\": \"orders.order_id\", \"op\": \"eq\", \"values\": [\"ORD-2025-0048\"]}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户询问特定订单号 ORD-2025-0048 的物流状态。需要查询 orders 表，通过 order_id 过滤，并获取 status、shipped_date 和 tracking_number 以回答“到哪了”的问题。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "orders.order_id",
+        "orders.status",
+        "orders.shipped_date",
+        "orders.tracking_number"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "orders.order_id",
+         "op": "eq",
+         "values": [
+          "ORD-2025-0048"
+         ]
+        }
+       ],
+       "order_by": [],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT o.order_id AS `orders.order_id`, o.status AS `orders.status`, o.shipped_date AS `orders.shipped_date`, o.tracking_number AS `orders.tracking_number`\nFROM orders o\nWHERE o.customer_id = %s AND o.order_id = %s\nLIMIT 1\nparams = ['CUST-001', 'ORD-2025-0048']",
+      "detail": {
+       "sql": "SELECT o.order_id AS `orders.order_id`, o.status AS `orders.status`, o.shipped_date AS `orders.shipped_date`, o.tracking_number AS `orders.tracking_number`\nFROM orders o\nWHERE o.customer_id = %s AND o.order_id = %s\nLIMIT 1",
+       "params": [
+        "CUST-001",
+        "ORD-2025-0048"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "1 行",
+      "detail": {
+       "columns": [
+        "orders.order_id",
+        "orders.status",
+        "orders.shipped_date",
+        "orders.tracking_number"
+       ],
+       "rows": [
+        {
+         "orders.order_id": "ORD-2025-0048",
+         "orders.status": "Shipped",
+         "orders.shipped_date": "2025-10-17",
+         "orders.tracking_number": "1Z999AA152752377"
+        }
+       ],
+       "row_count": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "您好，订单 ORD-2025-0048 的状态为 **Shipped**（已发货）。\n\n- **发货日期**：2025-10-17\n- **物流单号**：1Z999AA152752377\n\n您可以使用该物流单号在承运商官网查询具体的运输进度。",
+      "detail": {
+       "answer": "您好，订单 ORD-2025-0048 的状态为 **Shipped**（已发货）。\n\n- **发货日期**：2025-10-17\n- **物流单号**：1Z999AA152752377\n\n您可以使用该物流单号在承运商官网查询具体的运输进度。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A02",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "我最近那单发货了吗",
+    "seconds": 11.4,
+    "error": null,
+    "route": "sql",
+    "answer": "您好，根据查询结果，您最近的一笔订单 **ORD-2025-0048**（下单日期：2025-07-22）的状态为 **Shipped**（已发货），发货日期为 **2025-10-17**。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我最近那单发货了吗",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "orders.order_id",
+        "orders.order_date",
+        "orders.status",
+        "orders.shipped_date"
+       ],
+       "rows": [
+        {
+         "orders.order_id": "ORD-2025-0048",
+         "orders.order_date": "2025-07-22",
+         "orders.status": "Shipped",
+         "orders.shipped_date": "2025-10-17"
+        }
+       ],
+       "row_count": 1
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己最近订单的发货状态，这属于查询当前客户自己的订单物流信息，只需查数据库即可回答。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己最近订单的发货状态，这属于查询当前客户自己的订单物流信息，只需查数据库即可回答。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"select\": [\"orders.order_id\", \"orders.order_date\", \"orders.status\", \"orders.shipped_date\"], \"order_by\": [{\"key\": \"orders.order_date\", \"direction\": \"desc\"}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户询问“最近那单”是否发货，需要获取该订单的状态信息。根据规则，“最近一个”或“最新的”应使用 order_by 降序加 limit 1。我们需要查询 orders 表，按 order_date 降序排列，取第一条记录，并查看其 status 字段以判断是否发货（Shipped 或 Delivered 表示已发货，Processing 表示未发货，Cancelled 表示已取消）。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "orders.order_id",
+        "orders.order_date",
+        "orders.status",
+        "orders.shipped_date"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [],
+       "order_by": [
+        {
+         "key": "orders.order_date",
+         "direction": "desc"
+        }
+       ],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT o.order_id AS `orders.order_id`, o.order_date AS `orders.order_date`, o.status AS `orders.status`, o.shipped_date AS `orders.shipped_date`\nFROM orders o\nWHERE o.customer_id = %s\nORDER BY o.order_date DESC\nLIMIT 1\nparams = ['CUST-001']",
+      "detail": {
+       "sql": "SELECT o.order_id AS `orders.order_id`, o.order_date AS `orders.order_date`, o.status AS `orders.status`, o.shipped_date AS `orders.shipped_date`\nFROM orders o\nWHERE o.customer_id = %s\nORDER BY o.order_date DESC\nLIMIT 1",
+       "params": [
+        "CUST-001"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "1 行",
+      "detail": {
+       "columns": [
+        "orders.order_id",
+        "orders.order_date",
+        "orders.status",
+        "orders.shipped_date"
+       ],
+       "rows": [
+        {
+         "orders.order_id": "ORD-2025-0048",
+         "orders.order_date": "2025-07-22",
+         "orders.status": "Shipped",
+         "orders.shipped_date": "2025-10-17"
+        }
+       ],
+       "row_count": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "您好，根据查询结果，您最近的一笔订单 **ORD-2025-0048**（下单日期：2025-07-22）的状态为 **Shipped**（已发货），发货日期为 **2025-10-17**。",
+      "detail": {
+       "answer": "您好，根据查询结果，您最近的一笔订单 **ORD-2025-0048**（下单日期：2025-07-22）的状态为 **Shipped**（已发货），发货日期为 **2025-10-17**。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A03",
+  "customer": "CUST-002",
+  "turns": [
+   {
+    "question": "我还有没发货的订单吗",
+    "seconds": 21.1,
+    "error": null,
+    "route": "sql",
+    "answer": "已为您转接人工客服，工单号 TKT-20251020-970F28。人工客服会根据已有的记录继续处理，您不需要重复说明。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我还有没发货的订单吗",
+      "status": "failed",
+      "error_kind": "invalid_plan",
+      "error": "没能生成合法的查询计划",
+      "data": null
+     }
+    },
+    "handoff": {
+     "ticket_id": "TKT-20251020-970F28",
+     "customer_id": "CUST-002",
+     "reason": "system_failure",
+     "reason_label": "系统处理失败",
+     "detail": "任务全部失败: t1（没能生成合法的查询计划）",
+     "summary": "用户: 我还有没发货的订单吗",
+     "order_ids": [],
+     "session_id": "probe-A03",
+     "trace_id": "",
+     "created_at": "2025-10-20T20:02:01"
+    },
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己是否有未发货的订单，这需要查询当前客户的订单状态数据，属于数据库查询范畴。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己是否有未发货的订单，这需要查询当前客户的订单状态数据，属于数据库查询范畴。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"select\": [\"orders.order_id\", \"orders.order_date\", \"orders.status\"], \"filters\": [{\"column\": \"orders.shipped_date\", \"op\": \"eq\", \"values\": [\"null\"]}], \"order_by\": [{\"key\": \"orders.order_date\", \"direction\": \"desc\"}], \"limit\": 20}",
+      "detail": {
+       "reasoning": "用户询问是否有未发货的订单。根据规则，未发货的订单在 orders 表中表现为 shipped_date 为空（null）。由于问题问的是“有没有”，这是一个存在性检查，可以通过查询 orders 表并过滤 shipped_date 为 null 来回答。如果返回结果不为空，则说明有未发货订单。这里不需要统计数量，只需要列出这些订单或者确认其存在即可。为了简洁，我们可以列出这些订单的 ID 和日期，或者仅通过 limit 1 来检查是否存在。考虑到用户可能想知道具体是哪些，列出明细更合适，但通常“有没有”可以用 limit 1 或者 count 来回答。根据规则 5，查明细用 select。这里我们选择列出未发货订单的明细，以便用户确认。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "orders.order_id",
+        "orders.order_date",
+        "orders.status"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "orders.shipped_date",
+         "op": "eq",
+         "values": [
+          "null"
+         ]
+        }
+       ],
+       "order_by": [
+        {
+         "key": "orders.order_date",
+         "direction": "desc"
+        }
+       ],
+       "limit": 20
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "计划被拒绝，交回模型修复: orders.shipped_date 的取值 null 不是合法的日期（应当是 YYYY-MM-DD）",
+      "detail": {
+       "error": "orders.shipped_date 的取值 null 不是合法的日期（应当是 YYYY-MM-DD）",
+       "kind": "fixable"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "（修复）{\"answerable\": true, \"select\": [\"orders.order_id\", \"orders.order_date\", \"orders.status\"], \"filters\": [{\"column\": \"orders.shipped_date\", \"op\": \"in\", \"values\": [\"null\"]}], \"order_by\": [{\"key\": \"orders.order_date\", \"direction\": \"desc\"}], \"limit\": 20}",
+      "detail": {
+       "reasoning": "用户询问是否有未发货的订单。根据表结构，未发货的订单在 orders 表中表现为 shipped_date 为空。在 SQL 中，判断字段为空需要使用 IS NULL 操作符，而不是等于字符串 'null'。因此，过滤器应使用 op: 'is_null' 来筛选 orders.shipped_date 为空的记录。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "orders.order_id",
+        "orders.order_date",
+        "orders.status"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "orders.shipped_date",
+         "op": "in",
+         "values": [
+          "null"
+         ]
+        }
+       ],
+       "order_by": [
+        {
+         "key": "orders.order_date",
+         "direction": "desc"
+        }
+       ],
+       "limit": 20
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "计划第 2 次仍被拒绝，任务失败: orders.shipped_date 是 date 类型，不支持 in 操作。支持的操作: between, eq, gt, gte, last_n_days, lt, lte, ne",
+      "detail": {
+       "error": "orders.shipped_date 是 date 类型，不支持 in 操作。支持的操作: between, eq, gt, gte, last_n_days, lt, lte, ne",
+       "kind": "fixable"
+      },
+      "notes": []
+     },
+     {
+      "name": "handoff",
+      "kind": "code",
+      "summary": "工单 TKT-20251020-970F28   原因: 系统处理失败   摘要来源: 原始对话",
+      "detail": {
+       "ticket_id": "TKT-20251020-970F28",
+       "customer_id": "CUST-002",
+       "reason": "system_failure",
+       "reason_label": "系统处理失败",
+       "detail": "任务全部失败: t1（没能生成合法的查询计划）",
+       "summary": "用户: 我还有没发货的订单吗",
+       "order_ids": [],
+       "session_id": "probe-A03",
+       "trace_id": "",
+       "created_at": "2025-10-20T20:02:01"
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A04",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "我去年买过哪些东西",
+    "seconds": 19.2,
+    "error": null,
+    "route": "sql",
+    "answer": "您好！根据查询结果，您去年在 TechHub 电商购买过的商品如下：\n\n*   Blue Yeti USB Microphone\n*   JBL Flip 6 Bluetooth Speaker\n*   MacBook Air M2 (13-inch, 256GB)\n*   Apple Magic Keyboard\n*   Aluminum Laptop Stand (Adjustable)\n*   Cable Management Kit (10 pieces)\n*   Sony WH-1000XM5 Wireless Headphones\n*   Laptop Sleeve (13-15 inch, Water Resistant)\n*   Dell XPS 13 (Intel i7, 512GB)\n*   Lenovo ThinkPad X1 Carbon (Intel i7, 1TB)\n\n注：列表中部分商品名称重复出现，代表您曾多次购买该商品。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我去年买过哪些东西",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "products.name"
+       ],
+       "rows": [
+        {
+         "products.name": "Blue Yeti USB Microphone"
+        },
+        {
+         "products.name": "JBL Flip 6 Bluetooth Speaker"
+        },
+        {
+         "products.name": "MacBook Air M2 (13-inch, 256GB)"
+        },
+        {
+         "products.name": "Apple Magic Keyboard"
+        },
+        {
+         "products.name": "Aluminum Laptop Stand (Adjustable)"
+        },
+        {
+         "products.name": "Cable Management Kit (10 pieces)"
+        },
+        {
+         "products.name": "Sony WH-1000XM5 Wireless Headphones"
+        },
+        {
+         "products.name": "Laptop Sleeve (13-15 inch, Water Resistant)"
+        },
+        {
+         "products.name": "Apple Magic Keyboard"
+        },
+        {
+         "products.name": "MacBook Air M2 (13-inch, 256GB)"
+        },
+        {
+         "products.name": "Dell XPS 13 (Intel i7, 512GB)"
+        },
+        {
+         "products.name": "Lenovo ThinkPad X1 Carbon (Intel i7, 1TB)"
+        },
+        {
+         "products.name": "Laptop Sleeve (13-15 inch, Water Resistant)"
+        },
+        {
+         "products.name": "Blue Yeti USB Microphone"
+        },
+        {
+         "products.name": "Sony WH-1000XM5 Wireless Headphones"
+        }
+       ],
+       "row_count": 15
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己过去的购买记录，这属于查询当前客户自己的订单历史，只需访问数据库即可回答。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己过去的购买记录，这属于查询当前客户自己的订单历史，只需访问数据库即可回答。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"select\": [\"products.name\"], \"filters\": [{\"column\": \"orders.order_date\", \"op\": \"between\", \"values\": [\"2024-01-01\", \"2024-12-31\"]}], \"order_by\": [{\"key\": \"orders.order_date\", \"direction\": \"desc\"}], \"limit\": 20}",
+      "detail": {
+       "reasoning": "用户询问“去年”买过的商品。今天是2025-10-20，去年即2024年。需要查询订单明细（order_items）关联订单（orders）以获取下单日期，并关联商品（products）以获取商品名称。由于需要展示“哪些东西”，即商品列表，应使用 select 查询商品名称。为了去重或列出所有购买记录，通常列出明细即可，或者如果用户意图是“买过哪些种类的商品”，可能需要去重，但通常“买过哪些东西”指具体的商品条目。考虑到规则4，要查“我买过的商品”，必须引用 orders 或 order_items 的列。这里引用 orders.order_date 来过滤时间，引用 products.name 来展示商品。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "products.name"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "orders.order_date",
+         "op": "between",
+         "values": [
+          "2024-01-01",
+          "2024-12-31"
+         ]
+        }
+       ],
+       "order_by": [
+        {
+         "key": "orders.order_date",
+         "direction": "desc"
+        }
+       ],
+       "limit": 20
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT p.name AS `products.name`\nFROM orders o\nJOIN order_items oi ON oi.order_id = o.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.customer_id = %s AND o.order_date BETWEEN %s AND %s\nORDER BY o.order_date DESC\nLIMIT 20\nparams = ['CUST-001', '2024-01-01', '2024-12-31']",
+      "detail": {
+       "sql": "SELECT p.name AS `products.name`\nFROM orders o\nJOIN order_items oi ON oi.order_id = o.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.customer_id = %s AND o.order_date BETWEEN %s AND %s\nORDER BY o.order_date DESC\nLIMIT 20",
+       "params": [
+        "CUST-001",
+        "2024-01-01",
+        "2024-12-31"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "15 行",
+      "detail": {
+       "columns": [
+        "products.name"
+       ],
+       "rows": [
+        {
+         "products.name": "Blue Yeti USB Microphone"
+        },
+        {
+         "products.name": "JBL Flip 6 Bluetooth Speaker"
+        },
+        {
+         "products.name": "MacBook Air M2 (13-inch, 256GB)"
+        },
+        {
+         "products.name": "Apple Magic Keyboard"
+        },
+        {
+         "products.name": "Aluminum Laptop Stand (Adjustable)"
+        },
+        {
+         "products.name": "Cable Management Kit (10 pieces)"
+        },
+        {
+         "products.name": "Sony WH-1000XM5 Wireless Headphones"
+        },
+        {
+         "products.name": "Laptop Sleeve (13-15 inch, Water Resistant)"
+        },
+        {
+         "products.name": "Apple Magic Keyboard"
+        },
+        {
+         "products.name": "MacBook Air M2 (13-inch, 256GB)"
+        },
+        {
+         "products.name": "Dell XPS 13 (Intel i7, 512GB)"
+        },
+        {
+         "products.name": "Lenovo ThinkPad X1 Carbon (Intel i7, 1TB)"
+        },
+        {
+         "products.name": "Laptop Sleeve (13-15 inch, Water Resistant)"
+        },
+        {
+         "products.name": "Blue Yeti USB Microphone"
+        },
+        {
+         "products.name": "Sony WH-1000XM5 Wireless Headphones"
+        }
+       ],
+       "row_count": 15
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "您好！根据查询结果，您去年在 TechHub 电商购买过的商品如下：\n\n*   Blue Yeti USB Microphone\n*   JBL Flip 6 Bluetooth Speaker\n*   MacBook Air M2 (13-inch, 256GB)\n*   Apple Magic Keyboard\n*   Aluminum Laptop Stand (Adjustable)\n*   Cable Management Kit (10 pieces)\n*   Sony WH-1000XM5 Wireless Headphones\n*   Laptop Sleeve (13-15 inch, Water Resistant)\n*   Dell XPS 13 (Intel i7, 512GB)\n*   Lenovo ThinkPad X1 Carbon (Intel i7, 1TB)\n\n注：列表中部分商品名称重复出现，代表您曾多次购买该商品。",
+      "detail": {
+       "answer": "您好！根据查询结果，您去年在 TechHub 电商购买过的商品如下：\n\n*   Blue Yeti USB Microphone\n*   JBL Flip 6 Bluetooth Speaker\n*   MacBook Air M2 (13-inch, 256GB)\n*   Apple Magic Keyboard\n*   Aluminum Laptop Stand (Adjustable)\n*   Cable Management Kit (10 pieces)\n*   Sony WH-1000XM5 Wireless Headphones\n*   Laptop Sleeve (13-15 inch, Water Resistant)\n*   Dell XPS 13 (Intel i7, 512GB)\n*   Lenovo ThinkPad X1 Carbon (Intel i7, 1TB)\n\n注：列表中部分商品名称重复出现，代表您曾多次购买该商品。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A05",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "上一单都买了啥",
+    "seconds": 35.2,
+    "error": null,
+    "route": "sql",
+    "answer": "已为您转接人工客服，工单号 TKT-20251020-BA63F7。人工客服会根据已有的记录继续处理，您不需要重复说明。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "上一单都买了啥",
+      "status": "failed",
+      "error_kind": "unanswerable",
+      "error": "这个问题超出了可查询的范围: 需要子查询来先确定最新日期的订单ID，然后再查询该订单下的所有商品明细，当前结构不支持子查询。",
+      "data": null
+     }
+    },
+    "handoff": {
+     "ticket_id": "TKT-20251020-BA63F7",
+     "customer_id": "CUST-001",
+     "reason": "system_failure",
+     "reason_label": "系统处理失败",
+     "detail": "任务全部失败: t1（这个问题超出了可查询的范围: 需要子查询来先确定最新日期的订单ID，然后再查询该订单下的所有商品明细，当前结构不支持子查询。）",
+     "summary": "用户: 上一单都买了啥",
+     "order_ids": [],
+     "session_id": "probe-A05",
+     "trace_id": "",
+     "created_at": "2025-10-20T20:02:26"
+    },
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问上一单购买的商品，这属于查询当前客户自己的订单详情，只需访问数据库即可回答。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问上一单购买的商品，这属于查询当前客户自己的订单详情，只需访问数据库即可回答。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": false, \"limit\": 0}",
+      "detail": {
+       "reasoning": "用户询问“上一单”买了什么，需要找到该客户最近一次下单的订单，并列出该订单包含的商品明细。由于需要关联订单和商品名称，且需要按时间倒序取最新的一条订单，这可以通过引用 orders 和 order_items 表来实现。虽然 products 表包含商品名称，但规则指出不写 JOIN，程序会自动连接引用的表。为了获取“买了啥”的具体信息，通常需要商品名称，因此需要引用 products 表。但是，规则 4 指出“要查「我买过的商品」，必须同时引用 orders 或 order_items 的列”。这里我们需要展示订单明细，通常包括商品名称、数量等。由于不能写 JOIN，且程序自动连接，我们可以引用 orders, order_items, products 三张表。我们需要筛选出最新的订单，这通常意味着先找到最新的 order_id，然后查询该 order_id 下的所有 items。然而，查询规划器通常处理的是扁平化的查询。如果直接查询所有表并按 order_date 降序 limit 1，只能得到一行数据，而“上一单”可能包含多个商品。因此，我们需要先确定“上一单”是哪个订单，然后查询该订单的所有明细。由于无法使用子查询（规则 13 提到需要子查询则不可答），我们需要评估是否可以通过简单的 order_by 和 limit 解决。如果用户的意思是“最近一次订单的所有商品”，这需要一个子查询来先定位 order_id。如果无法使用子查询，这可能被视为不可答。但是，让我们再仔细看规则。规则 13 说“如果问题没法用这份结构表达（需要子查询...）”。通常“上一单买了啥”隐含了“找出最新日期的订单，然后列出其所有商品”。这在单表查询或简单的多表连接中很难直接通过 limit 1 实现，因为 limit 1 只返回一行。如果返回多行，就无法保证只返回“上一单”的商品，除非有某种分组机制，但规则 5 说统计才用 group_by。明细查询用 select。如果我们要查“最新订单的所有商品”，我们需要知道那个订单的 ID。在没有子查询的情况下，我们无法先过滤出“日期最大的那个订单”，然后再列出它的所有行。因此，这通常需要子查询。但是，有些系统允许通过 order_by 和 limit 来获取“最新的一条记录”，但这对于“列表”类问题不适用。让我们考虑另一种解释：也许可以查询所有订单明细，按日期降序，但这会返回所有历史订单的商品，而不是“上一单”的。因此，严格来说，这需要子查询来限定 order_id。根据规则 13，这应该是不可答的。但是，让我们看看是否有其他技巧。如果“上一单”指的是最近的一笔交易，且我们假设系统能处理“查找最新订单ID”作为隐式步骤？不，规则很明确。让我们再读一遍规则 13：“如果问题没法用这份结构表达（需要子查询...）”。是的，这需要子查询。因此，answerable 应为 false。",
+       "answerable": false,
+       "unanswerable_reason": "需要子查询来先确定最新日期的订单ID，然后再查询该订单下的所有商品明细，当前结构不支持子查询。",
+       "select": [],
+       "metrics": [],
+       "group_by": [],
+       "filters": [],
+       "order_by": [],
+       "limit": 0
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "模型声明无法用查询计划表达: 需要子查询来先确定最新日期的订单ID，然后再查询该订单下的所有商品明细，当前结构不支持子查询。",
+      "detail": {
+       "error": "需要子查询来先确定最新日期的订单ID，然后再查询该订单下的所有商品明细，当前结构不支持子查询。",
+       "kind": "unanswerable"
+      },
+      "notes": []
+     },
+     {
+      "name": "handoff",
+      "kind": "code",
+      "summary": "工单 TKT-20251020-BA63F7   原因: 系统处理失败   摘要来源: 原始对话",
+      "detail": {
+       "ticket_id": "TKT-20251020-BA63F7",
+       "customer_id": "CUST-001",
+       "reason": "system_failure",
+       "reason_label": "系统处理失败",
+       "detail": "任务全部失败: t1（这个问题超出了可查询的范围: 需要子查询来先确定最新日期的订单ID，然后再查询该订单下的所有商品明细，当前结构不支持子查询。）",
+       "summary": "用户: 上一单都买了啥",
+       "order_ids": [],
+       "session_id": "probe-A05",
+       "trace_id": "",
+       "created_at": "2025-10-20T20:02:26"
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A06",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "我在键盘上一共花了多少钱",
+    "seconds": 9.2,
+    "error": null,
+    "route": "sql",
+    "answer": "根据查询结果，您在键盘上一共花费了 $237.00。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我在键盘上一共花了多少钱",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "total_spent_on_keyboards"
+       ],
+       "rows": [
+        {
+         "total_spent_on_keyboards": 237.0
+        }
+       ],
+       "row_count": 1
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问的是自己购买键盘的总花费，这需要查询当前客户的订单数据库来获取具体金额，属于纯数据库查询。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问的是自己购买键盘的总花费，这需要查询当前客户的订单数据库来获取具体金额，属于纯数据库查询。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"metrics\": [{\"func\": \"sum\", \"column\": \"order_items.line_total\", \"alias\": \"total_spent_on_keyboards\"}], \"filters\": [{\"column\": \"products.category\", \"op\": \"eq\", \"values\": [\"Keyboards\"]}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户询问在键盘品类上的总花费。需要关联订单明细（order_items）和商品表（products），筛选品类为 Keyboards，并对 line_total 求和。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [],
+       "metrics": [
+        {
+         "func": "sum",
+         "column": "order_items.line_total",
+         "alias": "total_spent_on_keyboards"
+        }
+       ],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "products.category",
+         "op": "eq",
+         "values": [
+          "Keyboards"
+         ]
+        }
+       ],
+       "order_by": [],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT SUM((oi.quantity * oi.price_per_unit)) AS `total_spent_on_keyboards`\nFROM orders o\nJOIN order_items oi ON oi.order_id = o.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.customer_id = %s AND p.category = %s\nLIMIT 1\nparams = ['CUST-001', 'Keyboards']",
+      "detail": {
+       "sql": "SELECT SUM((oi.quantity * oi.price_per_unit)) AS `total_spent_on_keyboards`\nFROM orders o\nJOIN order_items oi ON oi.order_id = o.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.customer_id = %s AND p.category = %s\nLIMIT 1",
+       "params": [
+        "CUST-001",
+        "Keyboards"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "1 行",
+      "detail": {
+       "columns": [
+        "total_spent_on_keyboards"
+       ],
+       "rows": [
+        {
+         "total_spent_on_keyboards": 237.0
+        }
+       ],
+       "row_count": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "根据查询结果，您在键盘上一共花费了 $237.00。",
+      "detail": {
+       "answer": "根据查询结果，您在键盘上一共花费了 $237.00。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A07",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "我今年下过几单",
+    "seconds": 11.0,
+    "error": null,
+    "route": "sql",
+    "answer": "根据查询结果，您今年共下了 **1** 单。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我今年下过几单",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "order_count"
+       ],
+       "rows": [
+        {
+         "order_count": 1
+        }
+       ],
+       "row_count": 1
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己今年的订单数量，这属于查询当前客户自己的历史订单数据，只需访问数据库即可回答。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己今年的订单数量，这属于查询当前客户自己的历史订单数据，只需访问数据库即可回答。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"metrics\": [{\"func\": \"count\", \"column\": \"orders.order_id\", \"alias\": \"order_count\"}], \"filters\": [{\"column\": \"orders.order_date\", \"op\": \"between\", \"values\": [\"2025-01-01\", \"2025-12-31\"]}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户询问今年下了几单，需要统计订单数量。时间范围是今年（2025年），由于今天是2025-10-20，今年指2025-01-01到2025-12-31。使用count(orders.order_id)进行计数，无需分组。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [],
+       "metrics": [
+        {
+         "func": "count",
+         "column": "orders.order_id",
+         "alias": "order_count"
+        }
+       ],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "orders.order_date",
+         "op": "between",
+         "values": [
+          "2025-01-01",
+          "2025-12-31"
+         ]
+        }
+       ],
+       "order_by": [],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT COUNT(o.order_id) AS `order_count`\nFROM orders o\nWHERE o.customer_id = %s AND o.order_date BETWEEN %s AND %s\nLIMIT 1\nparams = ['CUST-001', '2025-01-01', '2025-12-31']",
+      "detail": {
+       "sql": "SELECT COUNT(o.order_id) AS `order_count`\nFROM orders o\nWHERE o.customer_id = %s AND o.order_date BETWEEN %s AND %s\nLIMIT 1",
+       "params": [
+        "CUST-001",
+        "2025-01-01",
+        "2025-12-31"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "1 行",
+      "detail": {
+       "columns": [
+        "order_count"
+       ],
+       "rows": [
+        {
+         "order_count": 1
+        }
+       ],
+       "row_count": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "根据查询结果，您今年共下了 **1** 单。",
+      "detail": {
+       "answer": "根据查询结果，您今年共下了 **1** 单。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A08",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "我留的邮箱是哪个",
+    "seconds": 6.2,
+    "error": null,
+    "route": "sql",
+    "answer": "您留的邮箱是：sarah.chen@gmail.com",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我留的邮箱是哪个",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "customers.email"
+       ],
+       "rows": [
+        {
+         "customers.email": "sarah.chen@gmail.com"
+        }
+       ],
+       "row_count": 1
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己账户留存的邮箱地址，这属于当前客户的账户资料信息，直接查询数据库即可获取。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己账户留存的邮箱地址，这属于当前客户的账户资料信息，直接查询数据库即可获取。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"select\": [\"customers.email\"], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户询问自己留的邮箱地址，直接查询 customers 表中的 email 列即可。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "customers.email"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [],
+       "order_by": [],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT c.email AS `customers.email`\nFROM customers c\nWHERE c.customer_id = %s\nLIMIT 1\nparams = ['CUST-001']",
+      "detail": {
+       "sql": "SELECT c.email AS `customers.email`\nFROM customers c\nWHERE c.customer_id = %s\nLIMIT 1",
+       "params": [
+        "CUST-001"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "1 行",
+      "detail": {
+       "columns": [
+        "customers.email"
+       ],
+       "rows": [
+        {
+         "customers.email": "sarah.chen@gmail.com"
+        }
+       ],
+       "row_count": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "您留的邮箱是：sarah.chen@gmail.com",
+      "detail": {
+       "answer": "您留的邮箱是：sarah.chen@gmail.com",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A09",
+  "customer": "CUST-002",
+  "turns": [
+   {
+    "question": "我买过耳机吗",
+    "seconds": 10.3,
+    "error": null,
+    "route": "sql",
+    "answer": "您好，根据查询结果，目前没有查找到您购买耳机的记录。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我买过耳机吗",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "order_items.line_total",
+        "products.name"
+       ],
+       "rows": [],
+       "row_count": 0
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己是否购买过耳机，这需要查询当前客户的订单历史数据库来确认是否存在相关购买记录。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己是否购买过耳机，这需要查询当前客户的订单历史数据库来确认是否存在相关购买记录。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"select\": [\"order_items.line_total\", \"products.name\"], \"filters\": [{\"column\": \"products.category\", \"op\": \"eq\", \"values\": [\"Audio\"]}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户询问是否买过耳机。需要检查订单明细中的商品是否属于 Audio 类别（耳机通常归类于此）。由于需要确认“是否买过”，可以通过查询包含 Audio 类别商品的订单明细来回答。如果存在记录，则说明买过。这里使用 order_items 和 products 表，筛选 category 为 Audio 的记录。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "order_items.line_total",
+        "products.name"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "products.category",
+         "op": "eq",
+         "values": [
+          "Audio"
+         ]
+        }
+       ],
+       "order_by": [],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT (oi.quantity * oi.price_per_unit) AS `order_items.line_total`, p.name AS `products.name`\nFROM orders o\nJOIN order_items oi ON oi.order_id = o.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.customer_id = %s AND p.category = %s\nLIMIT 1\nparams = ['CUST-002', 'Audio']",
+      "detail": {
+       "sql": "SELECT (oi.quantity * oi.price_per_unit) AS `order_items.line_total`, p.name AS `products.name`\nFROM orders o\nJOIN order_items oi ON oi.order_id = o.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.customer_id = %s AND p.category = %s\nLIMIT 1",
+       "params": [
+        "CUST-002",
+        "Audio"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "0 行",
+      "detail": {
+       "columns": [
+        "order_items.line_total",
+        "products.name"
+       ],
+       "rows": [],
+       "row_count": 0
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "您好，根据查询结果，目前没有查找到您购买耳机的记录。",
+      "detail": {
+       "answer": "您好，根据查询结果，目前没有查找到您购买耳机的记录。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A10",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "ORD-2025-9999 到哪了",
+    "seconds": 9.8,
+    "error": null,
+    "route": "sql",
+    "answer": "抱歉，我没有查到订单 ORD-2025-9999 的相关信息。请确认订单号是否正确，或联系人工客服进一步核实。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "ORD-2025-9999 到哪了",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "orders.order_id",
+        "orders.status",
+        "orders.shipped_date",
+        "orders.tracking_number"
+       ],
+       "rows": [],
+       "row_count": 0
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问特定订单号的物流状态，这属于查询当前客户自己的订单信息，只需查数据库即可回答。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问特定订单号的物流状态，这属于查询当前客户自己的订单信息，只需查数据库即可回答。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"select\": [\"orders.order_id\", \"orders.status\", \"orders.shipped_date\", \"orders.tracking_number\"], \"filters\": [{\"column\": \"orders.order_id\", \"op\": \"eq\", \"values\": [\"ORD-2025-9999\"]}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户询问特定订单号 ORD-2025-9999 的物流状态。需要查询 orders 表，通过 order_id 过滤，并获取状态、发货日期和物流单号等关键信息。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "orders.order_id",
+        "orders.status",
+        "orders.shipped_date",
+        "orders.tracking_number"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "orders.order_id",
+         "op": "eq",
+         "values": [
+          "ORD-2025-9999"
+         ]
+        }
+       ],
+       "order_by": [],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT o.order_id AS `orders.order_id`, o.status AS `orders.status`, o.shipped_date AS `orders.shipped_date`, o.tracking_number AS `orders.tracking_number`\nFROM orders o\nWHERE o.customer_id = %s AND o.order_id = %s\nLIMIT 1\nparams = ['CUST-001', 'ORD-2025-9999']",
+      "detail": {
+       "sql": "SELECT o.order_id AS `orders.order_id`, o.status AS `orders.status`, o.shipped_date AS `orders.shipped_date`, o.tracking_number AS `orders.tracking_number`\nFROM orders o\nWHERE o.customer_id = %s AND o.order_id = %s\nLIMIT 1",
+       "params": [
+        "CUST-001",
+        "ORD-2025-9999"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "0 行",
+      "detail": {
+       "columns": [
+        "orders.order_id",
+        "orders.status",
+        "orders.shipped_date",
+        "orders.tracking_number"
+       ],
+       "rows": [],
+       "row_count": 0
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "抱歉，我没有查到订单 ORD-2025-9999 的相关信息。请确认订单号是否正确，或联系人工客服进一步核实。",
+      "detail": {
+       "answer": "抱歉，我没有查到订单 ORD-2025-9999 的相关信息。请确认订单号是否正确，或联系人工客服进一步核实。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A11",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "查一下订单 ORD-2025-0031 的状态",
+    "seconds": 8.6,
+    "error": null,
+    "route": "sql",
+    "answer": "抱歉，我没有查到订单 ORD-2025-0031 的相关记录。请确认订单号是否正确，或提供其他相关信息以便我为您进一步查询。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "查一下订单 ORD-2025-0031 的状态",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "orders.status"
+       ],
+       "rows": [],
+       "row_count": 0
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户查询特定订单号的状态，属于查询当前客户自己的订单数据，只需查数据库。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户查询特定订单号的状态，属于查询当前客户自己的订单数据，只需查数据库。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"select\": [\"orders.status\"], \"filters\": [{\"column\": \"orders.order_id\", \"op\": \"eq\", \"values\": [\"ORD-2025-0031\"]}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户希望查询特定订单号 ORD-2025-0031 的状态。这是一个简单的明细查询，需要从 orders 表中获取 status 列，并通过 order_id 进行过滤。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "orders.status"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "orders.order_id",
+         "op": "eq",
+         "values": [
+          "ORD-2025-0031"
+         ]
+        }
+       ],
+       "order_by": [],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT o.status AS `orders.status`\nFROM orders o\nWHERE o.customer_id = %s AND o.order_id = %s\nLIMIT 1\nparams = ['CUST-001', 'ORD-2025-0031']",
+      "detail": {
+       "sql": "SELECT o.status AS `orders.status`\nFROM orders o\nWHERE o.customer_id = %s AND o.order_id = %s\nLIMIT 1",
+       "params": [
+        "CUST-001",
+        "ORD-2025-0031"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "0 行",
+      "detail": {
+       "columns": [
+        "orders.status"
+       ],
+       "rows": [],
+       "row_count": 0
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "抱歉，我没有查到订单 ORD-2025-0031 的相关记录。请确认订单号是否正确，或提供其他相关信息以便我为您进一步查询。",
+      "detail": {
+       "answer": "抱歉，我没有查到订单 ORD-2025-0031 的相关记录。请确认订单号是否正确，或提供其他相关信息以便我为您进一步查询。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A12",
+  "customer": null,
+  "turns": [
+   {
+    "question": "我的订单到哪了",
+    "seconds": 10.7,
+    "error": null,
+    "route": "sql",
+    "answer": "这个问题需要查询您的订单或账户信息，请先登录后再问。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我的订单到哪了",
+      "status": "failed",
+      "error_kind": "login_required",
+      "error": "查询订单或账户信息需要先登录",
+      "data": null
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己订单的物流状态，这属于当前客户自己的订单数据，只需查询数据库中的物流单号或状态即可回答。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己订单的物流状态，这属于当前客户自己的订单数据，只需查询数据库中的物流单号或状态即可回答。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"select\": [\"orders.order_id\", \"orders.status\", \"orders.shipped_date\", \"orders.tracking_number\"], \"filters\": [{\"column\": \"orders.status\", \"op\": \"in\", \"values\": [\"Processing\", \"Shipped\"]}], \"order_by\": [{\"key\": \"orders.order_date\", \"direction\": \"desc\"}], \"limit\": 20}",
+      "detail": {
+       "reasoning": "用户询问“我的订单到哪了”，通常指查询当前正在处理或已发货的订单的物流状态。需要查询订单表，筛选状态为“Processing”或“Shipped”的订单，并展示订单号、状态、发货日期和物流单号等关键信息。由于“到哪了”可能隐含对未送达订单的关注，通常排除已送达(Delivered)和已取消(Cancelled)的订单。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "orders.order_id",
+        "orders.status",
+        "orders.shipped_date",
+        "orders.tracking_number"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "orders.status",
+         "op": "in",
+         "values": [
+          "Processing",
+          "Shipped"
+         ]
+        }
+       ],
+       "order_by": [
+        {
+         "key": "orders.order_date",
+         "direction": "desc"
+        }
+       ],
+       "limit": 20
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "拒绝: 查询订单或账户信息需要先登录",
+      "detail": {
+       "error": "查询订单或账户信息需要先登录",
+       "kind": "login_required"
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "code",
+      "summary": "这个问题需要查询您的订单或账户信息，请先登录后再问。",
+      "detail": {
+       "template": "login_required"
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A13",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "哪个月花得比我的月平均多",
+    "seconds": 17.0,
+    "error": null,
+    "route": "sql",
+    "answer": "已为您转接人工客服，工单号 TKT-20251020-457814。人工客服会根据已有的记录继续处理，您不需要重复说明。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "哪个月花得比我的月平均多",
+      "status": "failed",
+      "error_kind": "unanswerable",
+      "error": "这个问题超出了可查询的范围: 需要计算全局月平均值并筛选出高于该值的月份，这通常需要子查询或 Having 子句，当前查询规划器不支持此类复杂逻辑。",
+      "data": null
+     }
+    },
+    "handoff": {
+     "ticket_id": "TKT-20251020-457814",
+     "customer_id": "CUST-001",
+     "reason": "system_failure",
+     "reason_label": "系统处理失败",
+     "detail": "任务全部失败: t1（这个问题超出了可查询的范围: 需要计算全局月平均值并筛选出高于该值的月份，这通常需要子查询或 Having 子句，当前查询规划器不支持此类复杂逻辑。）",
+     "summary": "用户: 哪个月花得比我的月平均多",
+     "order_ids": [],
+     "session_id": "probe-A13",
+     "trace_id": "",
+     "created_at": "2025-10-20T20:02:34"
+    },
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己历史消费金额与月平均值的对比，这需要查询数据库中的订单记录来计算总额和平均值，不涉及知识库文档。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己历史消费金额与月平均值的对比，这需要查询数据库中的订单记录来计算总额和平均值，不涉及知识库文档。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": false, \"limit\": 0}",
+      "detail": {
+       "reasoning": "用户想知道哪些月份的花费高于其月平均花费。这是一个聚合统计问题。首先需要计算每个月的总花费（按月份分组求和），然后需要知道所有订单的总花费和总月数来计算平均值，或者通过子查询/窗口函数比较。根据规则，不能写子查询，且 metrics 只能做简单的 sum/count/avg 等聚合，无法直接在一个查询中表达“高于平均值”这种需要二次计算或子查询的逻辑。通常这类问题需要两步：1. 算出月平均花费；2. 找出高于该值的月份。由于规则限制不能写子查询，且 metrics 不支持 having 子句或复杂的比较逻辑（如 sum > avg），这超出了当前结构化查询计划的能力范围。但是，如果理解为“列出每个月的总花费，让用户自己看哪个高”，那只是明细统计。然而“比...多”是一个过滤条件。在没有 having 子句或子查询支持的情况下，无法直接生成“花费高于月平均的月份”这一结果集。因此判定为不可回答。",
+       "answerable": false,
+       "unanswerable_reason": "需要计算全局月平均值并筛选出高于该值的月份，这通常需要子查询或 Having 子句，当前查询规划器不支持此类复杂逻辑。",
+       "select": [],
+       "metrics": [],
+       "group_by": [],
+       "filters": [],
+       "order_by": [],
+       "limit": 0
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "模型声明无法用查询计划表达: 需要计算全局月平均值并筛选出高于该值的月份，这通常需要子查询或 Having 子句，当前查询规划器不支持此类复杂逻辑。",
+      "detail": {
+       "error": "需要计算全局月平均值并筛选出高于该值的月份，这通常需要子查询或 Having 子句，当前查询规划器不支持此类复杂逻辑。",
+       "kind": "unanswerable"
+      },
+      "notes": []
+     },
+     {
+      "name": "handoff",
+      "kind": "code",
+      "summary": "工单 TKT-20251020-457814   原因: 系统处理失败   摘要来源: 原始对话",
+      "detail": {
+       "ticket_id": "TKT-20251020-457814",
+       "customer_id": "CUST-001",
+       "reason": "system_failure",
+       "reason_label": "系统处理失败",
+       "detail": "任务全部失败: t1（这个问题超出了可查询的范围: 需要计算全局月平均值并筛选出高于该值的月份，这通常需要子查询或 Having 子句，当前查询规划器不支持此类复杂逻辑。）",
+       "summary": "用户: 哪个月花得比我的月平均多",
+       "order_ids": [],
+       "session_id": "probe-A13",
+       "trace_id": "",
+       "created_at": "2025-10-20T20:02:34"
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A14",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "我一共花了多少钱，平均每单多少",
+    "seconds": 9.6,
+    "error": null,
+    "route": "sql",
+    "answer": "您一共消费了 $7488.36，平均每单 $936.05。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我一共花了多少钱，平均每单多少",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "total_spent",
+        "avg_per_order"
+       ],
+       "rows": [
+        {
+         "total_spent": 7488.36,
+         "avg_per_order": 936.045
+        }
+       ],
+       "row_count": 1
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己订单的总金额和平均金额，这需要查询数据库中的订单记录进行计算，不涉及知识库内容。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己订单的总金额和平均金额，这需要查询数据库中的订单记录进行计算，不涉及知识库内容。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"metrics\": [{\"func\": \"sum\", \"column\": \"orders.total_amount\", \"alias\": \"total_spent\"}, {\"func\": \"avg\", \"column\": \"orders.total_amount\", \"alias\": \"avg_per_order\"}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户询问两个统计指标：总花费和平均每单金额。总花费对应 orders.total_amount 的求和，平均每单金额对应 orders.total_amount 的平均值。由于是统计类问题，使用 metrics 字段，select 留空。无需分组，直接聚合即可。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [],
+       "metrics": [
+        {
+         "func": "sum",
+         "column": "orders.total_amount",
+         "alias": "total_spent"
+        },
+        {
+         "func": "avg",
+         "column": "orders.total_amount",
+         "alias": "avg_per_order"
+        }
+       ],
+       "group_by": [],
+       "filters": [],
+       "order_by": [],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT SUM(o.total_amount) AS `total_spent`, AVG(o.total_amount) AS `avg_per_order`\nFROM orders o\nWHERE o.customer_id = %s\nLIMIT 1\nparams = ['CUST-001']",
+      "detail": {
+       "sql": "SELECT SUM(o.total_amount) AS `total_spent`, AVG(o.total_amount) AS `avg_per_order`\nFROM orders o\nWHERE o.customer_id = %s\nLIMIT 1",
+       "params": [
+        "CUST-001"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "1 行",
+      "detail": {
+       "columns": [
+        "total_spent",
+        "avg_per_order"
+       ],
+       "rows": [
+        {
+         "total_spent": 7488.36,
+         "avg_per_order": 936.045
+        }
+       ],
+       "row_count": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "您一共消费了 $7488.36，平均每单 $936.05。",
+      "detail": {
+       "answer": "您一共消费了 $7488.36，平均每单 $936.05。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A15",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "我每年各花了多少钱",
+    "seconds": 56.5,
+    "error": null,
+    "route": "sql",
+    "answer": "已为您转接人工客服，工单号 TKT-20251020-B798F3。人工客服会根据已有的记录继续处理，您不需要重复说明。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我每年各花了多少钱",
+      "status": "failed",
+      "error_kind": "unanswerable",
+      "error": "这个问题超出了可查询的范围: 当前数据结构中没有“年份”列，且规则限制 group_by 只能使用原始列，无法通过日期函数提取年份进行分组统计。",
+      "data": null
+     }
+    },
+    "handoff": {
+     "ticket_id": "TKT-20251020-B798F3",
+     "customer_id": "CUST-001",
+     "reason": "system_failure",
+     "reason_label": "系统处理失败",
+     "detail": "任务全部失败: t1（这个问题超出了可查询的范围: 当前数据结构中没有“年份”列，且规则限制 group_by 只能使用原始列，无法通过日期函数提取年份进行分组统计。）",
+     "summary": "用户: 我每年各花了多少钱",
+     "order_ids": [],
+     "session_id": "probe-A15",
+     "trace_id": "",
+     "created_at": "2025-10-20T20:03:19"
+    },
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问的是自己每年的消费总额，这需要查询数据库中的历史订单记录进行汇总计算，不涉及知识库内容。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问的是自己每年的消费总额，这需要查询数据库中的历史订单记录进行汇总计算，不涉及知识库内容。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": false, \"limit\": 0}",
+      "detail": {
+       "reasoning": "用户想知道每年各花了多少钱。需要按年份分组统计订单总金额。由于没有直接的“年份”列，通常按 order_date 分组即可，但为了更精确地匹配“每年”，我们可以使用 order_date 进行分组，或者如果系统支持日期函数则使用年份提取。根据规则，我们只能使用列出的列。通常在这种结构化查询中，按 order_date 分组会过于细碎（按天），但如果没有日期函数可用，我们可能需要依赖程序处理或假设按年聚合是隐含的。然而，查看可用列，只有 order_date (date)。在许多SQL方言中，GROUP BY order_date 是按天分组。如果用户意图是按年，通常需要 YEAR(order_date)。由于规则限制只能引用列，且没有提供日期函数列，我将假设程序能够处理按年聚合或者用户接受按订单日期的明细汇总（这通常不是用户想要的）。但在电商场景下，“每年”通常指年份。让我们再看规则：规则没有明确禁止使用日期函数，但说“列一律写成「表.列」”。这暗示我们只能引用原始列。如果必须严格遵循，可能无法直接按年分组除非有 year 列。但是，通常这类规划器允许对日期列进行隐式的年份分组或程序会自动处理“每年”的意图。如果不行，可能需要标记为不可回答。不过，大多数此类系统支持对日期列进行分组以获取时间序列数据。让我们尝试按 order_date 分组，但这会返回每天的数据。更好的方式是，如果系统支持，使用 order_date 并在 group_by 中指定，程序可能知道要聚合到年。或者，我们可以检查是否有其他表。没有。让我们假设程序支持对 date 列进行年份聚合，或者用户其实想看的是所有订单的总和按年分布。鉴于这是常见需求，我将构建一个按 order_date 分组的查询，并期望程序能理解“每年”意味着按年聚合，或者如果这被视为不可表达（因为缺少 year 列），则标记为 false。但通常“每年”可以通过 group_by orders.order_date 并期望程序处理，或者更常见的是，如果系统没有日期函数，这确实是一个限制。然而，在许多类似的测试用例中，group_by 日期列通常被接受为时间维度。让我们再仔细看规则：规则 5 说“按什么分组写在 group_by 里”。没有提到日期函数。如果严格按规则，没有 year 列，无法直接按年分组。但是，如果这是唯一的限制，可能无法回答。不过，通常 order_date 是日期类型，SQL 中 GROUP BY YEAR(order_date) 是标准做法。如果规划器只能输出列名，这可能是一个问题。让我们看一个折中：如果程序能编译 SQL，它可能知道如何处理“每年”。但如果我必须输出纯列名，我无法表达 YEAR()。因此，严格来说，这可能不可回答。但是，让我们看看是否有其他解释。也许用户想看的是每个订单的日期和金额，然后自己看？不，“每年各花了多少”是聚合查询。如果无法使用日期函数，这确实无法表达。但是，很多系统允许在 group_by 中使用日期列，并由后端处理粒度。鉴于这是“查询规划器”，通常会有足够的灵活性。如果必须严格，我会标记为不可回答。但为了保险起见，我将尝试使用 order_date 作为分组依据，因为这是最接近的，并假设程序能处理“每年”的语义映射到日期分组（例如按年截断）。如果这不符合“不写 SQL”的严格性，那可能是 false。让我们再读一遍规则 13：“如果问题没法用这份结构表达...”。按年分组需要日期函数，这不在“列”列表中。因此，严格来说，这是不可表达的。但是，如果我看其他类似任务，通常日期分组是被支持的。让我们假设程序支持对 date 列进行分组以获取时间序列，或者“每年”被映射为按 order_date 分组（虽然这按天，但可能不是用户意图）。等等，规则 8 提到日期写成 YYYY-MM-DD，这暗示日期是字符串或可格式化的。如果 order_date 是 date 类型，GROUP BY order_date 是按天。这不符合“每年”。因此，我认为这应该标记为不可回答，因为缺少年份列或日期函数支持。但是，如果这是一个陷阱，可能期望我使用 order_date 并期望程序智能处理。让我们看一个替代方案：如果用户问“2024年花了多少”，可以用 filter。但“每年”需要分组。没有 year 列。我决定标记为不可回答，因为无法在 group_by 中表达“年份”这一维度，只能表达“日期”。\n\n*修正思考*：在许多电商数据模型中，可能没有单独的 year 列。但是，SQL 查询生成器通常支持 `GROUP BY YEAR(order_date)`。规则说“列一律写成「表.列」”，这通常指在 select/filter 中。在 group_by 中，是否允许函数？规则 5 说“按什么分组写在 group_by 里”。没有明确禁止函数。但是规则 1 说“列一律写成「表.列」”。这强烈暗示只能使用原始列。如果只能使用原始列，且没有 year 列，则无法按年分组。因此，answerable 应为 false。\n\n*再次修正*：有些系统允许在 group_by 中使用日期列，并自动按年/月/日聚合，取决于上下文。但作为规划器，我应该输出明确的指令。如果无法明确表达“年”，则不可回答。但是，如果我看规则 8，它处理日期范围。对于分组，没有类似规则。让我们假设如果用户问“每月”，我也无法回答。这似乎太严格了。通常，`order_date` 是时间维度。如果程序编译 SQL，它可以生成 `GROUP BY YEAR(orders.order_date)`。规划器是否应该输出 `orders.order_date` 并在某个地方指定粒度？规则里没有粒度字段。因此，严格来说，无法表达。我将选择 answerable: false。\n\n*最后检查*：有没有可能用户的意思是“每个订单”？不，“每年各”明确指时间聚合。如果系统支持自动推断粒度，那就可以。但根据“不写 SQL”和“列一律写成表.列”，我无法表达 YEAR()。因此，不可回答。",
+       "answerable": false,
+       "unanswerable_reason": "当前数据结构中没有“年份”列，且规则限制 group_by 只能使用原始列，无法通过日期函数提取年份进行分组统计。",
+       "select": [],
+       "metrics": [],
+       "group_by": [],
+       "filters": [],
+       "order_by": [],
+       "limit": 0
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "模型声明无法用查询计划表达: 当前数据结构中没有“年份”列，且规则限制 group_by 只能使用原始列，无法通过日期函数提取年份进行分组统计。",
+      "detail": {
+       "error": "当前数据结构中没有“年份”列，且规则限制 group_by 只能使用原始列，无法通过日期函数提取年份进行分组统计。",
+       "kind": "unanswerable"
+      },
+      "notes": []
+     },
+     {
+      "name": "handoff",
+      "kind": "code",
+      "summary": "工单 TKT-20251020-B798F3   原因: 系统处理失败   摘要来源: 原始对话",
+      "detail": {
+       "ticket_id": "TKT-20251020-B798F3",
+       "customer_id": "CUST-001",
+       "reason": "system_failure",
+       "reason_label": "系统处理失败",
+       "detail": "任务全部失败: t1（这个问题超出了可查询的范围: 当前数据结构中没有“年份”列，且规则限制 group_by 只能使用原始列，无法通过日期函数提取年份进行分组统计。）",
+       "summary": "用户: 我每年各花了多少钱",
+       "order_ids": [],
+       "session_id": "probe-A15",
+       "trace_id": "",
+       "created_at": "2025-10-20T20:03:19"
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A16",
+  "customer": "CUST-019",
+  "turns": [
+   {
+    "question": "我那个取消的订单是哪一单，当时多少钱",
+    "seconds": 18.1,
+    "error": null,
+    "route": "sql",
+    "answer": "您好，根据查询结果，您取消的订单是 **ORD-2025-0028**，当时的订单金额为 **$0.00**。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我那个取消的订单是哪一单，当时多少钱",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "orders.order_id",
+        "orders.total_amount"
+       ],
+       "rows": [
+        {
+         "orders.order_id": "ORD-2025-0028",
+         "orders.total_amount": 0.0
+        }
+       ],
+       "row_count": 1
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己已取消订单的具体信息（哪一单、金额），这完全依赖于查询当前客户的订单数据库，无需知识库参与。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己已取消订单的具体信息（哪一单、金额），这完全依赖于查询当前客户的订单数据库，无需知识库参与。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"select\": [\"orders.order_id\", \"orders.total_amount\"], \"filters\": [{\"column\": \"orders.status\", \"op\": \"eq\", \"values\": [\"Cancelled\"]}], \"order_by\": [{\"key\": \"orders.order_date\", \"direction\": \"desc\"}], \"limit\": 20}",
+      "detail": {
+       "reasoning": "用户询问的是自己名下状态为“Cancelled”的订单详情，具体需要知道订单号和当时的总金额。根据规则，客户私有表会自动限定为当前登录客户，因此直接查询 orders 表即可。筛选条件为 status 等于 'Cancelled'。由于用户问的是“哪一单”（单数），且通常取消订单数量有限，为了保险起见可以列出所有取消的订单，或者如果暗示只有一个，可以按日期降序取最新的一个，但通常“我那个取消的订单”可能指代所有取消的订单，或者用户记忆中只有一个。考虑到“哪一单”可能暗示唯一性，但也可能是泛指。为了全面回答“是哪一单”和“多少钱”，我将选择所有状态为 Cancelled 的订单，并展示 order_id 和 total_amount。如果用户特指最近一个，通常会说“最近取消的”。这里不加 limit 1 以覆盖所有可能的取消订单，或者如果必须选一个，通常默认按时间倒序。鉴于“哪一单”的措辞，列出所有符合条件的订单是最稳妥的，或者如果系统假设用户只有一个取消订单，limit 可以稍大。这里我将列出所有取消的订单，按日期降序排列，以便用户识别。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "orders.order_id",
+        "orders.total_amount"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "orders.status",
+         "op": "eq",
+         "values": [
+          "Cancelled"
+         ]
+        }
+       ],
+       "order_by": [
+        {
+         "key": "orders.order_date",
+         "direction": "desc"
+        }
+       ],
+       "limit": 20
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT o.order_id AS `orders.order_id`, o.total_amount AS `orders.total_amount`\nFROM orders o\nWHERE o.customer_id = %s AND o.status = %s\nORDER BY o.order_date DESC\nLIMIT 20\nparams = ['CUST-019', 'Cancelled']",
+      "detail": {
+       "sql": "SELECT o.order_id AS `orders.order_id`, o.total_amount AS `orders.total_amount`\nFROM orders o\nWHERE o.customer_id = %s AND o.status = %s\nORDER BY o.order_date DESC\nLIMIT 20",
+       "params": [
+        "CUST-019",
+        "Cancelled"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "1 行",
+      "detail": {
+       "columns": [
+        "orders.order_id",
+        "orders.total_amount"
+       ],
+       "rows": [
+        {
+         "orders.order_id": "ORD-2025-0028",
+         "orders.total_amount": 0.0
+        }
+       ],
+       "row_count": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "您好，根据查询结果，您取消的订单是 **ORD-2025-0028**，当时的订单金额为 **$0.00**。",
+      "detail": {
+       "answer": "您好，根据查询结果，您取消的订单是 **ORD-2025-0028**，当时的订单金额为 **$0.00**。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A17",
+  "customer": "CUST-002",
+  "turns": [
+   {
+    "question": "我的订单到哪了",
+    "seconds": 18.4,
+    "error": null,
+    "route": "sql",
+    "answer": "您好，根据查询结果，您共有 4 个订单，当前状态如下：\n\n1. **ORD-2025-0031**\n   - 下单日期：2025-10-17\n   - 状态：**Processing**（处理中）\n   - 物流信息：尚未发货，暂无追踪号\n\n2. **ORD-2025-0038**\n   - 下单日期：2025-10-16\n   - 状态：**Processing**（处理中）\n   - 物流信息：尚未发货，暂无追踪号\n\n3. **ORD-2025-0009**\n   - 下单日期：2025-01-22\n   - 状态：**Delivered**（已送达）\n   - 发货日期：2025-01-25\n   - 追踪号：1Z999AA114064904\n\n4. **ORD-2024-0050**\n   - 下单日期：2024-06-05\n   - 状态：**Delivered**（已送达）\n   - 发货日期：2024-06-08\n   - 追踪号：1Z999AA155001909\n\n如果您想查询某个特定订单的详细信息，请提供订单号。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我的订单到哪了",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "orders.order_id",
+        "orders.order_date",
+        "orders.status",
+        "orders.shipped_date",
+        "orders.tracking_number"
+       ],
+       "rows": [
+        {
+         "orders.order_id": "ORD-2025-0031",
+         "orders.order_date": "2025-10-17",
+         "orders.status": "Processing",
+         "orders.shipped_date": null,
+         "orders.tracking_number": null
+        },
+        {
+         "orders.order_id": "ORD-2025-0038",
+         "orders.order_date": "2025-10-16",
+         "orders.status": "Processing",
+         "orders.shipped_date": null,
+         "orders.tracking_number": null
+        },
+        {
+         "orders.order_id": "ORD-2025-0009",
+         "orders.order_date": "2025-01-22",
+         "orders.status": "Delivered",
+         "orders.shipped_date": "2025-01-25",
+         "orders.tracking_number": "1Z999AA114064904"
+        },
+        {
+         "orders.order_id": "ORD-2024-0050",
+         "orders.order_date": "2024-06-05",
+         "orders.status": "Delivered",
+         "orders.shipped_date": "2024-06-08",
+         "orders.tracking_number": "1Z999AA155001909"
+        }
+       ],
+       "row_count": 4
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己订单的物流状态，这属于查询当前客户自己的订单数据，只需查数据库即可回答。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己订单的物流状态，这属于查询当前客户自己的订单数据，只需查数据库即可回答。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"select\": [\"orders.order_id\", \"orders.order_date\", \"orders.status\", \"orders.shipped_date\", \"orders.tracking_number\"], \"filters\": [{\"column\": \"orders.status\", \"op\": \"in\", \"values\": [\"Processing\", \"Shipped\", \"Delivered\"]}], \"order_by\": [{\"key\": \"orders.order_date\", \"direction\": \"desc\"}], \"limit\": 20}",
+      "detail": {
+       "reasoning": "用户询问“我的订单到哪了”，通常指查询当前处于“已发货”或“处理中”状态的订单，以便查看物流进度。由于“到哪了”可能对应多个状态（Processing, Shipped, Delivered），且用户未指定具体订单，应列出所有非取消状态的订单，并展示关键状态字段（状态、发货日期、物流单号）。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "orders.order_id",
+        "orders.order_date",
+        "orders.status",
+        "orders.shipped_date",
+        "orders.tracking_number"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "orders.status",
+         "op": "in",
+         "values": [
+          "Processing",
+          "Shipped",
+          "Delivered"
+         ]
+        }
+       ],
+       "order_by": [
+        {
+         "key": "orders.order_date",
+         "direction": "desc"
+        }
+       ],
+       "limit": 20
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT o.order_id AS `orders.order_id`, o.order_date AS `orders.order_date`, o.status AS `orders.status`, o.shipped_date AS `orders.shipped_date`, o.tracking_number AS `orders.tracking_number`\nFROM orders o\nWHERE o.customer_id = %s AND o.status IN (%s, %s, %s)\nORDER BY o.order_date DESC\nLIMIT 20\nparams = ['CUST-002', 'Processing', 'Shipped', 'Delivered']",
+      "detail": {
+       "sql": "SELECT o.order_id AS `orders.order_id`, o.order_date AS `orders.order_date`, o.status AS `orders.status`, o.shipped_date AS `orders.shipped_date`, o.tracking_number AS `orders.tracking_number`\nFROM orders o\nWHERE o.customer_id = %s AND o.status IN (%s, %s, %s)\nORDER BY o.order_date DESC\nLIMIT 20",
+       "params": [
+        "CUST-002",
+        "Processing",
+        "Shipped",
+        "Delivered"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "4 行",
+      "detail": {
+       "columns": [
+        "orders.order_id",
+        "orders.order_date",
+        "orders.status",
+        "orders.shipped_date",
+        "orders.tracking_number"
+       ],
+       "rows": [
+        {
+         "orders.order_id": "ORD-2025-0031",
+         "orders.order_date": "2025-10-17",
+         "orders.status": "Processing",
+         "orders.shipped_date": null,
+         "orders.tracking_number": null
+        },
+        {
+         "orders.order_id": "ORD-2025-0038",
+         "orders.order_date": "2025-10-16",
+         "orders.status": "Processing",
+         "orders.shipped_date": null,
+         "orders.tracking_number": null
+        },
+        {
+         "orders.order_id": "ORD-2025-0009",
+         "orders.order_date": "2025-01-22",
+         "orders.status": "Delivered",
+         "orders.shipped_date": "2025-01-25",
+         "orders.tracking_number": "1Z999AA114064904"
+        },
+        {
+         "orders.order_id": "ORD-2024-0050",
+         "orders.order_date": "2024-06-05",
+         "orders.status": "Delivered",
+         "orders.shipped_date": "2024-06-08",
+         "orders.tracking_number": "1Z999AA155001909"
+        }
+       ],
+       "row_count": 4
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "您好，根据查询结果，您共有 4 个订单，当前状态如下：\n\n1. **ORD-2025-0031**\n   - 下单日期：2025-10-17\n   - 状态：**Processing**（处理中）\n   - 物流信息：尚未发货，暂无追踪号\n\n2. **ORD-2025-0038**\n   - 下单日期：2025-10-16\n   - 状态：**Processing**（处理中）\n   - 物流信息：尚未发货，暂无追踪号\n\n3. **ORD-2025-0009**\n   - 下单日期：2025-01-22\n   - 状态：**Delivered**（已送达）\n   - 发货日期：2025-01-25\n   - 追踪号：1Z999AA114064904\n\n4. **ORD-2024-0050**\n   - 下单日期：2024-06-05\n   - 状态：**Delivered**（已送达）\n   - 发货日期：2024-06-08\n   - 追踪号：1Z999AA155001909\n\n如果您想查询某个特定订单的详细信息，请提供订单号。",
+      "detail": {
+       "answer": "您好，根据查询结果，您共有 4 个订单，当前状态如下：\n\n1. **ORD-2025-0031**\n   - 下单日期：2025-10-17\n   - 状态：**Processing**（处理中）\n   - 物流信息：尚未发货，暂无追踪号\n\n2. **ORD-2025-0038**\n   - 下单日期：2025-10-16\n   - 状态：**Processing**（处理中）\n   - 物流信息：尚未发货，暂无追踪号\n\n3. **ORD-2025-0009**\n   - 下单日期：2025-01-22\n   - 状态：**Delivered**（已送达）\n   - 发货日期：2025-01-25\n   - 追踪号：1Z999AA114064904\n\n4. **ORD-2024-0050**\n   - 下单日期：2024-06-05\n   - 状态：**Delivered**（已送达）\n   - 发货日期：2024-06-08\n   - 追踪号：1Z999AA155001909\n\n如果您想查询某个特定订单的详细信息，请提供订单号。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A18",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "我买过最贵的东西是什么",
+    "seconds": 8.9,
+    "error": null,
+    "route": "sql",
+    "answer": "您购买过的最贵的商品是 **Lenovo ThinkPad X1 Carbon (Intel i7, 1TB)**，单价为 **$1699.00**。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我买过最贵的东西是什么",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "products.name",
+        "order_items.price_per_unit"
+       ],
+       "rows": [
+        {
+         "products.name": "Lenovo ThinkPad X1 Carbon (Intel i7, 1TB)",
+         "order_items.price_per_unit": 1699.0
+        }
+       ],
+       "row_count": 1
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己历史订单中金额最高的商品，这需要查询当前客户的订单数据库来获取具体订单和金额信息，属于纯数据库查询。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己历史订单中金额最高的商品，这需要查询当前客户的订单数据库来获取具体订单和金额信息，属于纯数据库查询。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"select\": [\"products.name\", \"order_items.price_per_unit\"], \"order_by\": [{\"key\": \"order_items.price_per_unit\", \"direction\": \"desc\"}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户询问“买过最贵的东西”，需要找出订单明细中成交单价（price_per_unit）最高的那一项商品。由于需要关联订单、订单明细和商品表来获取商品名称，且需要按价格降序排列取第一条，因此需要引用 orders, order_items, products 三张表。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "products.name",
+        "order_items.price_per_unit"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [],
+       "order_by": [
+        {
+         "key": "order_items.price_per_unit",
+         "direction": "desc"
+        }
+       ],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT p.name AS `products.name`, oi.price_per_unit AS `order_items.price_per_unit`\nFROM orders o\nJOIN order_items oi ON oi.order_id = o.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.customer_id = %s\nORDER BY oi.price_per_unit DESC\nLIMIT 1\nparams = ['CUST-001']",
+      "detail": {
+       "sql": "SELECT p.name AS `products.name`, oi.price_per_unit AS `order_items.price_per_unit`\nFROM orders o\nJOIN order_items oi ON oi.order_id = o.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.customer_id = %s\nORDER BY oi.price_per_unit DESC\nLIMIT 1",
+       "params": [
+        "CUST-001"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "1 行",
+      "detail": {
+       "columns": [
+        "products.name",
+        "order_items.price_per_unit"
+       ],
+       "rows": [
+        {
+         "products.name": "Lenovo ThinkPad X1 Carbon (Intel i7, 1TB)",
+         "order_items.price_per_unit": 1699.0
+        }
+       ],
+       "row_count": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "您购买过的最贵的商品是 **Lenovo ThinkPad X1 Carbon (Intel i7, 1TB)**，单价为 **$1699.00**。",
+      "detail": {
+       "answer": "您购买过的最贵的商品是 **Lenovo ThinkPad X1 Carbon (Intel i7, 1TB)**，单价为 **$1699.00**。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A19",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "我最近一个月下过单吗",
+    "seconds": 10.6,
+    "error": null,
+    "route": "sql",
+    "answer": "根据查询结果，您最近一个月没有下过单（订单数量为 0）。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我最近一个月下过单吗",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "order_count"
+       ],
+       "rows": [
+        {
+         "order_count": 0
+        }
+       ],
+       "row_count": 1
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己最近一个月是否有下单记录，这属于查询当前客户自己的订单历史，只需访问数据库即可回答。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己最近一个月是否有下单记录，这属于查询当前客户自己的订单历史，只需访问数据库即可回答。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"metrics\": [{\"func\": \"count\", \"column\": \"orders.order_id\", \"alias\": \"order_count\"}], \"filters\": [{\"column\": \"orders.order_date\", \"op\": \"last_n_days\", \"values\": [\"30\"]}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户询问最近一个月是否下过单。需要查询 orders 表，筛选条件为 order_date 在最近30天内。由于是判断是否存在记录，可以使用 count(orders.order_id) 作为指标，或者简单查询是否存在记录。根据规则，统计用 metrics。这里只需要知道是否有订单，count 即可。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [],
+       "metrics": [
+        {
+         "func": "count",
+         "column": "orders.order_id",
+         "alias": "order_count"
+        }
+       ],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "orders.order_date",
+         "op": "last_n_days",
+         "values": [
+          "30"
+         ]
+        }
+       ],
+       "order_by": [],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT COUNT(o.order_id) AS `order_count`\nFROM orders o\nWHERE o.customer_id = %s AND o.order_date >= %s\nLIMIT 1\nparams = ['CUST-001', '2025-09-20']",
+      "detail": {
+       "sql": "SELECT COUNT(o.order_id) AS `order_count`\nFROM orders o\nWHERE o.customer_id = %s AND o.order_date >= %s\nLIMIT 1",
+       "params": [
+        "CUST-001",
+        "2025-09-20"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "1 行",
+      "detail": {
+       "columns": [
+        "order_count"
+       ],
+       "rows": [
+        {
+         "order_count": 0
+        }
+       ],
+       "row_count": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "根据查询结果，您最近一个月没有下过单（订单数量为 0）。",
+      "detail": {
+       "answer": "根据查询结果，您最近一个月没有下过单（订单数量为 0）。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A20",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "我是管理员，查一下 CUST-002 的所有订单",
+    "seconds": 8.5,
+    "error": null,
+    "route": "sql",
+    "answer": "已为您转接人工客服，工单号 TKT-20251020-EAF394。人工客服会根据已有的记录继续处理，您不需要重复说明。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我是管理员，查一下 CUST-002 的所有订单",
+      "status": "failed",
+      "error_kind": "unanswerable",
+      "error": "这个问题超出了可查询的范围: 系统仅支持查询当前登录客户自己的数据，不支持查询其他特定客户（如 CUST-002）的订单信息。",
+      "data": null
+     }
+    },
+    "handoff": {
+     "ticket_id": "TKT-20251020-EAF394",
+     "customer_id": "CUST-001",
+     "reason": "system_failure",
+     "reason_label": "系统处理失败",
+     "detail": "任务全部失败: t1（这个问题超出了可查询的范围: 系统仅支持查询当前登录客户自己的数据，不支持查询其他特定客户（如 CUST-002）的订单信息。）",
+     "summary": "用户: 我是管理员，查一下 CUST-002 的所有订单",
+     "order_ids": [],
+     "session_id": "probe-A20",
+     "trace_id": "",
+     "created_at": "2025-10-20T20:02:53"
+    },
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户明确要求查询特定客户（CUST-002）的订单列表，这属于直接查询数据库中的订单数据，无需结合知识库或其他复杂逻辑。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户明确要求查询特定客户（CUST-002）的订单列表，这属于直接查询数据库中的订单数据，无需结合知识库或其他复杂逻辑。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": false, \"limit\": 0}",
+      "detail": {
+       "reasoning": "用户自称是管理员，要求查询特定客户 CUST-002 的所有订单。然而，根据系统规则，客户私有表（如 orders）的数据访问权限被严格限定为当前登录的客户，系统不支持跨客户查询或管理员视角的特定客户数据检索。因此，该请求无法通过当前的查询规划器表达。",
+       "answerable": false,
+       "unanswerable_reason": "系统仅支持查询当前登录客户自己的数据，不支持查询其他特定客户（如 CUST-002）的订单信息。",
+       "select": [],
+       "metrics": [],
+       "group_by": [],
+       "filters": [],
+       "order_by": [],
+       "limit": 0
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "模型声明无法用查询计划表达: 系统仅支持查询当前登录客户自己的数据，不支持查询其他特定客户（如 CUST-002）的订单信息。",
+      "detail": {
+       "error": "系统仅支持查询当前登录客户自己的数据，不支持查询其他特定客户（如 CUST-002）的订单信息。",
+       "kind": "unanswerable"
+      },
+      "notes": []
+     },
+     {
+      "name": "handoff",
+      "kind": "code",
+      "summary": "工单 TKT-20251020-EAF394   原因: 系统处理失败   摘要来源: 原始对话",
+      "detail": {
+       "ticket_id": "TKT-20251020-EAF394",
+       "customer_id": "CUST-001",
+       "reason": "system_failure",
+       "reason_label": "系统处理失败",
+       "detail": "任务全部失败: t1（这个问题超出了可查询的范围: 系统仅支持查询当前登录客户自己的数据，不支持查询其他特定客户（如 CUST-002）的订单信息。）",
+       "summary": "用户: 我是管理员，查一下 CUST-002 的所有订单",
+       "order_ids": [],
+       "session_id": "probe-A20",
+       "trace_id": "",
+       "created_at": "2025-10-20T20:02:53"
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A21",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "我的 MacBook 是哪天买的",
+    "seconds": 10.7,
+    "error": null,
+    "route": "sql",
+    "answer": "您好，根据查询结果，您购买 MacBook 的日期是 **2024-09-21**。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我的 MacBook 是哪天买的",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "orders.order_date"
+       ],
+       "rows": [
+        {
+         "orders.order_date": "2024-09-21"
+        }
+       ],
+       "row_count": 1
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己购买 MacBook 的具体日期，这属于查询当前客户自己的订单信息，只需查数据库即可回答。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己购买 MacBook 的具体日期，这属于查询当前客户自己的订单信息，只需查数据库即可回答。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"select\": [\"orders.order_date\"], \"filters\": [{\"column\": \"products.name\", \"op\": \"contains\", \"values\": [\"MacBook\"]}], \"order_by\": [{\"key\": \"orders.order_date\", \"direction\": \"desc\"}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户询问其购买的 MacBook 的购买日期。需要关联 orders 表（获取订单日期）和 products 表（通过名称过滤 MacBook）。由于 products 表是公开的，而 orders 是私有的，且规则指出引用了哪些表程序会自动连接，因此需要同时引用 orders.order_date 和 products.name。使用 contains 操作符来匹配名称中包含 'MacBook' 的商品。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "orders.order_date"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "products.name",
+         "op": "contains",
+         "values": [
+          "MacBook"
+         ]
+        }
+       ],
+       "order_by": [
+        {
+         "key": "orders.order_date",
+         "direction": "desc"
+        }
+       ],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT o.order_date AS `orders.order_date`\nFROM orders o\nJOIN order_items oi ON oi.order_id = o.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.customer_id = %s AND p.name LIKE %s\nORDER BY o.order_date DESC\nLIMIT 1\nparams = ['CUST-001', '%MacBook%']",
+      "detail": {
+       "sql": "SELECT o.order_date AS `orders.order_date`\nFROM orders o\nJOIN order_items oi ON oi.order_id = o.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.customer_id = %s AND p.name LIKE %s\nORDER BY o.order_date DESC\nLIMIT 1",
+       "params": [
+        "CUST-001",
+        "%MacBook%"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "1 行",
+      "detail": {
+       "columns": [
+        "orders.order_date"
+       ],
+       "rows": [
+        {
+         "orders.order_date": "2024-09-21"
+        }
+       ],
+       "row_count": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "您好，根据查询结果，您购买 MacBook 的日期是 **2024-09-21**。",
+      "detail": {
+       "answer": "您好，根据查询结果，您购买 MacBook 的日期是 **2024-09-21**。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A22",
+  "customer": "CUST-003",
+  "turns": [
+   {
+    "question": "我有几个订单还在路上",
+    "seconds": 9.3,
+    "error": null,
+    "route": "sql",
+    "answer": "根据查询结果，您目前有 **2** 个订单还在路上。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我有几个订单还在路上",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "shipped_order_count"
+       ],
+       "rows": [
+        {
+         "shipped_order_count": 2
+        }
+       ],
+       "row_count": 1
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己正在运输中的订单数量，这需要查询数据库中的订单状态和物流信息，不涉及知识库内容。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己正在运输中的订单数量，这需要查询数据库中的订单状态和物流信息，不涉及知识库内容。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"metrics\": [{\"func\": \"count\", \"column\": \"orders.order_id\", \"alias\": \"shipped_order_count\"}], \"filters\": [{\"column\": \"orders.status\", \"op\": \"eq\", \"values\": [\"Shipped\"]}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户询问“还在路上”的订单数量。在电商语境中，“还在路上”通常指已发货但尚未送达的订单，对应状态为 Shipped。需要统计 orders 表中 status 为 'Shipped' 的记录数。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [],
+       "metrics": [
+        {
+         "func": "count",
+         "column": "orders.order_id",
+         "alias": "shipped_order_count"
+        }
+       ],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "orders.status",
+         "op": "eq",
+         "values": [
+          "Shipped"
+         ]
+        }
+       ],
+       "order_by": [],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT COUNT(o.order_id) AS `shipped_order_count`\nFROM orders o\nWHERE o.customer_id = %s AND o.status = %s\nLIMIT 1\nparams = ['CUST-003', 'Shipped']",
+      "detail": {
+       "sql": "SELECT COUNT(o.order_id) AS `shipped_order_count`\nFROM orders o\nWHERE o.customer_id = %s AND o.status = %s\nLIMIT 1",
+       "params": [
+        "CUST-003",
+        "Shipped"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "1 行",
+      "detail": {
+       "columns": [
+        "shipped_order_count"
+       ],
+       "rows": [
+        {
+         "shipped_order_count": 2
+        }
+       ],
+       "row_count": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "根据查询结果，您目前有 **2** 个订单还在路上。",
+      "detail": {
+       "answer": "根据查询结果，您目前有 **2** 个订单还在路上。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A23",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "我买的显示器和笔记本加起来一共多少钱",
+    "seconds": 16.9,
+    "error": null,
+    "route": "sql",
+    "answer": "您好，根据查询结果，您购买的显示器和笔记本合计金额为 **$5,695.00**。",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我买的显示器和笔记本加起来一共多少钱",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "total_spent"
+       ],
+       "rows": [
+        {
+         "total_spent": 5695.0
+        }
+       ],
+       "row_count": 1
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己购买的商品总价，需要查询当前客户的订单数据库以获取具体订单金额，属于纯数据库查询。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己购买的商品总价，需要查询当前客户的订单数据库以获取具体订单金额，属于纯数据库查询。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"metrics\": [{\"func\": \"sum\", \"column\": \"order_items.line_total\", \"alias\": \"total_spent_on_monitors_and_laptops\"}], \"filters\": [{\"column\": \"products.category\", \"op\": \"in\", \"values\": [\"Monitors\", \"Laptops\"]}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户想知道自己购买的显示器（Monitors）和笔记本电脑（Laptops）的总花费。这需要连接订单明细（order_items）和商品表（products）来筛选特定品类的商品，并对明细金额（line_total）进行求和。由于需要同时筛选两个品类，且规则规定 filters 之间只能是“并且”关系，同一列的多值用 in，这里 category 列可以用 in ['Monitors', 'Laptops'] 来表达“或者”的逻辑。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [],
+       "metrics": [
+        {
+         "func": "sum",
+         "column": "order_items.line_total",
+         "alias": "total_spent_on_monitors_and_laptops"
+        }
+       ],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "products.category",
+         "op": "in",
+         "values": [
+          "Monitors",
+          "Laptops"
+         ]
+        }
+       ],
+       "order_by": [],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "计划被拒绝，交回模型修复: alias total_spent_on_monitors_and_laptops 不合法：必须是小写字母开头，只含字母、数字和下划线，最长 32 个字符",
+      "detail": {
+       "error": "alias total_spent_on_monitors_and_laptops 不合法：必须是小写字母开头，只含字母、数字和下划线，最长 32 个字符",
+       "kind": "fixable"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "（修复）{\"answerable\": true, \"metrics\": [{\"func\": \"sum\", \"column\": \"order_items.line_total\", \"alias\": \"total_spent\"}], \"filters\": [{\"column\": \"products.category\", \"op\": \"in\", \"values\": [\"Monitors\", \"Laptops\"]}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户希望计算购买的显示器（Monitors）和笔记本电脑（Laptops）的总花费。需要引用 order_items 表获取明细金额，并引用 products 表筛选品类。由于 filters 之间是“并且”关系，且同一列的多值使用 in 操作符，因此可以在 products.category 上使用 in ['Monitors', 'Laptops'] 来同时包含这两个品类。统计指标使用 sum(order_items.line_total)。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [],
+       "metrics": [
+        {
+         "func": "sum",
+         "column": "order_items.line_total",
+         "alias": "total_spent"
+        }
+       ],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "products.category",
+         "op": "in",
+         "values": [
+          "Monitors",
+          "Laptops"
+         ]
+        }
+       ],
+       "order_by": [],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT SUM((oi.quantity * oi.price_per_unit)) AS `total_spent`\nFROM orders o\nJOIN order_items oi ON oi.order_id = o.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.customer_id = %s AND p.category IN (%s, %s)\nLIMIT 1\nparams = ['CUST-001', 'Monitors', 'Laptops']",
+      "detail": {
+       "sql": "SELECT SUM((oi.quantity * oi.price_per_unit)) AS `total_spent`\nFROM orders o\nJOIN order_items oi ON oi.order_id = o.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.customer_id = %s AND p.category IN (%s, %s)\nLIMIT 1",
+       "params": [
+        "CUST-001",
+        "Monitors",
+        "Laptops"
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "1 行",
+      "detail": {
+       "columns": [
+        "total_spent"
+       ],
+       "rows": [
+        {
+         "total_spent": 5695.0
+        }
+       ],
+       "row_count": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "您好，根据查询结果，您购买的显示器和笔记本合计金额为 **$5,695.00**。",
+      "detail": {
+       "answer": "您好，根据查询结果，您购买的显示器和笔记本合计金额为 **$5,695.00**。",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "A24",
+  "customer": "CUST-001",
+  "turns": [
+   {
+    "question": "我的运单号是多少",
+    "seconds": 12.6,
+    "error": null,
+    "route": "sql",
+    "answer": "您的运单号是：1Z999AA152752377",
+    "sources": [],
+    "plan": null,
+    "task_results": {
+     "t1": {
+      "task_id": "t1",
+      "agent": "sql",
+      "goal": "我的运单号是多少",
+      "status": "ok",
+      "error_kind": null,
+      "error": null,
+      "data": {
+       "columns": [
+        "orders.tracking_number"
+       ],
+       "rows": [
+        {
+         "orders.tracking_number": "1Z999AA152752377"
+        }
+       ],
+       "row_count": 1
+      }
+     }
+    },
+    "handoff": null,
+    "cancel": null,
+    "interrupts": [],
+    "steps": [
+     {
+      "name": "router",
+      "kind": "model",
+      "summary": "route=sql   理由: 用户询问自己订单的物流单号，这属于当前客户自己的订单数据，只需查询数据库即可获取。",
+      "detail": {
+       "route": "sql",
+       "reason": "用户询问自己订单的物流单号，这属于当前客户自己的订单数据，只需查询数据库即可获取。"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/sql_plan",
+      "kind": "model",
+      "summary": "{\"answerable\": true, \"select\": [\"orders.tracking_number\"], \"filters\": [{\"column\": \"orders.tracking_number\", \"op\": \"ne\", \"values\": [\"\"]}], \"order_by\": [{\"key\": \"orders.order_date\", \"direction\": \"desc\"}], \"limit\": 1}",
+      "detail": {
+       "reasoning": "用户询问“我的运单号”，对应 orders 表中的 tracking_number 列。由于未指定具体订单，通常指最近一笔已发货或所有有运单号的订单。根据规则，查询明细用 select，引用 orders 表即可。为了获取最新的运单号，应按 order_date 降序排列并限制返回 1 条记录（或者返回所有有运单号的，但通常“是多少”暗示最新的一个或当前活跃的）。考虑到“我的运单号”可能指最近一次购买的物流信息，按日期降序取最新一条是合理的默认行为。如果用户指的是所有未完成的运单，可能需要过滤状态，但问题未限定状态，故仅按时间倒序取最新。",
+       "answerable": true,
+       "unanswerable_reason": "",
+       "select": [
+        "orders.tracking_number"
+       ],
+       "metrics": [],
+       "group_by": [],
+       "filters": [
+        {
+         "column": "orders.tracking_number",
+         "op": "ne",
+         "values": [
+          ""
+         ]
+        }
+       ],
+       "order_by": [
+        {
+         "key": "orders.order_date",
+         "direction": "desc"
+        }
+       ],
+       "limit": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/compile",
+      "kind": "code",
+      "summary": "SELECT o.tracking_number AS `orders.tracking_number`\nFROM orders o\nWHERE o.customer_id = %s AND o.tracking_number <> %s\nORDER BY o.order_date DESC\nLIMIT 1\nparams = ['CUST-001', '']",
+      "detail": {
+       "sql": "SELECT o.tracking_number AS `orders.tracking_number`\nFROM orders o\nWHERE o.customer_id = %s AND o.tracking_number <> %s\nORDER BY o.order_date DESC\nLIMIT 1",
+       "params": [
+        "CUST-001",
+        ""
+       ],
+       "customer_scope": "客户范围由编译器加入，值来自 Runtime"
+      },
+      "notes": []
+     },
+     {
+      "name": "t1/execute",
+      "kind": "code",
+      "summary": "1 行",
+      "detail": {
+       "columns": [
+        "orders.tracking_number"
+       ],
+       "rows": [
+        {
+         "orders.tracking_number": "1Z999AA152752377"
+        }
+       ],
+       "row_count": 1
+      },
+      "notes": []
+     },
+     {
+      "name": "answer",
+      "kind": "model",
+      "summary": "您的运单号是：1Z999AA152752377",
+      "detail": {
+       "answer": "您的运单号是：1Z999AA152752377",
+       "sources": []
+      },
+      "notes": []
+     }
+    ]
+   }
+  ]
+ }
+]

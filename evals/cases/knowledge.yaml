@@ -1,0 +1,551 @@
+# 商品与售后知识。都不需要登录。知识库文档是英文，quote 是文档原文的摘录。
+
+- id: kb-return-window-opened
+  business: 知识问答
+  situation: 一个片段里有答案
+  set: gate
+  note: 探查 B02
+  turns:
+    - user: 拆封了的耳机还能退吗，几天内
+      expect:
+        route: &rag {prefer: rag, accept: [supervisor]}
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/return_policy.md, section: Return Windows}]
+        answer:
+          facts:
+            - {text: 已拆封的电子产品在收货后 14 天内可以退, quote: "14 days from delivery date"}
+        trace: &no_db {max_sql: 0, max_model_steps: 3, forbid_steps: ["cancel/*", handoff]}
+
+- id: kb-return-window-opened-2
+  business: 知识问答
+  situation: 一个片段里有答案
+  set: gate
+  split: holdout
+  turns:
+    - user: 电子产品拆开用过了，多久之内可以退货
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/return_policy.md, section: Return Windows}]
+        answer:
+          facts:
+            - {text: 已拆封的电子产品在收货后 14 天内可以退, quote: "14 days from delivery date"}
+        trace: *no_db
+
+- id: kb-shipping-standard
+  business: 知识问答
+  situation: 一个片段里有答案
+  set: gate
+  note: 探查 B04
+  turns:
+    - user: 标准配送要几天，满多少免运费
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/shipping_guide.md, section: Shipping Options}]
+        answer:
+          facts:
+            - {text: 标准配送需要 5 到 7 个工作日, quote: "Standard Shipping (5-7 Business Days)"}
+            - {text: 订单满 50 美元免运费, quote: "FREE on orders $50 or more"}
+        trace: *no_db
+
+- id: kb-processing-time
+  business: 知识问答
+  situation: 一个片段里有答案
+  set: gate
+  split: holdout
+  turns:
+    - user: 下单后多久发货
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/shipping_guide.md, section: Order Processing Time}]
+        answer:
+          facts:
+            - {text: 工作日下午 2 点（美东时间）前下单当天发货, quote: "Ship same business day"}
+        trace: *no_db
+
+- id: kb-sony-battery
+  business: 知识问答
+  situation: 一个片段里有答案
+  set: gate
+  note: 探查 B14
+  turns:
+    - user: Sony 那款降噪耳机续航多久
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant:
+            - {doc: products/TECH-AUD-016.md, section: Key Specifications}
+            - {doc: products/TECH-AUD-016.md, section: Common Questions}
+        answer:
+          facts:
+            - {text: 开着降噪续航最长 30 小时, quote: "Up to 30 hours with ANC on"}
+        trace: *no_db
+
+- id: kb-keyboard-switch
+  business: 知识问答
+  situation: 一个片段里有答案
+  set: gate
+  note: 探查 B15
+  turns:
+    - user: 机械键盘是什么轴的
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant:
+            - {doc: products/TECH-KEY-012.md, section: Key Specifications}
+            - {doc: products/TECH-KEY-012.md, section: Product Overview}
+        answer:
+          literals: [Cherry MX Red]
+          facts:
+            - {text: 用的是 Cherry MX Red 轴（红轴）, quote: "Cherry MX Red"}
+        trace: *no_db
+
+- id: kb-airpods-water
+  business: 知识问答
+  situation: 一个片段里有答案
+  set: gate
+  note: 探查 B20
+  turns:
+    - user: AirPods Pro 防水吗
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: products/TECH-AUD-017.md}]
+        answer:
+          literals: [IPX4]
+          facts:
+            - {text: 防水等级是 IPX4，能防汗防溅水, quote: "IPX4 rated"}
+        trace: *no_db
+
+- id: kb-contact-phone
+  business: 知识问答
+  situation: 一个片段里有答案
+  set: gate
+  env: {customer: CUST-001}
+  note: 探查 E08。问联系方式，不是要转人工
+  turns:
+    - user: 客服电话是多少
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant:
+            - {doc: policies/support_faq.md, section: Contact Methods}
+            - {doc: policies/support_faq.md, section: "Still Have Questions?"}
+        answer: {literals: [1-800-555-TECH]}
+        trace: *no_db
+
+- id: kb-forgot-password
+  business: 知识问答
+  situation: 一个片段里有答案
+  set: gate
+  split: holdout
+  turns:
+    - user: 忘记密码怎么办
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/support_faq.md, section: Account Management}]
+        answer:
+          facts:
+            - {text: 在登录页点「忘记密码」并输入邮箱，会收到重置链接, quote: 'Click "Forgot Password" on the login page'}
+        trace: *no_db
+
+- id: kb-return-policy-overview
+  business: 知识问答
+  situation: 概括型，答案分在几个片段
+  set: gate
+  note: 探查 B01。最关键的 Return Windows 片段只排到第 6
+  turns:
+    - user: 退货政策是什么
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/return_policy.md, section: Return Windows}]
+        answer:
+          facts:
+            - {text: 未拆封的电子产品收货后 30 天内可退, quote: "30 days from delivery date"}
+            - {text: 已拆封的电子产品收货后 14 天内可退, quote: "14 days from delivery date"}
+        trace: *no_db
+
+- id: kb-refund-time
+  business: 知识问答
+  situation: 一个片段里有答案
+  set: gate
+  split: holdout
+  turns:
+    - user: 退款一般多久能到账
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/return_policy.md, section: Refund Method}]
+        answer:
+          facts:
+            - {text: 信用卡或借记卡退款需要 5 到 7 个工作日, quote: "Credit/debit cards: 5-7 business days"}
+        trace: *no_db
+
+- id: kb-warranty-two-questions
+  business: 知识问答
+  situation: 一句话问两件事
+  source: 失败回流
+  note: 探查 B03。文档写从送达日期起算，回答 5 次都写成了发货日期
+  turns:
+    - user: 保修多久，摔坏了保吗
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          mode: all
+          relevant:
+            - {doc: policies/warranty_guide.md, section: Standard Warranty Coverage}
+            - {doc: policies/warranty_guide.md, section: "What's NOT Covered"}
+        answer:
+          literals_exclude: [发货日期]
+          facts:
+            - {text: 标准保修期是 1 年, quote: "1-year limited manufacturer warranty"}
+            - {text: 保修期从送达（收货）日期开始算, quote: "Coverage begins on the delivery date"}
+            - {text: 摔坏属于意外损坏，标准保修不保, quote: "Accidental Damage"}
+        trace: *no_db
+
+- id: kb-warranty-start-date
+  business: 知识问答
+  situation: 一句话问两件事
+  source: 失败回流
+  split: holdout
+  turns:
+    - user: 保修是从哪天开始算的
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/warranty_guide.md, section: Standard Warranty Coverage}]
+        answer:
+          literals_exclude: [发货日期]
+          facts:
+            - {text: 保修期从送达（收货）日期开始算, quote: "Coverage begins on the delivery date"}
+        trace: *no_db
+
+- id: kb-not-covered-drop
+  business: 知识问答
+  situation: 一个片段里有答案
+  set: gate
+  split: holdout
+  turns:
+    - user: 东西摔坏了能保修吗
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/warranty_guide.md, section: "What's NOT Covered"}]
+        answer:
+          facts:
+            - {text: 摔坏属于意外损坏，标准保修不保, quote: "Accidental Damage"}
+        trace: *no_db
+
+- id: kb-restocking-fee-apply
+  business: 知识问答
+  situation: 把用户的情况套到条款上
+  set: gate
+  note: 探查 B12
+  turns:
+    - user: 一千多的笔记本拆开用了几天想退，要收手续费吗
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/return_policy.md, section: Restocking Fees}]
+        answer:
+          literals: ["15%"]
+          facts:
+            - {text: 超过 500 美元的已拆封电子产品因个人原因退货要收 15% 的手续费, quote: "Opened electronics over $500 being returned due to buyer's remorse"}
+        trace: *no_db
+
+- id: kb-thunderbolt-laptops
+  business: 知识问答
+  situation: 跨多篇文档汇总
+  source: 失败回流
+  note: 探查 B16。中文「雷电」检索不到英文 Thunderbolt；没检索到之后回答靠推测
+  turns:
+    - user: 哪些笔记本有雷电接口
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          mode: all
+          relevant:
+            - {doc: products/TECH-LAP-001.md, section: Key Specifications}
+            - {doc: products/TECH-LAP-002.md, section: Key Specifications}
+            - {doc: products/TECH-LAP-003.md, section: Key Specifications}
+            - {doc: products/TECH-LAP-004.md, section: Key Specifications}
+        answer:
+          facts:
+            - {text: MacBook Air M2 有雷电接口, quote: "2x Thunderbolt/USB 4 ports"}
+            - {text: MacBook Pro M3 有雷电接口, quote: "3x Thunderbolt 4/USB 4 ports"}
+            - {text: Dell XPS 13 有雷电接口, quote: "2x Thunderbolt 4 (USB-C)"}
+            - {text: Lenovo ThinkPad X1 Carbon 有雷电接口, quote: "2x Thunderbolt 4 (USB-C)"}
+          must_not: [说 HP Pavilion 15 有雷电接口]
+        trace: *no_db
+
+- id: kb-macbook-pro-thunderbolt-count
+  business: 知识问答
+  situation: 一个片段里有答案
+  source: 失败回流
+  split: holdout
+  note: 同样是「雷电」这个词检索不到
+  turns:
+    - user: MacBook Pro 有几个雷电口
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: products/TECH-LAP-002.md, section: Key Specifications}]
+        answer:
+          facts:
+            - {text: MacBook Pro M3 有 3 个雷电接口, quote: "3x Thunderbolt 4/USB 4 ports"}
+        trace: *no_db
+
+- id: kb-student-laptop
+  business: 知识问答
+  situation: 跨多篇文档汇总
+  set: gate
+  note: 探查 F08。推荐类，没有唯一答案，只看检索和有没有依据
+  turns:
+    - user: 给学生推荐一台笔记本
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant:
+            - {doc: products/TECH-LAP-005.md}
+            - {doc: policies/compatibility_guide.md, section: Common Product Combinations}
+        trace: *no_db
+
+- id: kb-extended-warranty-price
+  business: 知识问答
+  situation: 文档只有一部分答案
+  note: 探查 B23。文档讲了怎么买，没有价格
+  turns:
+    - user: 延保怎么买，多少钱
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/warranty_guide.md, section: Extended Warranty Options}]
+        answer:
+          facts:
+            - {text: 延保可以在结账时购买, quote: "Available at checkout"}
+            - 说明了资料里没有延保的具体价格
+          must_not: [给出一个具体的延保价格数字]
+        trace: *no_db
+
+- id: kb-international-shipping
+  business: 知识问答
+  situation: 答案是「不」
+  set: gate
+  note: 探查 B22
+  turns:
+    - user: 你们发国际件吗，能寄到加拿大吗
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/shipping_guide.md, section: Shipping Restrictions}]
+        answer:
+          facts:
+            - {text: 不提供国际配送，寄不到加拿大, quote: "International shipping"}
+        trace: *no_db
+
+- id: kb-cod
+  business: 知识问答
+  situation: 答案是「不」
+  set: gate
+  note: 探查 B10。文档只列了接受的支付方式，没有直接写不支持货到付款
+  turns:
+    - user: 支持货到付款吗
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/support_faq.md, section: Payment & Pricing}]
+        answer:
+          facts:
+            - {text: 列出了接受的支付方式（信用卡、PayPal、Apple Pay 等）, quote: "We accept Visa, Mastercard, American Express, Discover, PayPal, and Apple Pay"}
+          must_not: [说支持货到付款]
+        trace: *no_db
+
+- id: kb-warranty-claim-howto
+  business: 知识问答
+  situation: 流程型
+  set: gate
+  note: 探查 B11
+  turns:
+    - user: 保修期内屏幕坏了怎么申请保修
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/warranty_guide.md, section: Filing a Warranty Claim}]
+        answer:
+          facts:
+            - {text: 保修由制造商处理，要联系产品的制造商, quote: "Warranty claims are handled directly by the product manufacturer"}
+        trace: *no_db
+
+- id: kb-change-address
+  business: 知识问答
+  situation: 流程型
+  set: gate
+  note: 探查 B19。3 次都被送进了 Supervisor，多一次模型调用
+  turns:
+    - user: 下单后怎么改收货地址
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant:
+            - {doc: policies/support_faq.md, section: Modifying or Canceling Orders}
+            - {doc: policies/shipping_guide.md, section: Delivery Issues}
+        answer:
+          facts:
+            - {text: 订单没发货时联系客服可以改地址, quote: "If your order hasn't shipped, contact us right away and we'll update the address"}
+            - {text: 发货后要通过承运商改，可能有额外费用, quote: "address changes must go through the carrier"}
+          must_not: [声称已经修改了收货地址]
+        trace: {max_sql: 0, forbid_steps: ["cancel/*", handoff]}
+
+- id: kb-english-question
+  business: 知识问答
+  situation: 用英文问
+  set: gate
+  note: 探查 B21
+  turns:
+    - user: What is the return window for opened electronics?
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/return_policy.md, section: Return Windows}]
+        answer:
+          facts:
+            - {text: 已拆封的电子产品在收货后 14 天内可以退, quote: "14 days from delivery date"}
+        trace: *no_db
+
+- id: kb-not-in-kb-ceo
+  business: 知识问答
+  situation: 知识库里没有
+  set: gate
+  note: 探查 B17
+  turns:
+    - user: TechHub 的 CEO 是谁
+      expect:
+        route: {prefer: direct, accept: [rag, supervisor]}
+        outcome: answered
+        answer:
+          must_not: [给出一个具体的人名作为 CEO]
+        trace: {max_sql: 0, forbid_steps: ["cancel/*", handoff]}
+
+- id: kb-policy-not-exist
+  business: 知识问答
+  situation: 知识库里没有
+  set: gate
+  note: 文档里没有以旧换新
+  turns:
+    - user: 你们有以旧换新吗
+      expect:
+        route: {prefer: rag, accept: [supervisor, direct]}
+        outcome: answered
+        answer:
+          must_not: [说有以旧换新服务，或给出以旧换新的具体规则]
+        trace: {max_sql: 0, forbid_steps: ["cancel/*", handoff]}
+
+- id: kb-cancel-policy-question
+  business: 知识问答
+  situation: 问取消的规定，不是要取消
+  set: gate
+  note: 探查 B18
+  turns:
+    - user: 订单取消有什么规定
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: policies/support_faq.md, section: Modifying or Canceling Orders}]
+        answer:
+          facts:
+            - {text: 没发货的订单可以取消并全额退款, quote: "If your order hasn't shipped yet, contact us immediately and we can cancel it for a full refund"}
+            - {text: 已经发货的要收货后走退货流程, quote: "Once an order ships, you'll need to receive it and follow our return process"}
+        trace: *no_db
+
+- id: kb-lg-mac-compat
+  business: 知识问答
+  situation: 一个片段里有答案
+  set: gate
+  note: 探查 B05
+  turns:
+    - user: LG 24 寸显示器能接 MacBook 吗
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant:
+            - {doc: products/TECH-MON-007.md, section: Compatibility}
+            - {doc: products/TECH-MON-007.md, section: Common Questions}
+        answer:
+          facts:
+            - {text: 可以接，但需要一个 USB-C 转 HDMI 的转接头, quote: "Requires USB-C to HDMI adapter"}
+        trace: *no_db
+
+- id: kb-benq-warranty
+  business: 知识问答
+  situation: 单品文档和通用政策不一致
+  set: gate
+  note: 通用政策是 1 年，这款的文档写的是 3 年，应以单品为准
+  turns:
+    - user: BenQ 27 寸显示器保修几年
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: products/TECH-MON-009.md, section: Common Questions}]
+        answer:
+          facts:
+            - {text: BenQ 这款显示器是 3 年有限保修, quote: "3-year limited warranty"}
+        trace: *no_db
+
+- id: kb-troubleshoot-mic
+  business: 知识问答
+  situation: 流程型
+  set: gate
+  split: holdout
+  note: 只看检索和有没有依据
+  turns:
+    - user: Blue Yeti 麦克风没声音怎么办
+      expect:
+        route: *rag
+        outcome: answered
+        retrieval:
+          relevant: [{doc: products/TECH-AUD-018.md, section: Troubleshooting}]
+        trace: *no_db
+
+- id: kb-recommend-speaker-stock
+  business: 知识问答
+  situation: 规格加库存，其实是跨领域
+  source: 失败回流
+  note: 探查 B24。进了 sql，查询计划说答不了，转人工。在售的蓝牙音箱只有 JBL Flip 6（$129，有货）
+  turns:
+    - user: 便宜点的蓝牙音箱有什么推荐，有货吗
+      expect:
+        route: {prefer: supervisor, accept: [sql, rag]}
+        outcome: [answered, partial]
+        answer: {literals: [JBL Flip 6]}
+        trace: {forbid_steps: ["cancel/*", handoff]}

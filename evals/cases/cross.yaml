@@ -1,0 +1,381 @@
+# 跨领域：同时要查库和查文档。首选路由是 supervisor；误送到单个 Agent 会漏答，默认不接受。
+
+- id: x-order-and-policy
+  business: 跨领域
+  situation: 两件互不相关的事，并行
+  set: gate
+  env: &c1 {customer: CUST-001}
+  note: 探查 C01
+  turns:
+    - user: 我最近一个订单到哪了？另外退货政策是什么？
+      expect:
+        route: &sup {prefer: supervisor}
+        outcome: answered
+        plan: {agents: [sql, rag], max_tasks: 2}
+        sql: {rows_contain: [Shipped]}
+        retrieval:
+          relevant:
+            - {doc: policies/return_policy.md, section: Return Windows}
+            - {doc: policies/support_faq.md, section: Returns & Refunds}
+        answer:
+          facts:
+            - 最近一个订单已经发货
+            - {text: 已拆封的电子产品收货后 14 天内可退, quote: "14 days from delivery date"}
+        trace: &two {max_sql: 1, max_model_steps: 5, forbid_steps: ["cancel/*", handoff]}
+
+- id: x-spec-and-price
+  business: 跨领域
+  situation: 两件互不相关的事，并行
+  set: gate
+  note: 探查 B08。不需要登录
+  turns:
+    - user: Dell 4K 显示器的刷新率是多少，现在卖多少钱
+      expect:
+        route: *sup
+        outcome: answered
+        plan: {agents: [sql, rag], max_tasks: 2}
+        sql:
+          rows_contain: [549]
+          reference_sql: SELECT price FROM products WHERE name LIKE '%Dell%4K%'
+        retrieval:
+          relevant: [{doc: products/TECH-MON-006.md, section: Key Specifications}]
+        answer:
+          literals: ["549", 60Hz]
+        trace: *two
+
+- id: x-login-partial
+  business: 跨领域
+  situation: 其中一件要登录
+  set: gate
+  note: 探查 C07。没登录：政策照答，订单部分提示登录
+  turns:
+    - user: 我最近的订单到哪了？退货政策是什么？
+      expect:
+        route: *sup
+        outcome: partial
+        plan: {agents: [sql, rag], max_tasks: 2}
+        sql: {result: login_required}
+        retrieval:
+          relevant: [{doc: policies/return_policy.md}]
+        answer:
+          facts:
+            - 查订单需要先登录
+            - {text: 已拆封的电子产品收货后 14 天内可退, quote: "14 days from delivery date"}
+          must_not: [给出任何订单的状态、订单号或物流信息]
+        trace: {max_sql: 0, forbid_steps: ["cancel/*", handoff]}
+
+- id: x-notfound-plus-policy
+  business: 跨领域
+  situation: 其中一件查不到
+  set: gate
+  env: *c1
+  note: 探查 C08
+  turns:
+    - user: 我的订单 ORD-2025-9999 能退货吗
+      expect:
+        route: *sup
+        outcome: answered
+        sql: {row_count: 0}
+        answer:
+          facts: [没有查到订单 ORD-2025-9999]
+          must_not: [说这个订单可以退或者不可以退]
+        trace: *two
+
+- id: x-dep-monitor-mac
+  business: 跨领域
+  situation: 先查库，再拿结果查文档
+  env: *c1
+  note: 探查 C03
+  turns:
+    - user: 我最近买的显示器能接 MacBook 吗
+      expect:
+        route: *sup
+        outcome: answered
+        plan: {agents: [sql, rag], depends: [[rag, sql]], max_tasks: 2}
+        sql:
+          rows_contain: [LG 24]
+          reference_sql: SELECT p.name FROM orders o JOIN order_items oi ON oi.order_id = o.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.customer_id = 'CUST-001' AND p.category = 'Monitors' ORDER BY o.order_date DESC LIMIT 1
+        retrieval:
+          relevant:
+            - {doc: products/TECH-MON-007.md, section: Compatibility}
+            - {doc: products/TECH-MON-007.md, section: Common Questions}
+        answer:
+          literals: [LG 24]
+          facts:
+            - {text: 接 MacBook 需要一个 USB-C 转 HDMI 的转接头, quote: "Requires USB-C to HDMI adapter"}
+        trace: *two
+
+- id: x-dep-monitor-mac-2
+  business: 跨领域
+  situation: 先查库，再拿结果查文档
+  split: holdout
+  env: *c1
+  turns:
+    - user: 我上次买的那台显示器刷新率是多少
+      expect:
+        route: *sup
+        outcome: answered
+        plan: {agents: [sql, rag], depends: [[rag, sql]], max_tasks: 2}
+        sql: {rows_contain: [LG 24]}
+        retrieval:
+          relevant: [{doc: products/TECH-MON-007.md, section: Key Specifications}]
+        answer:
+          literals: [75Hz]
+        trace: *two
+
+- id: x-dep-warranty-and-refund
+  business: 跨领域
+  situation: 先查库，再拿结果查文档
+  set: gate
+  source: 失败回流
+  env: *c1
+  note: 探查 C02。4 次里 2 次查库任务被整句问题带偏，说库里没有保修期
+  turns:
+    - user: 我最近买的那个显示器保修多久？另外退款多久到账？
+      expect:
+        route: *sup
+        outcome: answered
+        plan: {agents: [sql, rag, rag], depends: [[rag, sql]], max_tasks: 3}
+        sql: {rows_contain: [LG 24]}
+        retrieval:
+          mode: all
+          relevant:
+            - {doc: products/TECH-MON-007.md}
+            - {doc: policies/return_policy.md, section: Refund Method}
+        answer:
+          facts:
+            - {text: 这台 LG 显示器保修 1 年, quote: "LG's standard 1-year limited warranty"}
+            - {text: 信用卡或借记卡退款需要 5 到 7 个工作日, quote: "Credit/debit cards: 5-7 business days"}
+        trace: {max_sql: 1, max_model_steps: 5, forbid_steps: ["cancel/*", handoff]}
+
+- id: x-dep-two-keyboards-bt
+  business: 跨领域
+  situation: 先查库，再拿结果查文档
+  source: 失败回流
+  env: *c1
+  note: 探查 C09。一个检索词里有两个商品，只检索到了一个
+  turns:
+    - user: 我买过哪些键盘，它们支持蓝牙吗
+      expect:
+        route: *sup
+        outcome: answered
+        plan: {agents: [sql, rag], depends: [[rag, sql]]}
+        sql:
+          rows_contain: [Apple Magic Keyboard, Wireless Mouse & Keyboard Combo]
+        retrieval:
+          mode: all
+          relevant:
+            - {doc: products/TECH-KEY-010.md}
+            - {doc: products/TECH-KEY-015.md}
+        answer:
+          facts:
+            - {text: Apple Magic Keyboard 支持蓝牙, quote: "Bluetooth wireless"}
+            - {text: 无线键鼠套装不支持蓝牙，用的是 2.4GHz 的 USB 接收器, quote: "No Bluetooth"}
+        trace: {max_model_steps: 5, forbid_steps: ["cancel/*", handoff]}
+
+- id: x-dep-benq-warranty
+  business: 跨领域
+  situation: 先查库，再拿结果查文档
+  set: gate
+  env: &c2 {customer: CUST-002}
+  note: 探查 C13。2024-06-05 买的，3 年保修，今天是 2025-10-20，还在保
+  turns:
+    - user: 我买的 BenQ 显示器坏了，还能保修吗，怎么申请
+      expect:
+        route: *sup
+        outcome: answered
+        plan: {agents: [sql, rag]}
+        sql: {rows_contain: [BenQ]}
+        retrieval:
+          relevant: [{doc: products/TECH-MON-009.md}]
+        answer:
+          facts:
+            - {text: BenQ 这款显示器是 3 年有限保修, quote: "3-year limited warranty"}
+            - 还在保修期内
+        trace: {max_model_steps: 5, forbid_steps: ["cancel/*", handoff]}
+
+- id: x-attr-and-price-own
+  business: 跨领域
+  situation: 属性加价格
+  source: 失败回流
+  env: *c2
+  note: 探查 C10。答案对，但计划里多了一个重复查价的任务（5 次模型调用、2 次 SQL）
+  turns:
+    - user: 我那台还没发货的 MacBook Pro 有几个雷电口，现在标价多少
+      expect:
+        route: *sup
+        outcome: answered
+        plan: {agents: [sql, rag], max_tasks: 2}
+        sql: {rows_contain: [MacBook Pro M3, 1999]}
+        retrieval:
+          relevant: [{doc: products/TECH-LAP-002.md, section: Key Specifications}]
+        answer:
+          literals: ["1999"]
+          facts:
+            - {text: 有 3 个雷电接口, quote: "3x Thunderbolt 4/USB 4 ports"}
+        trace: {max_sql: 1, max_model_steps: 4, forbid_steps: ["cancel/*", handoff]}
+
+- id: x-attr-and-price-own-2
+  business: 跨领域
+  situation: 属性加价格
+  set: gate
+  split: holdout
+  env: *c1
+  turns:
+    - user: 我买的那台 Dell XPS 13 现在卖多少钱，能外接几台 4K 显示器
+      expect:
+        route: *sup
+        outcome: answered
+        plan: {agents: [sql, rag], max_tasks: 2}
+        sql: {rows_contain: [1399]}
+        retrieval:
+          relevant: [{doc: products/TECH-LAP-003.md}]
+        answer:
+          literals: ["1399"]
+          facts:
+            - {text: 最多能外接两台 4K 显示器, quote: "Supports up to two 4K displays at 60Hz via Thunderbolt 4 ports"}
+        trace: {max_model_steps: 5, forbid_steps: ["cancel/*", handoff]}
+
+- id: x-needs-today-warranty
+  business: 跨领域
+  situation: 订单事实加政策，要算日期
+  source: 失败回流
+  env: *c1
+  note: 探查 C05。回答节点不知道今天是 2025-10-20，答成了「当前日期尚未提供」
+  turns:
+    - user: 我 2024 年 1 月买的那副 Sony 耳机还在保修期吗
+      expect:
+        route: *sup
+        outcome: answered
+        plan: {agents: [sql, rag]}
+        sql: {rows_contain: [Sony]}
+        answer:
+          facts:
+            - {text: 保修期是 1 年, quote: "1-year limited manufacturer warranty"}
+            - 已经过了保修期
+        trace: {max_model_steps: 5, forbid_steps: ["cancel/*", handoff]}
+
+- id: x-needs-today-return
+  business: 跨领域
+  situation: 订单事实加政策，要算日期
+  env: *c1
+  note: 探查 C04。这单已发货、还没送达，退货期限从送达日算
+  turns:
+    - user: ORD-2025-0048 这单现在还能退吗
+      expect:
+        route: *sup
+        outcome: answered
+        plan: {agents: [sql, rag]}
+        sql: {rows_contain: [Shipped]}
+        retrieval:
+          relevant: [{doc: policies/return_policy.md}]
+        answer:
+          facts:
+            - 这单已经发货，还没有送达
+            - {text: 退货期限从送达（收货）那天开始算, quote: "from delivery date"}
+          must_not: [说这单已经超过了退货期限]
+        trace: {max_model_steps: 5, forbid_steps: ["cancel/*", handoff]}
+
+- id: x-forbidden-direction
+  business: 跨领域
+  situation: 用户的说法是先文档后库
+  source: 失败回流
+  env: *c2
+  note: 探查 C06。计划校验禁止 sql 依赖 rag，正确的拆法是先列买过的笔记本、再查文档。买过的三款都有雷电接口
+  turns:
+    - user: 有雷电接口的笔记本我买过吗
+      expect:
+        route: *sup
+        outcome: answered
+        plan: {agents: [sql, rag], depends: [[rag, sql]]}
+        sql:
+          rows_contain: [MacBook Air M2, MacBook Pro M3, Dell XPS 13]
+          rows_exclude: [HP Pavilion, ThinkPad]
+          reference_sql: SELECT DISTINCT p.name FROM orders o JOIN order_items oi ON oi.order_id = o.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.customer_id = 'CUST-002' AND p.category = 'Laptops'
+        answer:
+          facts: [买过带雷电接口的笔记本]
+          literals_exclude: [HP Pavilion, ThinkPad]
+        trace: {max_model_steps: 5, forbid_steps: ["cancel/*", handoff]}
+
+- id: x-when-ship
+  business: 跨领域
+  situation: 本该跨领域，被分到单领域
+  env: {customer: CUST-019}
+  note: 探查 C11。只答出状态也接受；最好带上处理时效
+  turns:
+    - user: 我的 ORD-2025-0076 什么时候能发货
+      expect:
+        route: {prefer: supervisor, accept: [sql]}
+        outcome: answered
+        sql: {rows_contain: [Processing]}
+        answer:
+          facts: [订单还在处理中，没有发货]
+          must_not: [给出一个确切的发货日期]
+        trace: {max_model_steps: 5, forbid_steps: ["cancel/*", handoff]}
+
+- id: x-delivered-not-received
+  business: 跨领域
+  situation: 有政策可答的异常
+  set: gate
+  env: *c1
+  note: 探查 E04。文档里有处理步骤，应该答步骤，不该直接转人工
+  turns:
+    - user: 我的包裹显示签收了但我没收到
+      expect:
+        route: {prefer: supervisor, accept: [rag]}
+        outcome: [answered, partial]
+        retrieval:
+          relevant: [{doc: policies/shipping_guide.md, section: Delivery Issues}]
+        answer:
+          facts:
+            - {text: 联系承运商确认投递位置, quote: "Contact the carrier for GPS delivery location"}
+            - {text: 48 小时内没解决就联系客服, quote: "Contact us if not resolved within 48 hours"}
+        trace: {forbid_steps: ["cancel/*", handoff]}
+
+- id: x-three-things
+  business: 跨领域
+  situation: 三件事的计划
+  set: gate
+  env: *c1
+  turns:
+    - user: 我最近一单到哪了，保修多久，标准配送要几天
+      expect:
+        route: *sup
+        outcome: answered
+        plan: {agents: [sql, rag], max_tasks: 3}
+        sql: {rows_contain: [Shipped]}
+        answer:
+          facts:
+            - 最近一单已经发货
+            - {text: 标准保修期是 1 年, quote: "1-year limited manufacturer warranty"}
+            - {text: 标准配送需要 5 到 7 个工作日, quote: "Standard Shipping (5-7 Business Days)"}
+        trace: {max_sql: 1, max_model_steps: 5, forbid_steps: ["cancel/*", handoff]}
+
+- id: x-many-items
+  business: 跨领域
+  situation: 超过任务上限的请求
+  note: 计划最多 5 个任务。要求的东西很多时，计划应当合并任务，而不是超出上限后被校验打回
+  turns:
+    - user: 分别告诉我 MacBook Air、MacBook Pro、Dell XPS、ThinkPad、HP Pavilion 和 LG 显示器现在的价格，还有它们各自保修多久
+      expect:
+        route: *sup
+        outcome: [answered, partial]
+        plan: {agents: [sql, rag], max_tasks: 5}
+        sql: {rows_contain: [1199, 1999, 1399, 1699, 899, 199]}
+        trace: {forbid_steps: ["cancel/*", handoff]}
+
+- id: x-primary-model-down
+  business: 跨领域
+  situation: 主模型不可用时的跨领域请求
+  set: gate
+  env: {customer: CUST-001, fault: primary_down}
+  note: 每个模型步骤都要重试两次再切备用模型，结果应当和正常时一样
+  turns:
+    - user: 我最近一个订单到哪了？另外退货政策是什么？
+      expect:
+        route: *sup
+        outcome: answered
+        sql: {rows_contain: [Shipped]}
+        answer:
+          facts: [最近一个订单已经发货]
+        trace: {max_sql: 1, forbid_steps: ["cancel/*", handoff]}

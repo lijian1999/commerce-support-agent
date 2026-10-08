@@ -1,0 +1,5 @@
+[
+ {"id":"D10","customer":"CUST-002","confirm":true,"turns":["帮我取消订单 ORD-2025-0031","ORD-2025-0031 现在什么状态","再取消一次 ORD-2025-0031"]},
+ {"id":"H01","customer":"CUST-001","fault":"primary_down","turns":["我一共下过几单"]},
+ {"id":"H02","customer":"CUST-001","fault":"all_down","turns":["我一共下过几单"]}
+]

@@ -1,0 +1,16 @@
+[
+ {"id":"C01","customer":"CUST-001","turns":["我最近一个订单到哪了？另外退货政策是什么？"]},
+ {"id":"C02","customer":"CUST-001","turns":["我最近买的那个显示器保修多久？另外退款多久到账？"]},
+ {"id":"C03","customer":"CUST-001","turns":["我最近买的显示器能接 MacBook 吗"]},
+ {"id":"C04","customer":"CUST-001","turns":["ORD-2025-0048 这单现在还能退吗"]},
+ {"id":"C05","customer":"CUST-001","turns":["我 2024 年 1 月买的那副 Sony 耳机还在保修期吗"]},
+ {"id":"C06","customer":"CUST-002","turns":["有雷电接口的笔记本我买过吗"]},
+ {"id":"C07","customer":null,"turns":["我最近的订单到哪了？退货政策是什么？"]},
+ {"id":"C08","customer":"CUST-001","turns":["我的订单 ORD-2025-9999 能退货吗"]},
+ {"id":"C09","customer":"CUST-001","turns":["我买过哪些键盘，它们支持蓝牙吗"]},
+ {"id":"C10","customer":"CUST-002","turns":["我那台还没发货的 MacBook Pro 有几个雷电口，现在标价多少"]},
+ {"id":"C11","customer":"CUST-019","turns":["我的 ORD-2025-0076 什么时候能发货"]},
+ {"id":"C12","customer":"CUST-001","turns":["我的 ORD-2025-0048 运费是多少"]},
+ {"id":"C13","customer":"CUST-002","turns":["我买的 BenQ 显示器坏了，还能保修吗，怎么申请"]},
+ {"id":"C14","customer":"CUST-001","turns":["我买过的东西里现在哪些缺货了"]}
+]

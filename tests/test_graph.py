@@ -526,3 +526,22 @@ def test_cli_passes_index_version(monkeypatch):
     monkeypatch.setattr(cli, "make_context", fake_make_context)
     assert cli.main(["--index-version", "v9", "你好"]) == 0
     assert seen["index_version"] == "v9"
+
+
+def test_make_context_passes_index_dir(monkeypatch):
+    """make_context 把 index_dir 交给 IndexStore，并原样放进 Context。"""
+    seen: dict = {}
+
+    class FakePointerStore:
+        def __init__(self, index_dir=None):
+            seen["index_dir"] = index_dir
+
+        def read_pointer(self):
+            return {"current": "v5"}
+
+    monkeypatch.setattr("app.runner.IndexStore", FakePointerStore)
+    ctx = make_context("CUST-001", index_dir="/tmp/x")
+    assert ctx.index_dir == "/tmp/x"
+    assert ctx.index_version == "v5"
+    assert seen["index_dir"] == Path("/tmp/x")
+    assert make_context("CUST-001").index_dir is None

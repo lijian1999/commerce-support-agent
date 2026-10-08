@@ -1,0 +1,229 @@
+# 取消订单。流程本身是确定性代码，由单元测试覆盖；这里评的是 Router 认不认得出，和整轮的结局。
+# CUST-002 有两张处理中的订单：ORD-2025-0031、ORD-2025-0038。每条都核对跑完后库里的订单状态。
+
+- id: cx-explicit-decline
+  business: 取消订单
+  situation: 明确要求，带订单号
+  set: gate
+  env: &c2 {customer: CUST-002}
+  note: 探查 D01。出预览后选「不取消」
+  turns:
+    - user: 帮我取消订单 ORD-2025-0031
+      expect:
+        route: &cancel {prefer: cancel}
+        outcome: "cancel:declined"
+        trace: &preview {max_model_steps: 1, require_steps: [cancel/confirm], forbid_steps: [cancel/execute, handoff]}
+        db_orders: &both {ORD-2025-0031: Processing, ORD-2025-0038: Processing}
+
+- id: cx-colloquial-lowercase
+  business: 取消订单
+  situation: 明确要求，带订单号
+  set: gate
+  env: *c2
+  note: 探查 D13。小写订单号，口语说法
+  turns:
+    - user: ord-2025-0031 不要了，退了吧
+      expect:
+        route: *cancel
+        outcome: "cancel:declined"
+        trace: *preview
+        db_orders: *both
+
+- id: cx-explicit-decline-2
+  business: 取消订单
+  situation: 明确要求，带订单号
+  set: gate
+  split: holdout
+  env: *c2
+  turns:
+    - user: 这单我不想要了 ORD-2025-0038
+      expect:
+        route: *cancel
+        outcome: "cancel:declined"
+        trace: *preview
+        db_orders: *both
+
+- id: cx-no-order-id
+  business: 取消订单
+  situation: 没给订单号
+  set: gate
+  env: *c2
+  note: 探查 D02。不猜，列出可取消的订单
+  turns:
+    - user: 我不想要昨天下的那单了
+      expect:
+        route: *cancel
+        outcome: "cancel:need_order_id"
+        answer: {literals: [ORD-2025-0031, ORD-2025-0038]}
+        trace: &no_exec {max_model_steps: 1, forbid_steps: [cancel/confirm, cancel/execute, handoff]}
+        db_orders: *both
+
+- id: cx-no-order-id-2
+  business: 取消订单
+  situation: 没给订单号
+  set: gate
+  split: holdout
+  env: *c2
+  turns:
+    - user: 取消订单
+      expect:
+        route: *cancel
+        outcome: "cancel:need_order_id"
+        answer: {literals: [ORD-2025-0031, ORD-2025-0038]}
+        trace: *no_exec
+        db_orders: *both
+
+- id: cx-with-other-question
+  business: 取消订单
+  situation: 取消加别的问题
+  set: gate
+  env: *c2
+  note: 探查 D06。写操作独占一轮
+  turns:
+    - user: 取消 ORD-2025-0031，另外退款多久到账
+      expect:
+        route: *cancel
+        outcome: "cancel:declined"
+        answer: {literals: [其他问题请再问一次]}
+        trace: *preview
+        db_orders: *both
+
+- id: cx-two-ids
+  business: 取消订单
+  situation: 一句话两个订单号
+  set: gate
+  env: *c2
+  note: 探查 D09
+  turns:
+    - user: 把 ORD-2025-0031 和 ORD-2025-0038 都取消
+      expect:
+        route: *cancel
+        outcome: "cancel:need_order_id"
+        answer: {literals: [一次只能取消一个订单]}
+        trace: *no_exec
+        db_orders: *both
+
+- id: cx-shipped
+  business: 取消订单
+  situation: 不能取消的四种情况
+  set: gate
+  env: {customer: CUST-001}
+  note: 探查 D03。已发货
+  turns:
+    - user: 取消 ORD-2025-0048
+      expect:
+        route: *cancel
+        outcome: "cancel:not_cancellable"
+        answer: {literals: [不能取消]}
+        trace: *no_exec
+        db_orders: {ORD-2025-0048: Shipped}
+
+- id: cx-delivered
+  business: 取消订单
+  situation: 不能取消的四种情况
+  set: gate
+  env: *c2
+  note: 已送达
+  turns:
+    - user: 取消 ORD-2025-0009
+      expect:
+        route: *cancel
+        outcome: "cancel:not_cancellable"
+        trace: *no_exec
+        db_orders: {ORD-2025-0009: Delivered}
+
+- id: cx-anonymous
+  business: 取消订单
+  situation: 不能取消的四种情况
+  set: gate
+  note: 探查 D05。没登录
+  turns:
+    - user: 取消订单 ORD-2025-0031
+      expect:
+        route: *cancel
+        outcome: "cancel:login_required"
+        trace: *no_exec
+        db_orders: {ORD-2025-0031: Processing}
+
+- id: cx-already-cancelled
+  business: 取消订单
+  situation: 不能取消的四种情况
+  set: gate
+  env: {customer: CUST-019}
+  note: 探查 D08
+  turns:
+    - user: 取消 ORD-2025-0028
+      expect:
+        route: *cancel
+        outcome: "cancel:already_cancelled"
+        trace: *no_exec
+        db_orders: {ORD-2025-0028: Cancelled}
+
+- id: cx-confirm-then-check
+  business: 取消订单
+  situation: 真的取消
+  set: gate
+  env: *c2
+  restore: [ORD-2025-0031]
+  note: 探查 D10。确认 → 查状态 → 再取消一次
+  turns:
+    - user: 帮我取消订单 ORD-2025-0031
+      confirm: true
+      expect:
+        route: *cancel
+        outcome: "cancel:cancelled"
+        answer: {literals: [ORD-2025-0031 已取消]}
+        trace: {max_model_steps: 1, require_steps: [cancel/confirm, cancel/execute]}
+        db_orders: {ORD-2025-0031: Cancelled, ORD-2025-0038: Processing}
+    - user: ORD-2025-0031 现在什么状态
+      expect:
+        route: {prefer: sql, accept: [supervisor]}
+        outcome: answered
+        sql: {rows_contain: [Cancelled]}
+        answer:
+          facts: [订单已经取消]
+    - user: 再取消一次 ORD-2025-0031
+      expect:
+        route: *cancel
+        outcome: "cancel:already_cancelled"
+        trace: *no_exec
+        db_orders: {ORD-2025-0031: Cancelled, ORD-2025-0038: Processing}
+
+- id: cx-ask-if-can-cancel
+  business: 取消订单
+  situation: 问能不能取消
+  set: gate
+  env: *c2
+  note: 探查 D07。问的是规定，不是要取消。进了取消流程也只会停在列表上，所以也接受
+  turns:
+    - user: 订单下错了还能取消吗
+      expect:
+        route: {prefer: rag, accept: [supervisor, cancel]}
+        trace: {forbid_steps: [cancel/confirm, cancel/execute, handoff]}
+        db_orders: *both
+
+- id: cx-how-to-cancel
+  business: 取消订单
+  situation: 问怎么取消
+  set: gate
+  env: *c2
+  note: 探查 D14。产品取舍 ③：进取消流程列出可取消的订单，或者答政策，都接受
+  turns:
+    - user: 怎么取消订单
+      expect:
+        route: {prefer: cancel, accept: [rag, supervisor]}
+        trace: {forbid_steps: [cancel/confirm, cancel/execute, handoff]}
+        db_orders: *both
+
+- id: cx-negation
+  business: 取消订单
+  situation: 否定
+  set: gate
+  env: *c2
+  note: 探查 D12。用户说的是不要取消
+  turns:
+    - user: 先别取消 ORD-2025-0031，我还要的
+      expect:
+        route: {prefer: direct, accept: [sql, rag, supervisor]}
+        trace: {forbid_steps: ["cancel/*"]}
+        db_orders: *both

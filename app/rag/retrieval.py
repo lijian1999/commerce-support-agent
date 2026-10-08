@@ -4,6 +4,7 @@
 里面没有模型，只有一个确定性节点，状态只装检索词、索引版本和片段，
 拿不到客户 ID，也看不到对话，对知识库只读。
 """
+from pathlib import Path
 from typing import TypedDict
 
 from langgraph.graph import END, START, StateGraph
@@ -23,6 +24,7 @@ SQL_ROWS_IN_QUERY = 5           # 每个上游 SQL 结果最多带几行进检�
 class RetrievalState(TypedDict, total=False):
     query: str                  # 检索词
     index_version: str          # 用哪个版本的索引
+    index_dir: str | None       # 用哪个目录的索引，None 表示默认目录
     chunks: list[dict]          # 检索到的片段
     error: str | None           # 检索过程中的错误，正常时是 None
 
@@ -34,7 +36,7 @@ def retrieve(state: RetrievalState) -> dict:
     全程确定性代码，任何异常都变成 error 字段返回，不往外抛。
     """
     try:
-        store = IndexStore()
+        store = IndexStore(Path(state["index_dir"])) if state.get("index_dir") else IndexStore()
         store.check_runtime(state["index_version"], runtime_config())
         embedding = embed_query(state["query"])
         chunks = store.query(state["index_version"], embedding, config.RAG_TOP_K)
@@ -88,8 +90,12 @@ def rag_agent_node(payload: TaskPayload, runtime: Runtime[AppContext]) -> dict:
         return {"task_results": {tid: result}, "steps": [step]}
 
     query = build_query(task["goal"], payload["upstream"])
-    # 只传检索词和索引版本，不传 context：子图看不到客户 ID 和对话。
-    out = _RETRIEVAL_GRAPH.invoke({"query": query, "index_version": version})
+    # 只传检索词、索引版本和索引目录，不传 context：子图看不到客户 ID 和对话。
+    out = _RETRIEVAL_GRAPH.invoke({
+        "query": query,
+        "index_version": version,
+        "index_dir": runtime.context.index_dir,
+    })
 
     error = out.get("error")
     if error:

@@ -1,0 +1,143 @@
+# 多轮：同一个会话里的指代、省略、取消流程跨轮。每一轮各有各的期望。
+
+- id: mt-previous-order
+  business: 多轮
+  situation: 指代上一轮的订单
+  source: 失败回流
+  env: &c1 {customer: CUST-001}
+  note: 探查 G01。第三句的订单号就在上一轮的回复里，查询计划没用它，说答不了
+  turns:
+    - user: 我最近一个订单到哪了
+      expect:
+        route: &sql {prefer: sql, accept: [supervisor]}
+        outcome: answered
+        sql: {rows_contain: [Shipped]}
+    - user: 那上一个呢
+      expect:
+        route: *sql
+        outcome: answered
+        sql: {rows_contain: [ORD-2024-0089]}
+        answer: {literals: [ORD-2024-0089]}
+    - user: 里面都买了什么
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [Blue Yeti, JBL Flip 6, MacBook Air M2]
+          rows_exclude: [LG 24, ThinkPad]
+        answer:
+          literals: [Blue Yeti, JBL Flip 6]
+          literals_exclude: [LG 24, ThinkPad]
+
+- id: mt-price-then-warranty
+  business: 多轮
+  situation: 上一轮查库，这一轮问文档
+  source: 失败回流
+  env: *c1
+  note: 探查 G02。第二轮直接拿「它保修多久」当检索词，没检索到 LG 这款的文档
+  turns:
+    - user: LG 24 寸显示器多少钱
+      expect:
+        route: *sql
+        outcome: answered
+        sql: {rows_contain: [199]}
+        answer: {literals: ["199"]}
+    - user: 它保修多久
+      expect:
+        route: {prefer: rag, accept: [supervisor]}
+        outcome: answered
+        retrieval:
+          relevant: [{doc: products/TECH-MON-007.md}]
+        answer:
+          literals_exclude: [发货日期]
+          facts:
+            - {text: 保修期是 1 年, quote: "LG's standard 1-year limited warranty"}
+
+- id: mt-policy-then-own-order
+  business: 多轮
+  situation: 上一轮问政策，这一轮套到自己的订单
+  source: 失败回流
+  env: *c1
+  note: 探查 G04。带着上一轮的历史时，计划去要「收货日期」「是否不可退」两个库里没有的字段，转了人工
+  turns:
+    - user: 退货政策是什么
+      expect:
+        route: {prefer: rag, accept: [supervisor]}
+        outcome: answered
+    - user: 那我 ORD-2025-0048 这单能退吗
+      expect:
+        route: {prefer: supervisor, accept: [sql]}
+        outcome: [answered, partial]
+        sql: {rows_contain: [Shipped]}
+        answer:
+          facts: [这单已经发货，还没有送达]
+          must_not: [说这单已经超过了退货期限]
+        trace: {forbid_steps: ["cancel/*", handoff]}
+
+- id: mt-unshipped-then-cancel
+  business: 多轮
+  situation: 取消流程跨轮
+  set: gate
+  env: &c2 {customer: CUST-002}
+  note: 探查 G03。第二句没有订单号，不猜；第三句只回一个订单号，要接上取消流程
+  turns:
+    - user: 我有哪些订单还没发货
+      expect:
+        route: *sql
+    - user: 把第一个取消掉
+      expect:
+        route: {prefer: cancel}
+        outcome: "cancel:need_order_id"
+        trace: {forbid_steps: [cancel/confirm, cancel/execute]}
+        db_orders: &both {ORD-2025-0031: Processing, ORD-2025-0038: Processing}
+    - user: ORD-2025-0031
+      expect:
+        route: {prefer: cancel}
+        outcome: "cancel:declined"
+        trace: {require_steps: [cancel/confirm], forbid_steps: [cancel/execute]}
+        db_orders: *both
+
+- id: mt-order-then-cancel-it
+  business: 多轮
+  situation: 取消流程跨轮
+  set: gate
+  env: *c2
+  note: 「把它取消」里没有订单号。订单号只从这一句里用正则提取，所以应当列出可取消的订单让用户指定
+  turns:
+    - user: ORD-2025-0038 现在什么状态
+      expect:
+        route: *sql
+        outcome: answered
+        sql: {rows_contain: [Processing]}
+    - user: 把它取消
+      expect:
+        route: {prefer: cancel}
+        outcome: "cancel:need_order_id"
+        trace: {forbid_steps: [cancel/confirm, cancel/execute]}
+        db_orders: *both
+
+- id: mt-bought-then-spec
+  business: 多轮
+  situation: 上一轮的结果带到下一轮
+  source: 失败回流
+  env: *c1
+  note: 探查 G06。买过的笔记本里最贵的是 ThinkPad X1 Carbon（$1699）
+  turns:
+    - user: 我买过哪些笔记本
+      expect:
+        route: *sql
+        outcome: answered
+        sql:
+          rows_contain: [MacBook Air M2, Dell XPS 13, ThinkPad X1 Carbon]
+          rows_exclude: [HP Pavilion, MacBook Pro]
+    - user: 最贵的那台有几个 USB 口
+      expect:
+        route: {prefer: supervisor, accept: [rag]}
+        outcome: [answered, partial]
+        retrieval:
+          relevant: [{doc: products/TECH-LAP-004.md}]
+        answer:
+          literals: [ThinkPad]
+          facts:
+            - {text: 有 2 个 USB-A 接口和 2 个雷电（USB-C）接口, quote: "2x Thunderbolt 4 (USB-C), 2x USB 3.2 Gen 1 Type-A"}
+        trace: {forbid_steps: ["cancel/*", handoff]}

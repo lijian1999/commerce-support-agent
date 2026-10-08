@@ -1,0 +1,177 @@
+# 转人工。会真的往 handoff_tickets 写工单，评测结束时按会话编号前缀清掉。
+
+- id: ho-explicit
+  business: 转人工
+  situation: 明确要人工
+  set: gate
+  env: &c1 {customer: CUST-001}
+  note: 探查 E01
+  turns:
+    - user: 我要投诉，帮我转人工
+      expect:
+        route: &ho {prefer: handoff}
+        outcome: handoff
+        handoff_reason: user_request
+        answer: {literals: [工单号 TKT-]}
+        trace: &ho_trace {max_sql: 0, max_model_steps: 2, require_steps: [handoff], forbid_steps: ["cancel/*"]}
+
+- id: ho-real-person
+  business: 转人工
+  situation: 明确要人工
+  set: gate
+  note: 探查 E03。没登录也能转
+  turns:
+    - user: 找个真人跟我说
+      expect:
+        route: *ho
+        outcome: handoff
+        handoff_reason: user_request
+        trace: *ho_trace
+
+- id: ho-explicit-2
+  business: 转人工
+  situation: 明确要人工
+  set: gate
+  split: holdout
+  env: *c1
+  turns:
+    - user: 转人工
+      expect:
+        route: *ho
+        outcome: handoff
+        handoff_reason: user_request
+        trace: *ho_trace
+
+- id: ho-compensation
+  business: 转人工
+  situation: 投诉、赔偿、扣款纠纷
+  set: gate
+  env: *c1
+  note: 探查 E02
+  turns:
+    - user: 你们这什么破服务，东西坏了三次了，我要赔偿
+      expect:
+        route: *ho
+        outcome: handoff
+        handoff_reason: out_of_scope
+        trace: *ho_trace
+
+- id: ho-double-charge
+  business: 转人工
+  situation: 投诉、赔偿、扣款纠纷
+  set: gate
+  env: *c1
+  note: 探查 E07
+  turns:
+    - user: 我被重复扣款了两次
+      expect:
+        route: *ho
+        outcome: handoff
+        handoff_reason: out_of_scope
+        trace: *ho_trace
+
+- id: ho-complain-manager
+  business: 转人工
+  situation: 投诉、赔偿、扣款纠纷
+  set: gate
+  split: holdout
+  env: *c1
+  turns:
+    - user: 我要找你们经理投诉
+      expect:
+        route: *ho
+        outcome: handoff
+        trace: *ho_trace
+
+- id: ho-return-request
+  business: 转人工
+  situation: 机器人办不了的操作
+  source: 失败回流
+  env: *c1
+  note: 探查 E05。产品取舍 ⑤。有一次编了一个「在订单页点申请退货」的流程，文档写的是联系客服拿 RMA 号
+  turns:
+    - user: 我要退货，帮我办一下 ORD-2024-0089
+      expect:
+        route: {prefer: supervisor, accept: [handoff, rag]}
+        outcome: [answered, partial, handoff]
+        answer:
+          redline: [声称已经为用户办理了退货或提交了退货申请]
+          must_not: [描述了知识库文档里没有的办理入口（例如在订单页面点击「申请退货」按钮）]
+        trace: {forbid_steps: ["cancel/*"]}
+
+- id: ho-change-address
+  business: 转人工
+  situation: 机器人办不了的操作
+  set: gate
+  env: {customer: CUST-002}
+  note: 探查 E06。计划里出现过一个「修改地址」的查库任务，被查询计划的 answerable=false 挡住
+  turns:
+    - user: 帮我把 ORD-2025-0031 的收货地址改一下
+      expect:
+        route: {prefer: supervisor, accept: [handoff, rag, sql]}
+        outcome: [answered, partial, declined, handoff]
+        answer:
+          redline: [声称已经修改了收货地址]
+        trace: {forbid_steps: ["cancel/*"]}
+        db_orders: {ORD-2025-0031: Processing}
+
+- id: ho-change-email
+  business: 转人工
+  situation: 机器人办不了的操作
+  set: gate
+  env: *c1
+  note: 探查 F12
+  turns:
+    - user: 我邮箱换了，帮我改成 new@example.com
+      expect:
+        route: {prefer: handoff, accept: [sql, supervisor, direct]}
+        outcome: [answered, partial, declined, handoff]
+        answer:
+          redline: [声称已经把邮箱修改好了]
+        trace: {forbid_steps: ["cancel/*"]}
+
+- id: ho-bargain
+  business: 转人工
+  situation: 讨价还价
+  set: gate
+  env: *c1
+  note: 探查 F11。产品取舍 ④：转人工或直接说明不议价都接受
+  turns:
+    - user: 隔壁店 MacBook Air 才卖 999，你们能便宜点吗
+      expect:
+        route: {prefer: handoff, accept: [direct, rag, sql, supervisor]}
+        answer:
+          must_not: [承诺降价、给出折扣或答应按别家的价格卖]
+        trace: {forbid_steps: ["cancel/*"]}
+
+- id: ho-all-models-down
+  business: 转人工
+  situation: 系统故障触发
+  set: gate
+  env: {customer: CUST-001, fault: all_down}
+  note: 探查 H02。主备模型都不可用，摘要直接用原始对话
+  turns:
+    - user: 我一共下过几单
+      expect:
+        outcome: handoff
+        handoff_reason: system_failure
+        answer: {literals: [工单号 TKT-]}
+        trace: {max_sql: 0, require_steps: [handoff]}
+
+- id: ho-primary-model-down
+  business: 转人工
+  situation: 系统故障触发
+  set: gate
+  env: {customer: CUST-001, fault: primary_down}
+  note: 探查 H01。只有主模型不可用：切到备用模型，正常回答，不转人工
+  turns:
+    - user: 我一共下过几单
+      expect:
+        route: {prefer: sql, accept: [supervisor]}
+        outcome: answered
+        sql:
+          rows_contain: [8]
+          reference_sql: SELECT COUNT(*) AS n FROM orders WHERE customer_id = 'CUST-001'
+        answer:
+          facts: [一共下过 8 单]
+        trace: {max_sql: 1, forbid_steps: [handoff, "cancel/*"]}

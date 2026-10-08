@@ -3,7 +3,7 @@
 你是执行者。任务说明由编排者（Claude）给出，完成后由编排者独立验收，所以：
 - 严格按任务说明做，不要做说明之外的功能，不要改说明没提到的文件。
 - 说明里写的接口、字段名、文件路径必须一字不差。
-- 说明有歧义时，按 `docs/contracts.md` 判断；还判断不了再看 `docs/design.md` 的对应小节。
+- 说明有歧义时，按 `docs/contracts.md` 判断（评测的任务按 `docs/eval-contracts.md`）；还判断不了再看 `docs/design.md` 的对应小节。
 - 完成前必须亲自运行说明里列出的检查命令，全部通过才算完成。不能跳过测试、不能为了通过而删改测试断言。
 - 最后一行只输出 `DONE` 或 `FAILED: <原因>`。
 
@@ -35,6 +35,11 @@
 | `docs/design.md` | 设计文档，**只读** |
 | `docs/contracts.md` | 模块之间的接口约定，**只读** |
 | `docs/tasks/` | 任务说明，**只读** |
+| `evals/` | 离线评测：Case、运行、检查、判分、报告 |
+| `evals/schema.py`、`evals/env.py` | 评测的数据结构和环境指纹。**只读**，由编排者维护 |
+| `evals/cases/`、`evals/calibration/`、`evals/poison_docs/`、`evals/exploration/` | 评测的 Case、判分校准集、诱导文档、早期探查材料，**只读** |
+| `docs/eval-contracts.md` | 评测各模块之间的接口约定，**只读** |
+| `tests/fixtures/`、`tests/conftest.py` | 测试用的样例数据和公共设置，**只读** |
 
 ## 技术约束
 
@@ -44,6 +49,7 @@
 - 模型只通过 `app.models.get_model` 调用。不给任何模型绑定工具（不使用 `bind_tools`）。
 - SQL 一律参数化（`%s` 占位符加参数列表），不用 f-string 或字符串拼接把值放进 SQL。
 - 单元测试不调用模型，不连 LangSmith。需要数据库的测试在说明里会写明。
+- 评测的代码放在 `evals/` 下，按包导入（`from evals.schema import Case`）。评测的会话编号一律以 `evals.schema.SESSION_PREFIX` 开头。
 
 ## 绝对不能做的事
 

@@ -6,3 +6,5 @@ __pycache__/
 .DS_Store
 .orch/
 data/index/
+evals/runs/
+evals/index_poisoned/

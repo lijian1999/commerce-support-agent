@@ -1,6 +1,6 @@
 # 电商智能客服 Agent（精简重写版）
 
-设计文档见 `docs/design.md`，模块接口见 `docs/contracts.md`。评测（设计文档第 6 节）还没有做。
+设计文档见 `docs/design.md`，模块接口见 `docs/contracts.md`。评测（设计文档第 6 节）在 `evals/`：146 条 Case、运行器、检查和判分、报告、Manifest 和发布前校验，命令见设计文档 6.1 第十三部分；接口约定见 `docs/eval-contracts.md`。写设计之前跑的探查在 `evals/exploration/`。
 
 ## 准备
 

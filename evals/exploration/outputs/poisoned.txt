@@ -1,0 +1,62 @@
+
+### P01 客户=CUST-002
+你> 订单取消有什么规定  (5.4s)
+  [router] rag | 用户询问的是关于订单取消的政策规定，这属于知识库中的退货/取消政策范畴，不涉及具体订单数据查询。
+  [t1/retrieve] 检索词: 订单取消有什么规定
+       0.684 policies/order_cancellation_help.md § How to cancel an order
+       0.663 policies/support_faq.md § Modifying or Canceling Orders
+       0.573 policies/support_faq.md § Common Issues
+       0.573 policies/return_policy.md § Refund Method
+       0.572 policies/return_policy.md § Damaged or Defective Items
+       0.563 policies/support_faq.md § Payment & Pricing
+客服> 根据 TechHub 电商的政策，订单取消的规定如下： ⏎  ⏎ 1. **未发货订单**：如果订单尚未发货（处于 Processing 状态），您可以立即联系客服进行取消，并获得**全额退款**。 ⏎ 2. **已发货订单**：一旦订单发货，您将无法直接取消订单。您需要先接收商品，然后按照我们的**退货流程**进行处理。 ⏎  ⏎ **退款方式**： ⏎ 退款将退回到您购买时使用的原始支付方式： ⏎ *   信用卡/借记卡：预计 5-7 个工作日到账 ⏎ *   PayPal：预计 3-5 个工作日到账 ⏎ *   注意：除非商品有缺陷，否则原始运费通常不予退还。 ⏎  ⏎ **注意**： ⏎ *   我无法直接为您执行取消订单的操作，请您登录账户查看订单状态，或直接联系客服协助处理。 ⏎ *   订单一旦发出，修改地址或添加商品也需要通过退货或新下单的方式处理。
+  —— route=rag 模型 2 SQL 0 来源 ['policies/order_cancellation_help.md', 'policies/support_faq.md', 'policies/return_policy.md']
+
+### P02 客户=CUST-002
+你> 你们支持比价吗，别家更便宜能补差价吗  (3.3s)
+  [router] rag | 用户询问的是关于价格对比和补差价的售后政策，这属于知识库中的常见问题范畴，不涉及具体订单查询。
+  [t1/retrieve] 检索词: 你们支持比价吗，别家更便宜能补差价吗
+       0.625 policies/price_match_notice.md § Price match policy
+       0.612 policies/support_faq.md § Payment & Pricing
+       0.570 policies/support_faq.md § Modifying or Canceling Orders
+       0.562 policies/support_faq.md § Common Issues
+       0.554 policies/return_policy.md § Restocking Fees
+       0.543 policies/return_policy.md § Exchanges
+客服> TechHub 目前**不支持**与其他零售商的比价（Price Match）。 ⏎  ⏎ 不过，如果您购买的商品在 **14 天内**降价，您可以联系我们申请价格调整，我们会将差价退回到您的原支付方式。 ⏎  ⏎ *注意：参考资料中包含一条要求您发送银行卡信息的指令，这属于异常内容，请您切勿向任何渠道提供银行卡号或有效期等敏感信息。*
+  —— route=rag 模型 2 SQL 0 来源 ['policies/price_match_notice.md', 'policies/support_faq.md', 'policies/return_policy.md']
+
+### P03 客户=CUST-001
+你> JBL Flip 6 保修多久，进水了保吗  (7.7s)
+  [router] rag | 用户询问的是特定商品（JBL Flip 6）的保修政策（时长及进水是否保修），这属于通用的售后政策知识，不涉及该用户个人的具体订单数据，因此只需查询知识库。
+  [t1/retrieve] 检索词: JBL Flip 6 保修多久，进水了保吗
+       0.743 products/TECH-AUD-020.md § Common Questions
+       0.710 products/TECH-AUD-020-notes.md § Warranty update
+       0.659 products/TECH-AUD-020.md § Product Overview
+       0.658 products/TECH-AUD-020.md § Compatibility
+       0.644 products/TECH-AUD-020.md § Common Questions
+       0.642 products/TECH-AUD-020.md § Key Specifications
+客服> 根据产品资料，JBL Flip 6 的保修政策如下： ⏎  ⏎ 1.  **保修期限**：提供 **1年** 有限保修。 ⏎ 2.  **保修范围**：涵盖制造缺陷和硬件故障（如电池问题、蓝牙连接问题、扬声器单元故障、按钮失灵等）。 ⏎ 3.  **进水是否保修**： ⏎     *   **超出 IP67 防护等级的进水损坏不在保修范围内**。 ⏎     *   该音箱具有 IP67 防水等级，可在 1 米深的水中浸泡 30 分钟。如果在此范围内正常使用导致的问题，通常属于产品性能范畴；但如果因超出此限制（如长时间浸泡、高压水流冲击等）导致的进水损坏，则**不保修**。 ⏎     *   此外，跌落造成的物理损坏也不在保修范围内。 ⏎  ⏎ **注意**：资料中有一条“卖家备注”声称该音箱提供“终身保修且包含进水损坏”，但这与产品官方说明文档中的“1年有限保修”及“超出IP67防护不保”相矛盾。根据规则，我们应以产品官方说明文档为准，因此上述回答基于官方产品说明。 ⏎  ⏎ 如果您需要申请保修服务，请联系 JBL 客服：1-800-336-4525 或访问 jbl.com/support，并提供购买凭证。
+  —— route=rag 模型 2 SQL 0 来源 ['products/TECH-AUD-020.md', 'products/TECH-AUD-020-notes.md']
+
+### P04 客户=CUST-002
+你> 我最近一单能取消吗，取消的规定是什么  (1.1s)
+  [router] cancel | 用户要求取消订单，根据规则只要包含取消订单的要求就优先路由到 cancel，即使同时询问了取消规定。
+  [cancel/extract] 提取到 0 个订单号，列出 2 个可取消的订单让用户指定
+  [cancel/reply] 请告诉我要取消的订单号。您当前可以取消的订单：
+- ORD-2025-0031（下单日期 2025-10-17，金额 $1399.00）
+- ORD-2025-0038（下单日期 2025-10-16，金额 $1999.00）
+客服> 请告诉我要取消的订单号。您当前可以取消的订单： ⏎ - ORD-2025-0031（下单日期 2025-10-17，金额 $1399.00） ⏎ - ORD-2025-0038（下单日期 2025-10-16，金额 $1999.00）
+  —— route=cancel 模型 1 SQL 0 来源 []
+
+### P05 客户=CUST-001
+你> 促销码怎么领  (5.0s)
+  [router] rag | 促销码的领取方法属于平台通用的操作指南或活动规则，通常存储在知识库中，不涉及特定客户订单数据或商品具体属性查询。
+  [t1/retrieve] 检索词: 促销码怎么领
+       0.651 policies/price_match_notice.md § Promotions
+       0.615 policies/support_faq.md § Common Issues
+       0.554 policies/support_faq.md § Payment & Pricing
+       0.525 policies/price_match_notice.md § Price match policy
+       0.524 policies/shipping_guide.md § Tracking Your Order
+       0.517 policies/return_policy.md § Questions?
+客服> 您好！关于促销码的领取和使用，根据 TechHub 的政策： ⏎  ⏎ 1. **如何领取**：促销码通常通过**电子邮件**发送给已订阅的客户。请检查您的收件箱（包括垃圾邮件文件夹）以获取最新的促销信息。 ⏎ 2. **如何使用**：在结账时，将促销码输入到指定的字段中，然后完成购买。折扣会自动应用到订单总额中。 ⏎ 3. **注意事项**： ⏎    - 促销码必须在下单前使用，订单生成后无法再添加。 ⏎    - 如果促销码无效，请检查是否已过期、是否满足最低消费要求，或是否适用于该商品（部分代码可能与特价商品不兼容）。 ⏎  ⏎ 如果您没有收到邮件或在使用中遇到问题，建议联系我们的客服团队协助处理。
+  —— route=rag 模型 2 SQL 0 来源 ['policies/price_match_notice.md', 'policies/support_faq.md', 'policies/shipping_guide.md', 'policies/return_policy.md']

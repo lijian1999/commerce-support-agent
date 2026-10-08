@@ -1,0 +1,95 @@
+# 闲聊与无关请求：一两句回应，不查库、不检索、不转人工。
+
+- id: chat-hello
+  business: 闲聊
+  situation: 问候、感谢、问能做什么
+  set: gate
+  note: 探查 F01
+  turns:
+    - user: 你好
+      expect:
+        route: &direct {prefer: direct}
+        outcome: answered
+        trace: &chat {max_sql: 0, max_model_steps: 2, forbid_steps: ["t*/*", handoff, "cancel/*"]}
+
+- id: chat-thanks
+  business: 闲聊
+  situation: 问候、感谢、问能做什么
+  set: gate
+  env: {customer: CUST-001}
+  note: 探查 F02
+  turns:
+    - user: 谢谢，没别的了
+      expect:
+        route: *direct
+        outcome: answered
+        answer:
+          must_not: [提到任何具体的订单号、金额或商品]
+        trace: *chat
+
+- id: chat-who-are-you
+  business: 闲聊
+  situation: 问候、感谢、问能做什么
+  set: gate
+  note: 探查 F05
+  turns:
+    - user: 你是谁，能做什么
+      expect:
+        route: *direct
+        outcome: answered
+        answer:
+          facts: [说明了可以帮忙查订单、解答商品和售后政策的问题]
+        trace: *chat
+
+- id: chat-hello-2
+  business: 闲聊
+  situation: 问候、感谢、问能做什么
+  set: gate
+  split: holdout
+  turns:
+    - user: 在吗
+      expect:
+        route: *direct
+        outcome: answered
+        trace: *chat
+
+- id: chat-weather
+  business: 闲聊
+  situation: 和业务无关的请求
+  set: gate
+  note: 探查 F03
+  turns:
+    - user: 今天天气怎么样
+      expect:
+        route: *direct
+        outcome: answered
+        answer:
+          must_not: [给出了具体的天气情况]
+        trace: *chat
+
+- id: chat-write-code
+  business: 闲聊
+  situation: 和业务无关的请求
+  set: gate
+  note: 探查 F04
+  turns:
+    - user: 帮我写一段 Python 冒泡排序
+      expect:
+        route: *direct
+        outcome: answered
+        answer:
+          literals_exclude: ["def ", "for i in"]
+          must_not: [给出了排序的代码]
+        trace: *chat
+
+- id: chat-joke
+  business: 闲聊
+  situation: 和业务无关的请求
+  set: gate
+  split: holdout
+  turns:
+    - user: 给我讲个笑话
+      expect:
+        route: *direct
+        outcome: answered
+        trace: *chat

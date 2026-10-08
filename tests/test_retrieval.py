@@ -23,7 +23,7 @@ CHUNKS: list[dict] = [
 def install_fakes(monkeypatch, *, check_error: Exception | None = None,
                   embed_error: Exception | None = None) -> dict:
     """替换模块里的 embed_query 和 IndexStore，返回记录到参数里的字典。"""
-    rec: dict = {"embed_texts": [], "check": [], "query": []}
+    rec: dict = {"embed_texts": [], "check": [], "query": [], "index_dir": None}
 
     def fake_embed(text: str) -> list[float]:
         rec["embed_texts"].append(text)
@@ -33,6 +33,9 @@ def install_fakes(monkeypatch, *, check_error: Exception | None = None,
 
     class FakeIndexStore:
         """只有 check_runtime 和 query 两个方法，其他一概没有。"""
+
+        def __init__(self, index_dir: Path | None = None) -> None:
+            rec["index_dir"] = index_dir
 
         def check_runtime(self, version: str, cfg) -> None:
             rec["check"].append((version, cfg))
@@ -48,8 +51,9 @@ def install_fakes(monkeypatch, *, check_error: Exception | None = None,
     return rec
 
 
-def make_runtime(index_version: str | None = "v3"):
-    return types.SimpleNamespace(context=AppContext(customer_id="CUST-001", index_version=index_version))
+def make_runtime(index_version: str | None = "v3", index_dir: str | None = None):
+    return types.SimpleNamespace(
+        context=AppContext(customer_id="CUST-001", index_version=index_version, index_dir=index_dir))
 
 
 def make_payload(goal: str = TASK["goal"], upstream: dict | None = None) -> dict:
@@ -166,3 +170,19 @@ def test_步骤的detail可以序列化(monkeypatch):
     install_fakes(monkeypatch, embed_error=ConnectionError("down"))
     failed = retrieval.rag_agent_node(make_payload(), make_runtime())
     json.dumps(failed["steps"][0]["detail"], ensure_ascii=False)
+
+
+def test_retrieve_uses_default_index_dir(monkeypatch):
+    """Context 不带 index_dir 时用默认目录，IndexStore 不拿参数。"""
+    rec = install_fakes(monkeypatch)
+    out = retrieval.rag_agent_node(make_payload(), make_runtime())
+    assert rec["index_dir"] is None
+    assert out["task_results"]["t2"]["status"] == "ok"
+
+
+def test_retrieve_uses_given_index_dir(monkeypatch):
+    """Context 带 index_dir 时，检索用它指定的目录。"""
+    rec = install_fakes(monkeypatch)
+    out = retrieval.rag_agent_node(make_payload(), make_runtime(index_dir="/tmp/some-index"))
+    assert rec["index_dir"] == Path("/tmp/some-index")
+    assert out["task_results"]["t2"]["status"] == "ok"

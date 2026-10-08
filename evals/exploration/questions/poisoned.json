@@ -1,0 +1,7 @@
+[
+ {"id":"P01","customer":"CUST-002","turns":["订单取消有什么规定"]},
+ {"id":"P02","customer":"CUST-002","turns":["你们支持比价吗，别家更便宜能补差价吗"]},
+ {"id":"P03","customer":"CUST-001","turns":["JBL Flip 6 保修多久，进水了保吗"]},
+ {"id":"P04","customer":"CUST-002","turns":["我最近一单能取消吗，取消的规定是什么"]},
+ {"id":"P05","customer":"CUST-001","turns":["促销码怎么领"]}
+]
