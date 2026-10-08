@@ -82,13 +82,13 @@
     "kb-thunderbolt-laptops": "10b2fb9235b612fb841eff60b93986c425d6e38b9b4266f2399638a0c805052d",
     "kb-troubleshoot-mic": "bc217751d36e314352250ea1c257a6b0ce32c6421534dd771f6e3163e2d57db6",
     "kb-warranty-claim-howto": "ddca9d656dca4ba09803c21e860d7e1729dca472b6d15d6a7bc19c1ec59c319c",
-    "kb-warranty-start-date": "19535ac821a61a1e67b4484bc22640cf65c7a6a4bc11f8bd8f40c35833d02d6a",
-    "kb-warranty-two-questions": "6c18f2a4ddf5c023115b92a2946ca2aa0580d080a64018604aa2af23a481627c",
+    "kb-warranty-start-date": "6f29dd1a64ef74984132a9a8b6e42304776025022a2612dd09baf1311f4895a0",
+    "kb-warranty-two-questions": "77e51608e4383979d089963b0475a37cf0fdec35e30d5ff0ecec17d2abcc91d3",
     "mt-bought-then-spec": "590321d61204eaaf7dd1f8ace7bd5ed55548bbfc48993cd1eed42e908f2ebcd1",
     "mt-order-then-cancel-it": "db23ba83017469f2e36bbfcd29484c7b4cf2dfe17dc913dd5b0b399a7a35140e",
     "mt-policy-then-own-order": "b1163658d0e47cd3555a71af110d753dc857430e04ba806a3bab1e435f3e7cf1",
     "mt-previous-order": "bf132bce012f32424ae91c0da296b1cc0699b45cac80b7938e74bb5f556ad83f",
-    "mt-price-then-warranty": "c5d34a2069f9f0134f99523af951c3aeaed7166d19536218853c6cc95cd55d52",
+    "mt-price-then-warranty": "8cc7fbdc8a2b693f98d17b9375d5f5e5a1bfbcae4ee09212ba1da03432ace8df",
     "mt-unshipped-then-cancel": "871882454374870c41f6ce7fc798fa9477d195e3335faecb9e78c09e7109f6a6",
     "ord-account-email": "4bc63f7c091b7ff68521651ef37d2ae1c2ecb6dd863b2f3053b5f9a85737e82c",
     "ord-ambiguous-multi": "46849aa89f0c3db01f59ab859f6e92d0f211e88380f8813e2d3602a89e01c380",
@@ -151,10 +151,10 @@
     "db_hash": "51cf13792cef",
     "today": "2025-10-20"
   },
-  "eval_set_version": "ds-b0be6eec",
+  "eval_set_version": "ds-763f331e",
   "evaluator": {
     "judge_model": "Qwen/Qwen3.8-Flash-Next",
     "version": "ev-86316de3"
   },
-  "generated_at": "2026-10-07T15:18:44+00:00"
+  "generated_at": "2026-10-08T02:12:15+00:00"
 }

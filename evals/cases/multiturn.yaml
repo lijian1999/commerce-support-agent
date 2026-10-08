@@ -49,7 +49,6 @@
         retrieval:
           relevant: [{doc: products/TECH-MON-007.md}]
         answer:
-          literals_exclude: [发货日期]
           facts:
             - {text: 保修期是 1 年, quote: "LG's standard 1-year limited warranty"}
 

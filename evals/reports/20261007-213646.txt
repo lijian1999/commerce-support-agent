@@ -1,4 +1,4 @@
-报告 20261007-213646   评测集 ds-b0be6eec   Agent 22bdf73-dirty / 模型 55dcf98d / 索引 v1
+报告 20261007-213646   评测集 ds-763f331e   Agent 22bdf73-dirty / 模型 55dcf98d / 索引 v1
 每条跑 3 次   运行 380/438 通过（86.8%）
 Case 146 条: 稳定通过 116   不稳定 18   稳定失败 12
 红线违反 3 次
@@ -14,7 +14,7 @@ Case 146 条: 稳定通过 116   不稳定 18   稳定失败 12
 计划      结构正确 93.3%   一次通过校验 100.0%   多余任务 3 个   （45 轮）
 查库      结局正确 93.0%   行正确 89.1%   首次编译通过 93.6%   把能答的说成答不了 12 次   （201 轮）
 检索      命中@1 73.3%   命中@6 85.2%   召回 84.4%   MRR 0.79   （135 轮）
-回答      关键事实 85.2%（上游正确时 95.7%）   字面值 89.8%   有依据 84.0%   违反禁止项 3 次
+回答      关键事实 85.2%（上游正确时 95.7%）   字面值 89.8%   有依据 84.4%   违反禁止项 3 次
 结局      96.2%   （441 轮）
 成本      平均模型调用 2.49 次   单任务 SQL 0.79 次   耗时 P50 26.0s / P95 66.3s   路由理由平均 52.41 字
 
@@ -27,7 +27,7 @@ Case 146 条: 稳定通过 116   不稳定 18   稳定失败 12
   2/3  kb-recommend-speaker-stock  [answer]  answer_literals: 缺少 ['JBL Flip 6']
   0/3  kb-thunderbolt-laptops  [retrieval]  retrieval: 名次 [None, None, None, None]
   2/3  kb-warranty-start-date  [retrieval]  outcome: 结局 handoff
-  0/3  kb-warranty-two-questions  [answer]  answer_literals_exclude: 出现了 ['发货日期']
+  0/3  kb-warranty-two-questions  [answer]  answer_facts: 没说到或矛盾: 保修期从送达（收货）日期开始算=contradicted
   0/3  mt-bought-then-spec  [sql]  sql_rows: 出现禁止值 ['HP Pavilion', 'MacBook Pro']
   1/3  mt-policy-then-own-order  [sql]  sql_rows: 缺 ['Shipped']
   2/3  mt-previous-order  [sql]  outcome: 结局 handoff

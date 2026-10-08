@@ -212,7 +212,6 @@
             - {doc: policies/warranty_guide.md, section: Standard Warranty Coverage}
             - {doc: policies/warranty_guide.md, section: "What's NOT Covered"}
         answer:
-          literals_exclude: [发货日期]
           facts:
             - {text: 标准保修期是 1 年, quote: "1-year limited manufacturer warranty"}
             - {text: 保修期从送达（收货）日期开始算, quote: "Coverage begins on the delivery date"}
@@ -232,7 +231,6 @@
         retrieval:
           relevant: [{doc: policies/warranty_guide.md, section: Standard Warranty Coverage}]
         answer:
-          literals_exclude: [发货日期]
           facts:
             - {text: 保修期从送达（收货）日期开始算, quote: "Coverage begins on the delivery date"}
         trace: *no_db

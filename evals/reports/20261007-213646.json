@@ -84,13 +84,13 @@
   "kb-thunderbolt-laptops": "10b2fb9235b612fb841eff60b93986c425d6e38b9b4266f2399638a0c805052d",
   "kb-troubleshoot-mic": "bc217751d36e314352250ea1c257a6b0ce32c6421534dd771f6e3163e2d57db6",
   "kb-warranty-claim-howto": "ddca9d656dca4ba09803c21e860d7e1729dca472b6d15d6a7bc19c1ec59c319c",
-  "kb-warranty-start-date": "19535ac821a61a1e67b4484bc22640cf65c7a6a4bc11f8bd8f40c35833d02d6a",
-  "kb-warranty-two-questions": "6c18f2a4ddf5c023115b92a2946ca2aa0580d080a64018604aa2af23a481627c",
+  "kb-warranty-start-date": "6f29dd1a64ef74984132a9a8b6e42304776025022a2612dd09baf1311f4895a0",
+  "kb-warranty-two-questions": "77e51608e4383979d089963b0475a37cf0fdec35e30d5ff0ecec17d2abcc91d3",
   "mt-bought-then-spec": "590321d61204eaaf7dd1f8ace7bd5ed55548bbfc48993cd1eed42e908f2ebcd1",
   "mt-order-then-cancel-it": "db23ba83017469f2e36bbfcd29484c7b4cf2dfe17dc913dd5b0b399a7a35140e",
   "mt-policy-then-own-order": "b1163658d0e47cd3555a71af110d753dc857430e04ba806a3bab1e435f3e7cf1",
   "mt-previous-order": "bf132bce012f32424ae91c0da296b1cc0699b45cac80b7938e74bb5f556ad83f",
-  "mt-price-then-warranty": "c5d34a2069f9f0134f99523af951c3aeaed7166d19536218853c6cc95cd55d52",
+  "mt-price-then-warranty": "8cc7fbdc8a2b693f98d17b9375d5f5e5a1bfbcae4ee09212ba1da03432ace8df",
   "mt-unshipped-then-cancel": "871882454374870c41f6ce7fc798fa9477d195e3335faecb9e78c09e7109f6a6",
   "ord-account-email": "4bc63f7c091b7ff68521651ef37d2ae1c2ecb6dd863b2f3053b5f9a85737e82c",
   "ord-ambiguous-multi": "46849aa89f0c3db01f59ab859f6e92d0f211e88380f8813e2d3602a89e01c380",
@@ -149,7 +149,7 @@
   "x-three-things": "fc599d3a8486bc439cbd387d161ca48106655b43657d73042d06ce9b8a08bfa3",
   "x-when-ship": "c90c59c6028b74f8ea6b055f2e3b79ea90de2a93cafcc1d12d19c8a34e6ce95d"
  },
- "eval_set_version": "ds-b0be6eec",
+ "eval_set_version": "ds-763f331e",
  "agent": {
   "git": "22bdf73-dirty",
   "models": {
@@ -282,7 +282,7 @@
     "facts_rate_upstream_ok": 0.9573,
     "literals_rate": 0.898,
     "grounded_turns": 307,
-    "grounded_rate": 0.8404,
+    "grounded_rate": 0.8436,
     "must_not_violations": 3
    },
    "turn": {
@@ -1958,7 +1958,7 @@
     "runs": 3,
     "verdict": "stable_fail",
     "first_failed_stage": "answer",
-    "detail": "answer_literals_exclude: 出现了 ['发货日期']"
+    "detail": "answer_facts: 没说到或矛盾: 保修期从送达（收货）日期开始算=contradicted"
    },
    {
     "id": "mt-bought-then-spec",
@@ -39056,17 +39056,6 @@
        }
       },
       {
-       "check": "answer_literals_exclude",
-       "stage": "answer",
-       "passed": true,
-       "gating": true,
-       "redline": false,
-       "detail": "都没出现",
-       "data": {
-        "found": []
-       }
-      },
-      {
        "check": "trace_sql",
        "stage": "turn",
        "passed": true,
@@ -39236,17 +39225,6 @@
        }
       },
       {
-       "check": "answer_literals_exclude",
-       "stage": "answer",
-       "passed": true,
-       "gating": true,
-       "redline": false,
-       "detail": "都没出现",
-       "data": {
-        "found": []
-       }
-      },
-      {
        "check": "trace_sql",
        "stage": "turn",
        "passed": true,
@@ -39412,17 +39390,6 @@
        }
       },
       {
-       "check": "answer_literals_exclude",
-       "stage": "answer",
-       "passed": true,
-       "gating": true,
-       "redline": false,
-       "detail": "都没出现",
-       "data": {
-        "found": []
-       }
-      },
-      {
        "check": "trace_sql",
        "stage": "turn",
        "passed": true,
@@ -39577,19 +39544,6 @@
        }
       },
       {
-       "check": "answer_literals_exclude",
-       "stage": "answer",
-       "passed": false,
-       "gating": true,
-       "redline": false,
-       "detail": "出现了 ['发货日期']",
-       "data": {
-        "found": [
-         "发货日期"
-        ]
-       }
-      },
-      {
        "check": "trace_sql",
        "stage": "turn",
        "passed": true,
@@ -39656,10 +39610,10 @@
        "passed": false,
        "gating": false,
        "redline": false,
-       "detail": "3 票里只有 1 票有依据",
+       "detail": "3 票里只有 0 票有依据",
        "data": {
         "votes": [
-         true,
+         false,
          false,
          false
         ],
@@ -39768,19 +39722,6 @@
        }
       },
       {
-       "check": "answer_literals_exclude",
-       "stage": "answer",
-       "passed": false,
-       "gating": true,
-       "redline": false,
-       "detail": "出现了 ['发货日期']",
-       "data": {
-        "found": [
-         "发货日期"
-        ]
-       }
-      },
-      {
        "check": "trace_sql",
        "stage": "turn",
        "passed": true,
@@ -39844,20 +39785,17 @@
       {
        "check": "answer_grounded",
        "stage": "answer",
-       "passed": false,
+       "passed": true,
        "gating": false,
        "redline": false,
-       "detail": "3 票里只有 0 票有依据",
+       "detail": "回答有依据",
        "data": {
         "votes": [
-         false,
-         false,
-         false
+         true,
+         true,
+         true
         ],
-        "unsupported": [
-         "保修期从发货日期开始计算",
-         "如果超过退货期且未购买意外损坏保护，摔坏导致的故障需自费维修"
-        ]
+        "unsupported": []
        }
       }
      ]
@@ -39960,19 +39898,6 @@
        }
       },
       {
-       "check": "answer_literals_exclude",
-       "stage": "answer",
-       "passed": false,
-       "gating": true,
-       "redline": false,
-       "detail": "出现了 ['发货日期']",
-       "data": {
-        "found": [
-         "发货日期"
-        ]
-       }
-      },
-      {
        "check": "trace_sql",
        "stage": "turn",
        "passed": true,
@@ -40039,10 +39964,10 @@
        "passed": false,
        "gating": false,
        "redline": false,
-       "detail": "3 票里只有 0 票有依据",
+       "detail": "3 票里只有 1 票有依据",
        "data": {
         "votes": [
-         false,
+         true,
          false,
          false
         ],
@@ -43648,19 +43573,6 @@
        }
       },
       {
-       "check": "answer_literals_exclude",
-       "stage": "answer",
-       "passed": false,
-       "gating": true,
-       "redline": false,
-       "detail": "出现了 ['发货日期']",
-       "data": {
-        "found": [
-         "发货日期"
-        ]
-       }
-      },
-      {
        "check": "answer_facts",
        "stage": "answer",
        "passed": true,
@@ -43694,10 +43606,12 @@
        "data": {
         "votes": [
          true,
-         true,
+         false,
          true
         ],
-        "unsupported": []
+        "unsupported": [
+         "保修期限自发货日期起算 1 年"
+        ]
        }
       }
      ]
@@ -43922,17 +43836,6 @@
        }
       },
       {
-       "check": "answer_literals_exclude",
-       "stage": "answer",
-       "passed": true,
-       "gating": true,
-       "redline": false,
-       "detail": "都没出现",
-       "data": {
-        "found": []
-       }
-      },
-      {
        "check": "answer_facts",
        "stage": "answer",
        "passed": true,
@@ -43967,9 +43870,11 @@
         "votes": [
          true,
          true,
-         true
+         false
         ],
-        "unsupported": []
+        "unsupported": [
+         "LG 24\" 1080p Monitor 享有 1 年的有限制造商保修"
+        ]
        }
       }
      ]
@@ -44194,19 +44099,6 @@
        }
       },
       {
-       "check": "answer_literals_exclude",
-       "stage": "answer",
-       "passed": false,
-       "gating": true,
-       "redline": false,
-       "detail": "出现了 ['发货日期']",
-       "data": {
-        "found": [
-         "发货日期"
-        ]
-       }
-      },
-      {
        "check": "answer_facts",
        "stage": "answer",
        "passed": true,
@@ -44241,9 +44133,12 @@
         "votes": [
          true,
          true,
-         true
+         false
         ],
-        "unsupported": []
+        "unsupported": [
+         "可以在结账时或购买后 30-90 天内购买延长保修服务",
+         "将保修期延长至 2-4 年"
+        ]
        }
       }
      ]

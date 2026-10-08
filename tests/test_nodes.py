@@ -6,7 +6,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 import app.answer as answer_mod
 import app.router as router_mod
 import app.supervisor.nodes as nodes_mod
-from app.answer import ANSWER_SYSTEM, DIRECT_SYSTEM, LOGIN_REPLY, answer_node, collect_sources
+from app.answer import ANSWER_REMINDER, ANSWER_SYSTEM, DIRECT_SYSTEM, LOGIN_REPLY, answer_node, collect_sources
 from app.context import AppContext
 from app.models import ModelError, ModelResult
 from app.router import ROUTER_SYSTEM, RouteDecision, router_node
@@ -272,7 +272,8 @@ def test_answer_normal(monkeypatch):
     assert "查询结果（1 行）:" in user
     assert '<参考资料 来源="policies/return_policy.md" 小节="Return Windows">' in user
     assert "</参考资料>" in user
-    assert system_message(fake) == ANSWER_SYSTEM
+    assert system_message(fake) == ANSWER_SYSTEM.replace("{today}",
+                                                         AppContext(customer_id="CUST-001").today)
     assert update["sources"] == ["policies/return_policy.md"]
 
 
@@ -337,3 +338,36 @@ def test_collect_sources_dedups_in_order():
             {"doc": "c.md", "section": "C", "text": "c"}]}),
     }
     assert collect_sources(results) == ["a.md", "b.md", "c.md"]
+
+
+# ---------- 21 回答提示词的今天日期与提醒 ----------
+
+def _runtime_with_today(today: str = "2025-10-20"):
+    """Runtime 的 Context 里指定今天的日期。"""
+    return types.SimpleNamespace(context=AppContext(customer_id="CUST-001", today=today))
+
+
+def test_answer_system_has_today(monkeypatch):
+    fake = FakeFactory(value="已过保。")
+    fake.install(monkeypatch, answer_mod)
+    answer_node(state_of(route="sql", task_results={"t1": _SQL_OK}), _runtime_with_today())
+    system = system_message(fake)
+    assert "今天是 2025-10-20。" in system
+    assert "{today}" not in system
+
+
+def test_answer_user_message_ends_with_reminder(monkeypatch):
+    fake = FakeFactory(value="已过保。")
+    fake.install(monkeypatch, answer_mod)
+    answer_node(state_of(route="sql", task_results={"t1": _SQL_OK}), _runtime_with_today())
+    user = user_message(fake)
+    assert user.endswith(ANSWER_REMINDER)
+    assert "查询结果（" in user
+
+
+def test_direct_answer_has_no_reminder(monkeypatch):
+    fake = FakeFactory(value="您好。")
+    fake.install(monkeypatch, answer_mod)
+    answer_node(state_of(route="direct"), _runtime_with_today())
+    assert "提醒：" not in user_message(fake)
+    assert system_message(fake) == DIRECT_SYSTEM
