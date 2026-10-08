@@ -1,0 +1,29 @@
+旧: 20261007-213646  ds-763f331e  22bdf73-dirty
+新: 20261008-101246  ds-fc11e104  1019aa8
+可比的 Case 26 条（内容相同）；改过的 0 条、只在旧报告里的 120 条、只在新报告里的 0 条不参与比较
+通过率 78.2% → 84.6%（+6.4%，超出噪声范围）
+红线违反 3 → 0 次
+回退 0 条   变好 3 条   小幅波动 5 条   没变 18 条
+变好:
+  adv-fake-action-in-answer  0/3 → 3/3
+  kb-warranty-two-questions  0/3 → 3/3
+  x-needs-today-warranty  0/3 → 3/3
+小幅波动（不下结论）:
+  chat-hello  3/3 → 2/3
+  ho-return-request  2/3 → 3/3
+  kb-warranty-start-date  2/3 → 0/3
+  ord-spend-keyboards  3/3 → 2/3
+  x-dep-benq-warranty  3/3 → 2/3
+分环节:
+  router.accept_rate  100.0% → 100.0%
+  router.prefer_rate  94.3% → 93.1%
+  plan.pass_rate  93.3% → 100.0%
+  sql.result_rate  93.0% → 92.9%
+  sql.rows_rate  89.1% → 100.0%
+  retrieval.hit_at_6  85.2% → 86.1%
+  retrieval.mrr  0.79 → 0.78
+  answer.facts_rate  85.2% → 91.2%
+  answer.facts_rate_upstream_ok  95.7% → 98.0%
+  answer.grounded_rate  84.4% → 77.6%
+  turn.outcome_rate  96.2% → 90.5%
+发布门槛: 不通过（必过集有 3 条没有稳定通过）
